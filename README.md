@@ -1,4 +1,10 @@
-# Azure Managed Kubernetes Service
+# Azure Managed Kubernetes Service & 필수 Application
+## AKS에 관한 정보와 Helm을 사용한 k8s 필수 어플리케이션 설치 가이드
+- AKS cluster
+- Nginx Ingress Controller
+- [Prometheus Stack (Prometheus, Grafana, AlertManager)](monitoring)
+- ELK Stack (Elastic Search, Log Stash, Kibana)
+- Istio Service Mesh
 ## AKS
 ### Azure Kubernetes Service
 Azure 제공하는 관리되는 쿠버네티스 클러스터 서비스, Azure의 PaaS 제품으로 쿠버네티스 Control Plane(API Server, ETCD, Controller, Scheduler)은 Azure가 관리하며, 사용자는 Workload에 집중할 수 있는 장점이 있다
