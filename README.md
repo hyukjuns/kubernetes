@@ -92,7 +92,7 @@ Azure 제공하는 관리되는 쿠버네티스 클러스터 서비스, Azure의
 3. Azure Policy
     
     Azure의 쿠버네티스 관련 정책을 활성화 하여 구독 내 AKS에 관한 규정 준수를 확인 할 수 있도록 서비스 통합을 제공하고 있다.
-### k8s 클러스터 버전
+### 지원하는 k8s Version
 <p>
 [major].[minor].[patch] <br>
 [주 버전].[부 버전].[패치 버전] <br>
