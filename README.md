@@ -118,3 +118,7 @@ AKS에서 Kubernetes 버전의 지원 기간은 “N-2(N(최신 릴리스) - 2(�
 </p>
 
 [k8s Release Info](https://en.wikipedia.org/wiki/Kubernetes#History)
+
+### AKS Network Mode
+- bridge는 deprecated되었으며, transparent가 디폴드 값으로 적용된다.
+- 참고 링크: https://docs.microsoft.com/en-us/azure/aks/faq#what-is-azure-cni-transparent-mode-vs-bridge-mode
