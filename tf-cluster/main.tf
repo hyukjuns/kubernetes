@@ -85,9 +85,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     http_application_routing {
       enabled = false
     }
-    # kube_dashboard {
-    #   enabled = false
-    # }
+    kube_dashboard {
+      enabled = false
+    }
     oms_agent {
       enabled = false
     }
