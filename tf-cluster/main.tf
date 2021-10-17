@@ -33,9 +33,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   location            = data.azurerm_resource_group.aks.location
   resource_group_name = data.azurerm_resource_group.aks.name
 
-  # # k8s version
-  # kubernetes_version = "1.21.1"
-  # automatic_channel_upgrade = "none"
+  # k8s version
+  kubernetes_version = "1.21.1"
+  automatic_channel_upgrade = "none"
 
   # Basic
   dns_prefix     = "${var.prefix}aks01"
