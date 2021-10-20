@@ -35,7 +35,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   # k8s version
   kubernetes_version = "1.21.1"
-  automatic_channel_upgrade = "none"
+  // automatic_channel_upgrade = "stable"
 
   # Basic
   dns_prefix     = "${var.prefix}aks01"

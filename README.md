@@ -5,10 +5,10 @@
 - AKS Cluster (Manged Controll Plane, Default 3 Worker nodes)
 - 2021.10월 기준 k8s Version: 1.21.x
 #### 필수 어플리케이션 설치 가이드는 링크를 참고
-- Nginx Ingress Controller
-- [Prometheus Stack (Prometheus, Grafana, AlertManager)](monitoring)
-- ELK Stack (Elastic Search, Log Stash, Kibana)
-- Istio Service Mesh
+- Routing: Nginx Ingress Controller
+- Monitoring: [Prometheus Stack (Prometheus, Grafana, AlertManager)](monitoring)
+- Logging: ELK Stack (Elastic Search, Log Stash, Kibana)
+- Service Mesh: Istio Service Mesh
 ## AKS 란?
 ### Azure Kubernetes Service
 Azure 제공하는 관리되는 쿠버네티스 클러스터 서비스, Azure의 PaaS 제품으로 쿠버네티스 Control Plane(API Server, ETCD, Controller, Scheduler)은 Azure가 관리하며, 사용자는 Workload에 집중할 수 있는 장점이 있다.

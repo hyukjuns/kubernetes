@@ -21,7 +21,10 @@
     ```
 3. Chart 설치
     ```
-    helm install [RELEASE_NAME] ingress-nginx/ingress-nginx -f vaules.yml -n ingress
+    helm install [RELEASE_NAME] ingress-nginx/ingress-nginx -f values.yml -n ingress
+    ```
+4. TLS 사용 설정
+    ```
     ```
 ---
 ### 참고 문서
