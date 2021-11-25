@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nam-svc-deploy
+spec:
+  type: LoadBalancer
+  selector:
+    app: deploy
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nam-deployment
+  labels:
+    app: deploy
+  annotations:
+    kubernetes.io/change-cause: Hyuk JUn node app ver 3
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: deploy
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 2
+      maxSurge: 2
+  minReadySeconds: 20
+  template:
+    metadata:
+      labels:
+        app: deploy
+    spec:
+      containers:
+      - name: mynam
+        image: nginx:stable-alpine
+        ports:
+         - containerPort: 8080
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: 20Mi
