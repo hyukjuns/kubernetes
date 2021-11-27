@@ -1,4 +1,4 @@
-# Azure Managed Kubernetes Service & 필수 Application
+# Terraform을 사용한 AKS 프로비져닝과 필수 Application 설치 및 운영
 ## AKS에 관한 정보와 Helm을 사용한 k8s 필수 어플리케이션 설치
 ### 클러스터 정보 및 필수 Add-on 어플리케이션 목록
 #### k8s Cluster
