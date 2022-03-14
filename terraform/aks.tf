@@ -1,4 +1,11 @@
 terraform {
+  cloud {
+    organization = "cloocus-hyukjuns"
+
+    workspaces {
+      name = "aks-test"
+    }
+  }
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"

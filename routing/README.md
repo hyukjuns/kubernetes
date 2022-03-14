@@ -24,7 +24,24 @@
     helm install [RELEASE_NAME] ingress-nginx/ingress-nginx -f values.yml -n ingress
     ```
 4. TLS 사용 설정
+    1. TLS Secret 생성
     ```
+    apiVersion: v1
+    kind: Secret
+    metadata:
+        name: example-tls
+        namespace: foo
+    data:
+        tls.crt: <base64 encoded cert>
+        tls.key: <base64 encoded key>
+    type: kubernetes.io/tls
+    ```
+    2. ingress object spec에서 secret 사용
+    ```
+    tls:
+      - hosts:
+        - www.example.com
+        secretName: example-tls
     ```
 ---
 ### 참고 문서
