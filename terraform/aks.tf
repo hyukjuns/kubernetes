@@ -4,6 +4,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "2.81.0"
     }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+      version = "2.8.0"
+    }
   }
 }
 
@@ -11,27 +15,28 @@ provider "azurerm" {
   features {}
 }
 
-data "azurerm_resource_group" "aks" {
+resource "azurerm_resource_group" "aks" {
   name = "k8s"
+  location = "koreacentral"
 }
 resource "azurerm_virtual_network" "aks" {
   name                = "${var.prefix}-network"
-  location            = data.azurerm_resource_group.aks.location
-  resource_group_name = data.azurerm_resource_group.aks.name
+  location            = azurerm_resource_group.aks.location
+  resource_group_name = azurerm_resource_group.aks.name
   address_space       = ["10.0.0.0/8"]
 }
 
 resource "azurerm_subnet" "aks" {
   name                 = "azurecni"
   virtual_network_name = azurerm_virtual_network.aks.name
-  resource_group_name  = data.azurerm_resource_group.aks.name
+  resource_group_name  = azurerm_resource_group.aks.name
   address_prefixes     = ["10.240.0.0/16"]
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "${var.prefix}-aks-01"
-  location            = data.azurerm_resource_group.aks.location
-  resource_group_name = data.azurerm_resource_group.aks.name
+  name                = "${var.prefix}-${var.cluster_name}"
+  location            = azurerm_resource_group.aks.location
+  resource_group_name = azurerm_resource_group.aks.name
 
   # k8s version
   kubernetes_version = "1.21.1"
