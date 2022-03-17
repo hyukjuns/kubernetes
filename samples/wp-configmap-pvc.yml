@@ -26,8 +26,8 @@ metadata:
   name: wp-pvc
   namespace: production
 spec:
-  accessModes: ["ReadWriteOnce"]
+  accessModes: ["ReadWriteMany"]
   resources:
     requests:
       storage: 1Gi
-  storageClassName: default
+  storageClassName: azurefile

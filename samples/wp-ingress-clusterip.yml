@@ -24,7 +24,7 @@ spec:
   #   secretName: ingress-tls-secret # tls를 위해 생성한 secret, tls.key 와 tls.crt 가 저장되어 있다.
   ingressClassName: nginx
   rules:
-    - host: hyukjun.me # 이 주소로 웹브라우저 에서 접근하기 위해선 local에서 /etc/hosts에 워커노드의 아이피 등록 필요
+    - host: test.hyukjun.me # 이 주소로 웹브라우저 에서 접근하기 위해선 local에서 /etc/hosts에 워커노드의 아이피 등록 필요
       http:
         paths:
         - path: /
