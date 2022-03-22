@@ -5,7 +5,7 @@ metadata:
   name: wordpress-deployment
   namespace: production
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: wp
@@ -65,10 +65,10 @@ spec:
               subPath: isok # 서브패스를 지정해줘야 파일단위로 마운트 되므로 다른 콘텐츠 파일들이 덮어씌어지지 않음
           resources:
             requests:
-              cpu: 500m
+              cpu: 300m
               memory: 200Mi
             limits:
-              cpu: 700m
+              cpu: 500m
               memory: 500Mi
           livenessProbe:
             exec:
