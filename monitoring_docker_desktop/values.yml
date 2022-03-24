@@ -1,0 +1,32 @@
+# Namespace and grafana admin password, timezone
+namespaceOverride: "monitoring"
+grafana:
+  namespaceOverride: "monitoring"
+  defaultDashboardsTimezone: kst
+  adminPassword: dkagh1.dkagh1.
+kube-state-metrics:
+  namespaceOverride: "monitoring"
+prometheus-node-exporter:
+  namespaceOverride: "monitoring"
+
+# # Persistant Volume Claim
+# prometheus:
+#   prometheusSpec:
+#     storageSpec: 
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: default
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 50Gi
+# alertmanager:
+#   alertmanagerSpec:
+#     storage:
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: default
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 50Gi
