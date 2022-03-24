@@ -5,7 +5,8 @@ metadata:
   labels:
     app: nginx
   annotations:
-    kubernetes.io/change-cause: Hyuk JUn node app ver 3
+    kubernetes.io/change-cause: Hyuk JUn node app ver 1
+  namespace: sample
 spec:
   replicas: 2
   selector:
@@ -39,6 +40,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx-svc-deploy
+  namespace: sample
 spec:
   type: LoadBalancer
   selector:
