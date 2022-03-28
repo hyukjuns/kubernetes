@@ -4,7 +4,7 @@ variable "prefix" {
 }
 
 variable "resource_group_name" {
-  default = "k8s"
+  default = "hyukjun-rg"
   description = "k8s rg name"
 }
 

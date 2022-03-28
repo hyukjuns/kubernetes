@@ -23,7 +23,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "aks" {
-  name = "k8s"
+  name = var.resource_group_name
   location = "koreacentral"
 }
 resource "azurerm_virtual_network" "aks" {
@@ -46,7 +46,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name = azurerm_resource_group.aks.name
 
   # k8s version
-  kubernetes_version = "1.21.1"
+  kubernetes_version = "1.23.3"
   // automatic_channel_upgrade = "stable"
 
   # Basic
