@@ -9,24 +9,24 @@ kube-state-metrics:
 prometheus-node-exporter:
   namespaceOverride: "monitoring"
 
-# Persistant Volume Claim
-prometheus:
-  prometheusSpec:
-    storageSpec: 
-      volumeClaimTemplate:
-        spec:
-          storageClassName: default
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 50Gi
-alertmanager:
-  alertmanagerSpec:
-    storage:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: default
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 50Gi
+# # Persistant Volume Claim
+# prometheus:
+#   prometheusSpec:
+#     storageSpec: 
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: default
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 50Gi
+# alertmanager:
+#   alertmanagerSpec:
+#     storage:
+#       volumeClaimTemplate:
+#         spec:
+#           storageClassName: default
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 50Gi
