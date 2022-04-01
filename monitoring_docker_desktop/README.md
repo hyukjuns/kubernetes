@@ -49,4 +49,15 @@ helm을 사용한 prometheus, alertmanager, grafana 통합 설치
     admin
     ```
 ---
+### Trouble shoot
+- node exporter crashlooback 이슈 발생 시
+    - patch 사용
+        ```
+        kubectl patch ds <NODE_EXPORTER_DAEMONSET_NAME> --type "json" -p '[{"op": "remove", "path" : "/spec/template/spec/containers/0/volumeMounts/2/mountPropagation"}]'
+        ```
+    - value.yml 수정
+        ```
+        nodeExporter:
+            hostRootfs: false
+        ```
 [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack#configuration)
