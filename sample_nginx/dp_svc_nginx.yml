@@ -4,8 +4,6 @@ metadata:
   name: nginx-deployment
   labels:
     app: nginx
-  annotations:
-    kubernetes.io/change-cause: Hyuk JUn node app ver 1
   namespace: sample
 spec:
   replicas: 2
@@ -34,7 +32,7 @@ spec:
             cpu: 500m
             memory: 500Mi
         ports:
-         - containerPort: 8080
+         - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -47,4 +45,4 @@ spec:
     app: nginx
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 80
