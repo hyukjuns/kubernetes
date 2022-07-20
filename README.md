@@ -4,5 +4,5 @@
 - logging
 - routing
 - cicd
-### AKS Guide
-[AKS Guide](AKS-Guide)
+### AKS Usage
+[AKS Usage](AKS-Guide)

@@ -1,2 +1,0 @@
-
-### Sample Workpress with Ingress
