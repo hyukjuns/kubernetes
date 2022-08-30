@@ -5,4 +5,4 @@
 - routing
 - cicd
 ### AKS Usage
-[AKS Usage](AKS-Guide)
+[AKS Usage](aks-usage)
