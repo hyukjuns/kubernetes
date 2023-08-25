@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: httpd
   namespace: myweb
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
   rules:
