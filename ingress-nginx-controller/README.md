@@ -92,13 +92,13 @@ Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝 <br>
     ```
     apiVersion: v1
     data:
-    proxy-connect-timeout: "10"
-    proxy-read-timeout: "120"
-    proxy-send-timeout: "120"
+      proxy-connect-timeout: "10"
+      proxy-read-timeout: "120"
+      proxy-send-timeout: "120"
     kind: ConfigMap
     metadata:
-    name: ingress-nginx-controller
-    namespace: ingress-nginx
+      name: ingress-nginx-controller
+      namespace: ingress-nginx
     ```
 
 
