@@ -91,9 +91,9 @@ helm 으로 Prometheus Stack 설치
         ```
     - 서비스 접속
 
-        - 그라파나 (Import Dashboard: 13770)
+        - 그라파나
             
-            ![grafana](image/grafana.png)        
+            ![grafana](image/nodes.png)        
 
         - 프로메테우스
 
