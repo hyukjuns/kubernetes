@@ -8,6 +8,7 @@
 - Jenkins
 - ArgoCD
 - Istio
+- Cluster Autoscaler
 
 ## plan
 1. Provisioning by Helm
