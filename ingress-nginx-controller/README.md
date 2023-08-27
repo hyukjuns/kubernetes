@@ -14,6 +14,7 @@ Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝 <br>
 
     ```
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+    helm repo update
     ```
 
 3. Customize Values
