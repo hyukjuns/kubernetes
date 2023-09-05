@@ -18,3 +18,15 @@ spec:
               number: 80
         path: /
         pathType: Prefix
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd
+  namespace: myweb
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+  selector:
+    app: httpd

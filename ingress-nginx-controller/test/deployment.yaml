@@ -15,6 +15,7 @@ spec:
     rollingUpdate:
       maxSurge: 30%
       maxUnavailable: 30%
+  minReadySeconds: 20 # 파드의 최소 준비 시간
   template:
     metadata:
       labels:
@@ -32,15 +33,27 @@ spec:
           limits:
             cpu: "1m"
             memory: "1024Mi"
+        livenessProbe:
+          exec:
+            command: ['cat', '/var/www/html/isok']
+        readinessProbe:
+          httpGet:
+            port: 80
+            path: /
+          timeoutSeconds: 60
+        volumeMounts:
+          - name: ready-config
+            mountPath: /var/www/html/isok
+            subPath: isok
+      volumes:
+        - name: ready-config
+          configMap:
+            name: wpconfigmap
 ---
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: httpd
+  name: wpconfigmap
   namespace: myweb
-spec:
-  type: ClusterIP
-  ports:
-    - port: 80
-  selector:
-    app: httpd
+data:
+  isok: "ready"
