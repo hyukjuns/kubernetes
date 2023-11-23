@@ -1,0 +1,10 @@
+
+# AKS
+controller:
+  service:
+    annotations: 
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+      service.beta.kubernetes.io/azure-load-balancer-internal: true
+    loadBalancerIP: 10.224.224.100
+  ingressClassResource:
+    name: nginx-internal

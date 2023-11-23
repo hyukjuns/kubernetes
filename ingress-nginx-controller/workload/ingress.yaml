@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: ing.testcloud.site
+  - host: myweb.testcloud.site
     http:
       paths:
       - backend:

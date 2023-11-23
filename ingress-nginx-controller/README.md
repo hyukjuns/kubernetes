@@ -34,7 +34,8 @@ Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝 <br>
 4. Install Chart (To be Release)
 
     ```
-    helm install ingress-nginx ingress-nginx/ingress-nginx -n ingress-nginx -f user-values.yaml
+    #   helm install [NAME] [CHART] [flags]
+    helm install ingress-nginx ingress-nginx/ingress-nginx --version <CHART_VERSION> -n ingress-nginx -f user-values.yaml
     ```
 
 5. Check installation
@@ -47,8 +48,7 @@ Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝 <br>
     helm get values ingress-nginx -n ingress-nginx
     ```
 
-## 특정 버전 설치 or 업그레이드
-### 특정 버전 설치 가이드
+## 특정 버전 설치
 
 1. 차트 버전 살펴보기
 
@@ -69,7 +69,7 @@ Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝 <br>
     ```
 
 
-### 차트 버전 업그레이드
+## 차트 버전 업그레이드
 1. 위 1,2번과 같은 방식으로 k8s 버전과 호환성 확인
 2. 차트 업그레이드
 
