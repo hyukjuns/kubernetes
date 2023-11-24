@@ -2,6 +2,10 @@
 Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝 <br>
 *주의: k8s 버전 업그레이드에 맞춰 Ingress Nginx 컨트롤러의 버전도 호환성을 체크하여 업그레이드 해주어야 한다.
 
+## Type
+- External Ingress Controller
+- Internal Ingress Controller
+
 ## 설치 순서
 
 1. Create Namespace

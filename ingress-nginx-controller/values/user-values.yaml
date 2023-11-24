@@ -1,5 +1,12 @@
-# AKS
+# External Ingress Controller in AKS
 controller:
   service:
     annotations: 
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
+  electionID: external-ingress-controller-leader
+  ingressClassResource:
+    name: nginx-external
+    enabled: true
+    default: false
+    controllerValue: "k8s.io/external-ingress-nginx"
+  ingressClass: nginx-external

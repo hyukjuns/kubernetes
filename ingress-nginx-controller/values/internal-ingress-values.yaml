@@ -1,10 +1,14 @@
-
-# AKS
+# Internal Ingress Controller in AKS
 controller:
   service:
     annotations: 
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
       service.beta.kubernetes.io/azure-load-balancer-internal: true
     loadBalancerIP: 10.224.224.100
+  electionID: internal-ingress-controller-leader
   ingressClassResource:
     name: nginx-internal
+    enabled: true
+    default: false
+    controllerValue: "k8s.io/internal-ingress-nginx"
+  ingressClass: nginx-internal
