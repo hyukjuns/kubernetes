@@ -3,7 +3,9 @@ data:
   proxy-connect-timeout: "10"
   proxy-read-timeout: "60"
   proxy-send-timeout: "60"
+  # allow-snippet-annotations: "true"
+  # enable-modsecurity: "true"
 kind: ConfigMap
 metadata:
-  name: ingress-nginx-controller
+  name: ingress-nginx-external-controller # Set <RELEASE_NAME>-controller
   namespace: ingress-nginx
