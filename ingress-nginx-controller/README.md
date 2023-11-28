@@ -90,6 +90,9 @@ Configmap으로 Ingress Nginx 세팅, (Helm Value로 세팅 가능)
 
     https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/#nginx-configuration
 
+- Configmap - 글로벌 설정: Configmap 이름과 인그레스 컨트롤러 이름을 같게하여 인그레스 컨트롤러 단위로 nginx 설정 적용 가능
+- Annotation - 개별 설정: Ingress Object 생성 시 Annotation에 Nginx Configuration을 기입하여 개별로 적용 가능
+
 - Configmap 설정
 
 1. 설정내용
