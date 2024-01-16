@@ -10,10 +10,6 @@
 - Istio
 - Cluster Autoscaler
 
-## plan
-1. Provisioning by Helm
-2. Provisioning by Terraform (Helm, K8s Provider)
-
 ## Helm
 ```
 # Add Repo
