@@ -3,7 +3,7 @@ namespaceOverride: "monitoring"
 grafana:
   namespaceOverride: "monitoring"
   defaultDashboardsTimezone: kst
-  adminPassword: dkagh1.dkagh1.
+  adminPassword: "password"
 kube-state-metrics:
   namespaceOverride: "monitoring"
 prometheus-node-exporter:

@@ -1,14 +1,12 @@
-# Kubernetes Addon Application
+# Kubernetes Practice
 
-## Addons
-- Prometheus Stack: Prometheus, Alert Manager, Grafana
+### Cluster
+- AKS
+
+### Addons
+- Prometheus
 - Loki
-- EFK Stack: Elasticsearch, Fluentd, Kibana
-- Ingress Nginx Controller
-- Jenkins
-- ArgoCD
-- Istio
-- Cluster Autoscaler
+- Nginx Ingress Controller
 
 ## Helm
 ```
