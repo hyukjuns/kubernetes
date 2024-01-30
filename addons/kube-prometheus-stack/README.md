@@ -98,19 +98,19 @@ helm 으로 Prometheus Stack 설치
         - 프로메테우스
 
             ![prometheus](image/prometheus.png)
-### Ref
+### 사용된 소스
 - 아티팩트 허브 kube-prometheus-stack
 
     https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
 
-- 공식 깃헙 Prometheus Community Kubernetes Helm Charts
-    
-    https://github.com/prometheus-community/helm-charts/
+    - 사용된 깃헙 리포 Prometheus Community Kubernetes Helm Charts
+        
+        https://github.com/prometheus-community/helm-charts/
 
 
-- 공식 깃헙 kube-prometheus
+    - 사용된 깃헙 리포 kube-prometheus
 
-    https://github.com/prometheus-operator/kube-prometheus
+        https://github.com/prometheus-operator/kube-prometheus
 
 - 프로메테우스 스토리지 참고
 
