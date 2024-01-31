@@ -9,7 +9,11 @@
 - Nginx Ingress Controller
 
 ## Helm
-```
+```markdown
+# Update Release
+helm upgrade [RELEASE] [CHART] [flags]
+ex) helm upgrade kube-prometheus-stack prometheus-community/kube-prometheus-stack  -f ./values/user-values.yaml -n prometheus
+ex) helm upgrade -n ingress-nginx ingress-nginx ingress-nginx/ingress-nginx --version <CHART_VERSION>
 # Add Repo
 helm repo add <REPO_NAME> <REPO_ADDRESS>
 helm repo update

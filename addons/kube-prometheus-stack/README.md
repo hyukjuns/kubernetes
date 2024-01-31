@@ -4,9 +4,9 @@ helm 으로 Prometheus Stack 설치
 # Prerequisite
 1. Kubernetes 1.16+
 2. Helm 3+
-## Version info
-- stack version: 48.4.0
-- app version: v0.66.0
+## Version info (2024.01.31)
+- Chart version: 56.2.1
+- App Version: v0.71.2
 ## Stack Component
 - The Prometheus Operator
 - Highly available Prometheus

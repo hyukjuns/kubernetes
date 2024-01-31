@@ -1,29 +1,106 @@
-## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.16.6
-kubeTargetVersionOverride: "1.26.6"
+# -------------------------------------
+# Global
+# -------------------------------------
+## 프로메테우스 스택의 레이블 설정 (Key: app)
+nameOverride: "kube-prometheus-stack-hyukjun"
 
-## Labels to apply to all resources
+## 네임스페이스 Label 설정
 commonLabels:
-  mgmt: monitoring
+  mgmt: hyukjun
 
-## Timezone for the default dashboards and password
+global:
+  # 프라이빗 레지스트리 사용시 활용
+  imageRegistry: ""
+  imagePullSecrets: []
+
+# -------------------------------------
+# Alertmanager 
+# -------------------------------------
+alertmanager:
+  # PDB 설정
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: ""
+  # 서비스 설정
+  service:
+    port: 9093
+    targetPort: 9093
+    type: LoadBalancer
+  # 파드 스펙 설정
+  alertmanagerSpec:
+    # 파드개수
+    replicas: 1
+
+    # 리소스 설정 - Guaranteed
+    resources:
+      limits:
+        memory: 400Mi
+      requests:
+        memory: 400Mi
+
+# -------------------------------------
+# Grafana 
+# -------------------------------------
 grafana:
+  # 대시보드 타임존
   defaultDashboardsTimezone: kst
+  # 어드민 암호
   adminPassword: admin
 
-# prometheus volumes
+
+# -------------------------------------
+# Promtetheus
+# -------------------------------------
 prometheus:
+  # 서비스 설정
+  service:
+    port: 9090
+    targetPort: 9090
+    type: ClusterIP
+  # PDB 설정
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+    maxUnavailable: ""
+  # 파드 스펙 설정
   prometheusSpec:
-    ## How long to retain metrics
-    retention:  14d
-    ## Prometheus StorageSpec for persistent data
-    storageSpec:
+    scrapeInterval: ""
+    scrapeTimeout: ""
+    evaluationInterval: ""
+    tolerations: []
+    topologySpreadConstraints: []
+    nodeSelector: {}
+
+    # 메트릭 보존 기간
+    retention:  14d 
+    
+    # 메트릭 최대 사이즈
+    retentionSize: "100GiB"
+
+    # 파드 개수
+    replicas: 1
+
+    # 스케쥴링
+    podAntiAffinity: ""
+    podAntiAffinityTopologyKey: kubernetes.io/hostname
+    affinity: {}
+    
+    # 리소스 설정 - Guaranteed
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1Gi        
+      requests:
+        cpu: 100m
+        memory: 1Gi
+    
+    # 스토리지 설정
+    storageSpec: 
       volumeClaimTemplate:
         spec:
-          storageClassName: azuredisk-ssdlrs
+          storageClassName: default
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
               storage: 10Gi
-
-## Available options
-## nodeselector, replicas
