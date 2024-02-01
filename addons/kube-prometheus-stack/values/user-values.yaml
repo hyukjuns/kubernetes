@@ -57,7 +57,7 @@ prometheus:
   service:
     port: 9090
     targetPort: 9090
-    type: ClusterIP
+    type: LoadBalancer
   # PDB 설정
   podDisruptionBudget:
     enabled: false
