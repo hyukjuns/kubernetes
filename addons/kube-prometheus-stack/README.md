@@ -1,12 +1,16 @@
 # kube-prometheus-stack
 helm 으로 Prometheus Stack 설치
 
-# Prerequisite
-1. Kubernetes 1.16+
-2. Helm 3+
-## Version info (2024.01.31)
-- Chart version: 56.2.1
-- App Version: v0.71.2
+## 사전 준비
+1. Kubernetes Cluster: 1.25.x
+2. kubectl: 1.26.x
+2. Helm: 3.11.x
+
+## Helm Chart (2024.01.31)
+- [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
+    - Chart version: 56.2.1
+    - App Version: v0.71.2
+
 ## Stack Component
 - The Prometheus Operator
 - Highly available Prometheus
@@ -16,7 +20,7 @@ helm 으로 Prometheus Stack 설치
 - kube-state-metrics
 - Grafana
 
-# 설치 순서
+## 설치 순서
 1. Create namespace
 
     ```bash
@@ -24,7 +28,7 @@ helm 으로 Prometheus Stack 설치
     ```
 2. Create StorageClass
 
-    프로메테우스의 데이터 저장용
+    프로메테우스의 데이터 저장을 위한 Blob StorageClass
 
     [storageclass.yaml](storageclass.yaml)
 
