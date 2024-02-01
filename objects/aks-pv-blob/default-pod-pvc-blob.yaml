@@ -1,0 +1,27 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: blob-use-pod
+spec:
+  containers:
+  - name: blob-use
+    image: alpine
+    command:
+    - sh
+    - -c
+    - sleep 1d
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+    volumeMounts:
+    - mountPath: "/mnt/blob"
+      name: nfs-volume
+      readOnly: false
+  volumes:
+    - name: nfs-volume
+      persistentVolumeClaim:
+        claimName: azure-blob-nfs

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azure-blob-nfs-retain
+spec:
+  accessModes:
+  - ReadWriteMany
+  storageClassName: azureblob-nfs-premium-retain
+  resources:
+    requests:
+      storage: 5Gi

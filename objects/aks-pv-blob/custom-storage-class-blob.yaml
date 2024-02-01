@@ -1,0 +1,13 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azureblob-nfs-premium-retain
+provisioner: blob.csi.azure.com
+parameters:
+  protocol: nfs
+  tags: env=mgmt
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+mountOptions:
+  - nconnect=4
+reclaimPolicy: Retain
