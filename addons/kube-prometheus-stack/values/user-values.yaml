@@ -73,7 +73,7 @@ prometheus:
     nodeSelector: {}
 
     # 메트릭 보존 기간
-    retention:  14d 
+    retention:  7d 
     
     # 메트릭 최대 사이즈
     retentionSize: "100GiB"
@@ -103,4 +103,4 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 10Gi
+              storage: 1Gi
