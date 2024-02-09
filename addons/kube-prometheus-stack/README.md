@@ -21,88 +21,55 @@ helm 으로 Prometheus Stack 설치
 - Grafana
 
 ## 설치 순서
-1. Create namespace
+
+### 사전준비
+1. Namespace 및 StorageClass 생성
+
+    프로메테우스를 배포할 Namespace 및 메트릭 데이터 저장용 PV를 위한 StorageClass 생성
+
+    - Namespace: ```k create ns <NAMESPACE>```
+    - StorageClass: [utils/storageclass.yaml](utils/storage-class.yaml)
+
+### Helm을 사용한 설치 순서
+1. 클러스터에 Helm repo 추가
 
     ```bash
-    k create ns monitoring
-    ```
-2. Create StorageClass
-
-    프로메테우스의 데이터 저장을 위한 Blob StorageClass
-
-    [storageclass.yaml](storageclass.yaml)
-
-3. Add Helm repo 
-
-    ```bash
+    # 클러스터에 리포 추가
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm repo update
-    # 확인
-    helm search repo prometheus-community
+
+    # 차트 버전 확인
+    helm search repo prometheus-community/kube-prometheus-stack --versions
     ```
-4. Edit user value
-    - k8s version, label, grafana timezone, pw, prometheus retention, volume
+
+2. 배포에 사용할 User Value 설정
+
+    - User Value File: [values/user-values.yaml](values/user-values.yaml)
+
     ```bash
-    # 참조할 value.yaml 생성
+    # 기본 value 추출 후 분석
     helm show values prometheus-community/kube-prometheus-stack > values.yaml
+
+    # User Value를 위한 파일 생성
+    vi user-values.yaml
+    ...
     ```
+
+3. 클러스터에 Chart 설치
+
     ```bash
-    # 새로운 파일로 user value 커스텀
-    # vi user-values.yaml
-    ## Provide a k8s version to auto dashboard import script example: kubeTargetVersionOverride: 1.16.6
-    kubeTargetVersionOverride: "1.26.6"
-
-    ## Labels to apply to all resources
-    commonLabels:
-      mgmt: monitoring
-
-    ## Timezone for the default dashboards and password
-    grafana:
-      defaultDashboardsTimezone: kst
-      adminPassword: admin
-
-    # prometheus volumes
-    prometheus:
-      prometheusSpec:
-        ## How long to retain metrics
-        retention:  14d
-        ## Prometheus StorageSpec for persistent data
-        storageSpec:
-          volumeClaimTemplate:
-            spec:
-              storageClassName: azuredisk-ssdlrs # 앞에서 만든 StorageClass Name
-              accessModes: ["ReadWriteOnce"]
-              resources:
-                requests:
-                  storage: 10Gi
+    # 클러스터에 Chart 설치
+    helm install [RELEASE_NAME] prometheus-community/kube-prometheus-stack --version <CHART_VERSION> -f user-values.yaml -n <NAMESPACE>
     ```
-5. Install Chart
+
+
+4. 배포 확인
+
     ```bash
-    helm install [RELEASE_NAME] prometheus-community/kube-prometheus-stack -f user-values.yaml -n monitoring
+    kubectl get all -n <NAMESPACE>
     ```
-6. Grafana, Prometheus Service Open
 
-    그라파나, 프로메테우스 외부 노출용 서비스
-
-    [service.yaml](service.yaml)
-
-7. 확인
-
-    - 배포 확인
-
-        ```bash
-        kubectl get all -n monitoring
-        ```
-    - 서비스 접속
-
-        - 그라파나
-            
-            ![grafana](image/nodes.png)        
-
-        - 프로메테우스
-
-            ![prometheus](image/prometheus.png)
-### 사용된 소스
+### 참고 자료
 - 아티팩트 허브 kube-prometheus-stack
 
     https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack
