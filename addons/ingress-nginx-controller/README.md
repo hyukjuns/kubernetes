@@ -1,50 +1,46 @@
 # Ingress Nginx Controller
-Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝, 
-
-## Caution
-운영시에 k8s 버전 업그레이드가 필요할 경우 Ingress Nginx Controller 버전과 호환성을 확인해야한다.
+Helm을 사용한 Ingress Nginx Controller 설치 및 설정
 
 ## Type
 - External Ingress Controller
 - Internal Ingress Controller
 
-## 기본 설치 순서
+## 설치 순서
 
-1. Create Namespace
+1. Namespace 생성
 
     ```
     k create ns ingress-nginx
     ```
 
-2. Setup Helm repo
+2. 작업 환경에 Helm Repo 추가
 
     ```
     helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
     helm repo update
     ```
 
-3. Customize Values
+3. User Value 설정
+
+    3.1 Default Value를 분석
 
     ```
     # Get Default Values
     helm show values ingress-nginx/ingress-nginx > values.yaml
-
-    # Custom Chart Values
-    $ vi user-values.yaml
-    controller:
-      service:
-        annotations: 
-          service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
-
     ```
-4. Install Chart (To be Release)
+
+    3.2 필요한 Value값 선정 및 수정
+
+    [external-ingress-values.yaml](./values/external-ingress-values.yaml)
+
+4. 클러스터에 Chart 설치
 
     ```
     # helm install [NAME] [CHART] [flags]
-    helm install ingress-nginx ingress-nginx/ingress-nginx --version <CHART_VERSION> -n ingress-nginx -f user-values.yaml
+    helm install <RELEASE_NAME> ingress-nginx/ingress-nginx --version <CHART_VERSION> -n <NAMESPACE>> -f <USER_VALUE_FILE>.yaml
     ```
 
-5. Check installation
+5. 설치된 릴리즈 확인
 
     ```
     # Check Installed chart (release)
@@ -54,88 +50,50 @@ Helm을 사용한 Ingress Nginx Controller 설치 및 튜닝,
     helm get values ingress-nginx -n ingress-nginx
     ```
 
-## 특정 버전 설치
+## 버전 업그레이드
+k8s 버전 업그레이드를 진행할 경우 Ingress Nginx Controller와 버전 호환성을 확인해서 함께 버전 관리를 해주어야 합니다.
 
-1. 차트 버전 살펴보기
+1. 작업환경에 설치된 차트의 버전 살펴보기
 
     ```
+    helm repo update
     helm search repo ingress-nginx --versions
     ```
     ![ingress-nginx-versions](image/ingress-nginx-versions.png)
 
-2. 공식 문서 참고해서 k8s 버전과 호환되는 버전으로 선택
+2. 공식 저장소에서도 버전 호환성 확인
 
     [supported-versions-table](https://github.com/kubernetes/ingress-nginx#supported-versions-table)
     ![supported-versions-table](image/supported-version-table.png)
 
 2. 버전 지정하여 설치
 
+    > 사용하고 있던 User Value를 유지하기 위해서는 기존 Value 파일을 함께 Flag로 지정하거나 혹은 기존 Value를 유지하는 옵션을 사용해줍ㄴ다.
     ```
-    helm install ingress-nginx ingress-nginx/ingress-nginx --version <CHART_VERSION> -n ingress-nginx -f user-values.yaml
+    # helm upgrade [RELEASE] [CHART] [flags]
+    helm upgrade <RELEASE_NAME> ingress-nginx/ingress-nginx --version <CHART_VERSION> -n <NAMESPACE> [-f <USER_VALUE_FILE>.yaml | --reuse-values]
     ```
-
-
-## 차트 버전 업그레이드
-1. 위 1,2번과 같은 방식으로 k8s 버전과 호환성 확인
-2. 차트 업그레이드
-
-    ```
-    helm upgrade -n ingress-nginx ingress-nginx ingress-nginx/ingress-nginx --version <CHART_VERSION>
-    ```
-> 기존 user value 값이 변하지 않도록 미리 추출해서 파일로 가지고 있던지, 혹은 유지하는 옵션 사용
 
 ## NGINX Configuration
-Configmap으로 Ingress Nginx 세팅, (Helm Value로 세팅 가능)
-- Configmap은 글로벌 설정, Annotation은 개별 설정이며 튜닝 가능한 옵션은 공식 문서 참조하여 구현
+Configmap은 글로벌 설정이며, Annotation은 Object 별로 설정이 필요할때 사용합니다. [공식문서](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/#nginx-configuration
+)
 
-    https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/#nginx-configuration
+- Configmap: 글로벌 설정, Configmap 이름과 인그레스 컨트롤러 이름을 같게하여 인그레스 컨트롤러 단위로 nginx 설정 적용 가능
+- Annotation: 개별 설정, Ingress Object 생성 시 Annotation에 Nginx Configuration을 기입하여 개별로 적용 가능
+- 주의사항 및 동작원리
 
-- Configmap - 글로벌 설정: Configmap 이름과 인그레스 컨트롤러 이름을 같게하여 인그레스 컨트롤러 단위로 nginx 설정 적용 가능
-- Annotation - 개별 설정: Ingress Object 생성 시 Annotation에 Nginx Configuration을 기입하여 개별로 적용 가능
+    - Configmap의 Namespace와 Name은 Controller와 같아야 합니다.
 
-- Configmap 설정
+    - Helm value에서 Configmap 참조방식을 변경하지 않은 경우 기본값으로 다음과 같이 세팅됩니다. (Controller Pod 의 네임스페이스와 Release이름 참조)
 
-1. 설정내용
+        > Controller Pod's args: ```--configmap=$(POD_NAMESPACE)/<RELEASE>-controller```
 
-    - Configmap의 Namespace와 Name은 Controller와 같아야함
-    
-    - Helm value에서 Configmap 참조방식을 변경하지 않은 경우 기본값으로 다음과 같이 세팅됨
-    - controller pod의 args를 보면 ```--configmap=$(POD_NAMESPACE)/<RELEASE>-controller``` 으로 지정되어 있고 컨트롤러 파드의 네임스페이스와 Helm 릴리즈이름을 참조하도록 세팅되어 있음
+- 샘플 구성
 
-    [config/configmap.yaml](confing/config.yaml)
+    [config/configmap.yaml](./config/configmap.yaml)
 
-    ```
-    apiVersion: v1
-    data:
-      proxy-connect-timeout: "10"
-      proxy-read-timeout: "120"
-      proxy-send-timeout: "120"
-    kind: ConfigMap
-    metadata:
-      name: ingress-nginx-controller
-      namespace: ingress-nginx
-    ```
-
-
-2. 확인
-nginx reload 확인 및 컨테이너 내 설정값 까지 확인
-
-    ```  
-    k describe pod <POD_NAME> -n ingress-nginx
-    Events:
-    ...
-    Normal   RELOAD             10m (x2 over 33m)  nginx-ingress-controller  NGINX reload triggered due to a change in configuration
-
-    k exec -it -n ingress-nginx <POD_NAME> -- /bin/bash
-    cat nginx.conf
-    ...
-    proxy_connect_timeout                   10s;
-    proxy_send_timeout                      120s;
-    proxy_read_timeout                      120s;
-    ...
-    ```
 ## NGINX Logging
-NGINX Controller Pod의 STDOUT으로 확인 가능
+NGINX Controller Pod의 STDOUT으로 확인 가능합니다.
 
 - Log Format
 
@@ -145,15 +103,6 @@ NGINX Controller Pod의 STDOUT으로 확인 가능
 - TLS Termination
 
     https://kubernetes.github.io/ingress-nginx/user-guide/tls/
-
-### Ref.
-- Ingress Nginx Official Repo
-  
-  https://github.com/kubernetes/ingress-nginx
-
-- AKS Docs
-  
-  https://learn.microsoft.com/ko-kr/azure/aks/ingress-basic?tabs=azure-cli
 
 # External and Internal Ingress
 ### Goal
@@ -206,3 +155,12 @@ NGINX Controller Pod의 STDOUT으로 확인 가능
     # helm install [NAME] [CHART] [flags]
     helm install ingress-nginx-[internal | external] ingress-nginx/ingress-nginx --version <CHART_VERSION> -n ingress-nginx -f [internal | external]-ingress-values.yaml
     ```
+---
+### Ref.
+- Ingress Nginx Official Repo
+  
+  https://github.com/kubernetes/ingress-nginx
+
+- AKS Docs
+  
+  https://learn.microsoft.com/ko-kr/azure/aks/ingress-basic?tabs=azure-cli
