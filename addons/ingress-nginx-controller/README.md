@@ -68,7 +68,7 @@ k8s 버전 업그레이드를 진행할 경우 Ingress Nginx Controller와 버�
 
 2. 버전 지정하여 설치
 
-    > 사용하고 있던 User Value를 유지하기 위해서는 기존 Value 파일을 함께 Flag로 지정하거나 혹은 기존 Value를 유지하는 옵션을 사용해줍ㄴ다.
+    > 사용하고 있던 User Value를 유지하기 위해서는 기존 Value 파일을 함께 Flag로 지정하거나 혹은 기존 Value를 유지하는 옵션을 사용해줍니다.
     ```
     # helm upgrade [RELEASE] [CHART] [flags]
     helm upgrade <RELEASE_NAME> ingress-nginx/ingress-nginx --version <CHART_VERSION> -n <NAMESPACE> [-f <USER_VALUE_FILE>.yaml | --reuse-values]
