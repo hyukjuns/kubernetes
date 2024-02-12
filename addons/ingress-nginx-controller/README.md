@@ -66,7 +66,7 @@ k8s 버전 업그레이드를 진행할 경우 Ingress Nginx Controller와 버�
     [supported-versions-table](https://github.com/kubernetes/ingress-nginx#supported-versions-table)
     ![supported-versions-table](image/supported-version-table.png)
 
-2. 버전 지정하여 설치
+3. 버전 업그레이드
 
     > 사용하고 있던 User Value를 유지하기 위해서는 기존 Value 파일을 함께 Flag로 지정하거나 혹은 기존 Value를 유지하는 옵션을 사용해줍니다.
     ```
