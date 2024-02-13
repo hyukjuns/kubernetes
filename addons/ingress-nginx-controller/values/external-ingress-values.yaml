@@ -2,11 +2,34 @@
 controller:
   service:
     annotations: 
-      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
-  electionID: external-ingress-controller-leader
-  ingressClassResource:
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz-custom
+  electionID: external-ingress-controller-leader # 인그레스 컨트롤러의 상태 업데이트를 위함
+  ingressClassResource: # 인그레스 클래스 세팅
     name: nginx-external
     enabled: true
     default: false
     controllerValue: "k8s.io/external-ingress-nginx"
-  ingressClass: nginx-external
+  ingressClass: nginx-external # 하위버전의 호환성을 위한 세팅
+  healthCheckPath: "/healthz-custom"
+  livenessProbe:
+    httpGet:
+      # should match container.healthCheckPath
+      path: "/healthz-custom"
+      port: 10254
+      scheme: HTTP
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 5
+  readinessProbe:
+    httpGet:
+      # should match container.healthCheckPath
+      path: "/healthz-custom"
+      port: 10254
+      scheme: HTTP
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3

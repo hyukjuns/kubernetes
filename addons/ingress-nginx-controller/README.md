@@ -30,6 +30,8 @@ Helm을 사용한 Ingress Nginx Controller 설치 및 설정
     ```
 
     3.2 필요한 Value값 선정 및 수정
+    
+    Ingress Controller Annotaion에 Azure Load Balancer의 Health 체크용 Endpoint를 기입, *Chart의 Default Value 값 중 ```healthCheckPath: "/healthz"```와 동일하게 맞춰줌
 
     [external-ingress-values.yaml](./values/external-ingress-values.yaml)
 
@@ -61,7 +63,7 @@ k8s 버전 업그레이드를 진행할 경우 Ingress Nginx Controller와 버�
     ```
     ![ingress-nginx-versions](image/ingress-nginx-versions.png)
 
-2. 공식 저장소에서도 버전 호환성 확인
+2. 공식 저장소에서 k8s 버전과 호환성 확인
 
     [supported-versions-table](https://github.com/kubernetes/ingress-nginx#supported-versions-table)
     ![supported-versions-table](image/supported-version-table.png)
@@ -105,16 +107,16 @@ NGINX Controller Pod의 STDOUT으로 확인 가능합니다.
     https://kubernetes.github.io/ingress-nginx/user-guide/tls/
 
 # External and Internal Ingress
-### Goal
+### 목적
 
 인그레스를 External (Public IP), Internal (Private IP) 용도로 분리하여 구성
 
-### Env
+### 작업 환경
 
 1. AKS (k8s v1.26.6)
 2. Ingress Nginx Chart 4.8.3 (nginx v1.9.4)
 
-### Config
+### Value 설정
 
 1. External Ingress
     
@@ -149,7 +151,7 @@ NGINX Controller Pod의 STDOUT으로 확인 가능합니다.
         controllerValue: "k8s.io/internal-ingress-nginx"
     ingressClass: nginx-internal
     ```
-### Install
+### 차트 배포
 
     ```
     # helm install [NAME] [CHART] [flags]
