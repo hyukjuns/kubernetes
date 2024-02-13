@@ -35,9 +35,9 @@ alertmanager:
     # 리소스 설정 - Guaranteed
     resources:
       limits:
-        memory: 400Mi
+        memory: 256Mi
       requests:
-        memory: 400Mi
+        memory: 256Mi
 
 # -------------------------------------
 # Grafana 
@@ -47,6 +47,11 @@ grafana:
   defaultDashboardsTimezone: kst
   # 어드민 암호
   adminPassword: admin
+  service:
+    type: LoadBalancer
+    port: 3000
+    portName: http-web
+    targetPort: 3000
 
 
 # -------------------------------------
@@ -76,7 +81,7 @@ prometheus:
     retention:  7d 
     
     # 메트릭 최대 사이즈
-    retentionSize: "100GiB"
+    retentionSize: "10GiB"
 
     # 파드 개수
     replicas: 2
@@ -89,10 +94,10 @@ prometheus:
     # 리소스 설정 - Guaranteed
     resources:
       limits:
-        cpu: 100m
-        memory: 1Gi        
+        cpu: 200m
+        memory: 1Gi
       requests:
-        cpu: 100m
+        cpu: 200m
         memory: 1Gi
     
     # 스토리지 설정
