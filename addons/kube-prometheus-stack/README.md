@@ -7,7 +7,7 @@ helm 으로 Prometheus Stack 설치
 2. Helm: 3.11.x
 
 ## Helm Chart (2024.01.31)
-- [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
+- [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack){:target="_blank"}
     - Chart version: 56.2.1
     - App Version: v0.71.2
 
