@@ -1,0 +1,57 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: external-ingress
+spec:
+  ingressClassName: nginx-external
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: external-ingress-svc
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: external-ingress-svc
+spec:
+  ports:
+  - name: external-ingress-svc-port
+    port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: external-nginx
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: external-nginx
+  labels:
+    app: external-nginx
+spec:
+  containers:
+    - image: nginx
+      name: external-nginx
+      ports:
+      - containerPort: 80
+      resources:
+        requests:
+          memory: 100Mi
+          cpu: 100m
+        limits:
+          memory: 100Mi
+          cpu: 100m
+      volumeMounts:
+        - name: mypage
+          mountPath: /usr/share/nginx/html
+  volumes:
+    - name: mypage
+      configMap: 
+        name: external-index
