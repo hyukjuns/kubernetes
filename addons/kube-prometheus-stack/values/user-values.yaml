@@ -84,7 +84,7 @@ prometheus:
     retentionSize: "10GiB"
 
     # 파드 개수
-    replicas: 2
+    replicas: 1
 
     # 스케쥴링
     podAntiAffinity: ""
