@@ -81,7 +81,7 @@ prometheus:
     retention:  7d 
     
     # 메트릭 최대 사이즈
-    retentionSize: "10GiB"
+    retentionSize: "1GiB"
 
     # 파드 개수
     replicas: 1
@@ -104,7 +104,7 @@ prometheus:
     storageSpec: 
       volumeClaimTemplate:
         spec:
-          storageClassName: default
+          storageClassName: azuredisk-ssd-lrs
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
