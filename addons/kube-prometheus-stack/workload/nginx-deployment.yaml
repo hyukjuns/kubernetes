@@ -33,17 +33,3 @@ spec:
           requests:
             cpu: 100m
             memory: 256Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: nginx-demo-loadbalancer
-  namespace: web
-spec:
-  type: LoadBalancer
-  selector:
-    app: nginx-demo
-  ports:
-  - port: 80
-    targetPort: nginx-port
-    

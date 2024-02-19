@@ -93,6 +93,10 @@ Configmap은 글로벌 설정이며, Annotation은 Object 별로 설정이 필�
 - 샘플 구성
 
     [config/configmap.yaml](./config/configmap.yaml)
+## NGINX Monitoring - Prometheus
+프로메테우스에 Nginx Controller 메트릭 수집가능하도록 설정
+- [external-ingress-values-monitoring.yaml](./values/external-ingress-values-monitoring.yaml)
+- Docs: https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#monitoring
 
 ## NGINX Logging
 NGINX Controller Pod의 STDOUT으로 확인 가능합니다.

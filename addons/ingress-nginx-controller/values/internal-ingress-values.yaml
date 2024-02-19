@@ -12,3 +12,4 @@ controller:
     default: false
     controllerValue: "k8s.io/internal-ingress-nginx"
   ingressClass: nginx-internal
+  healthCheckPath: "/healthz"

@@ -70,6 +70,12 @@ prometheus:
     maxUnavailable: ""
   # 파드 스펙 설정
   prometheusSpec:
+    # 서비스모니터 관련 설정
+    # By default, Prometheus only discovers PodMonitors within its own namespace.
+    # This should be disabled by setting podMonitorSelectorNilUsesHelmValues to false
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    # 메트릭 스크랩
     scrapeInterval: ""
     scrapeTimeout: ""
     evaluationInterval: ""
@@ -81,7 +87,7 @@ prometheus:
     retention:  7d 
     
     # 메트릭 최대 사이즈
-    retentionSize: "1GiB"
+    retentionSize: "5GiB"
 
     # 파드 개수
     replicas: 1
@@ -104,8 +110,8 @@ prometheus:
     storageSpec: 
       volumeClaimTemplate:
         spec:
-          storageClassName: azuredisk-ssd-lrs
+          storageClassName: azuredisk-ssd-lrs # 미리 단들어둔 스토리지클래스
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 1Gi
+              storage: 10Gi
