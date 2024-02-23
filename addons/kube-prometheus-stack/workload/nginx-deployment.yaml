@@ -33,3 +33,10 @@ spec:
           requests:
             cpu: 100m
             memory: 256Mi
+        volumeMounts:
+          - name: nginx-index
+            mountPath: /usr/share/nginx/html/custom-path
+      volumes:
+        - name: nginx-index
+          configMap:  
+            name: nginx-custom-path-index

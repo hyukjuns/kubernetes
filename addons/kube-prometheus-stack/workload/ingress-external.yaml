@@ -26,5 +26,5 @@ spec:
             name: web-svc
             port:
               number: 80
-        path: /
+        path: /custom-path
         pathType: Prefix
