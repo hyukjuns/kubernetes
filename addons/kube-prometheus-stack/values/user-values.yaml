@@ -75,10 +75,13 @@ prometheus:
     # This should be disabled by setting podMonitorSelectorNilUsesHelmValues to false
     podMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelectorNilUsesHelmValues: false
+    
     # 메트릭 스크랩
-    scrapeInterval: ""
-    scrapeTimeout: ""
-    evaluationInterval: ""
+    scrapeInterval: "15s"
+    scrapeTimeout: "30s"
+    evaluationInterval: "16s"
+
+    # 토폴로지
     tolerations: []
     topologySpreadConstraints: []
     nodeSelector: {}

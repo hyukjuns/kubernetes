@@ -7,10 +7,10 @@ controller:
       enabled: true
       additionalLabels:
         release: kube-prometheus-stack-dev # prometheus helm release 이름
-  # 프로메테우스 모니터링 세팅
-  podAnnotations:
-      prometheus.io/scrape: true
-      prometheus.io/port: 10254
+  # 프로메테우스 모니터링 세팅 - 프로메테우스와 같은 네임스페일 경우 사용
+  # podAnnotations:
+  #     prometheus.io/scrape: true
+  #     prometheus.io/port: 10254
   # Azure LB 프로브 세팅
   service:
     annotations: 
