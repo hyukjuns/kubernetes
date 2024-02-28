@@ -1,10 +1,8 @@
-# -------------------------------------
-# Global
-# -------------------------------------
-## 프로메테우스 스택의 레이블 설정 (Key: app)
+# -------------------Global-------------------
+# 프로메테우스 스택의 레이블 설정 (Key: app)
 nameOverride: "kube-prometheus-stack-hyukjun"
 
-## 네임스페이스 Label 설정
+# 네임스페이스 Label 설정
 commonLabels:
   mgmt: hyukjun
 
@@ -13,9 +11,18 @@ global:
   imageRegistry: ""
   imagePullSecrets: []
 
-# -------------------------------------
-# Alertmanager 
-# -------------------------------------
+# -------------------Global-Disable-------------------
+# ETCD / Controller Manager / Scheduler -> Control Plane Component (AKS)
+# Kube-Proxy
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+# -------------------Alertmanager-------------------
 alertmanager:
   # PDB 설정
   podDisruptionBudget:
@@ -39,9 +46,8 @@ alertmanager:
       requests:
         memory: 256Mi
 
-# -------------------------------------
-# Grafana 
-# -------------------------------------
+
+# -------------------Grafana-------------------
 grafana:
   # 대시보드 타임존
   defaultDashboardsTimezone: kst
@@ -53,10 +59,17 @@ grafana:
     portName: http-web
     targetPort: 3000
 
+# -------------------PrometheusOperator-------------------
+prometheusOperator:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
 
-# -------------------------------------
-# Promtetheus
-# -------------------------------------
+# -------------------Promtetheus-------------------
 prometheus:
   # 서비스 설정
   service:
@@ -70,7 +83,7 @@ prometheus:
     maxUnavailable: ""
   # 파드 스펙 설정
   prometheusSpec:
-    # 서비스모니터 관련 설정
+    # 서비스모니터 설정 -> 다른 네임스페이스에 있는 Service Monitor 사용을 위해 설정
     # By default, Prometheus only discovers PodMonitors within its own namespace.
     # This should be disabled by setting podMonitorSelectorNilUsesHelmValues to false
     podMonitorSelectorNilUsesHelmValues: false
@@ -81,10 +94,13 @@ prometheus:
     scrapeTimeout: "30s"
     evaluationInterval: "16s"
 
-    # 토폴로지
+    # 토폴로지 & 스케쥴링 옵션
     tolerations: []
     topologySpreadConstraints: []
     nodeSelector: {}
+    podAntiAffinity: ""
+    podAntiAffinityTopologyKey: kubernetes.io/hostname
+    affinity: {}
 
     # 메트릭 보존 기간
     retention:  7d 
@@ -95,19 +111,14 @@ prometheus:
     # 파드 개수
     replicas: 1
 
-    # 스케쥴링
-    podAntiAffinity: ""
-    podAntiAffinityTopologyKey: kubernetes.io/hostname
-    affinity: {}
-    
     # 리소스 설정 - Guaranteed
     resources:
       limits:
         cpu: 200m
-        memory: 1Gi
+        memory: 512Mi
       requests:
         cpu: 200m
-        memory: 1Gi
+        memory: 512Mi
     
     # 스토리지 설정
     storageSpec: 
@@ -117,4 +128,4 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 10Gi
+              storage: 5Gi
