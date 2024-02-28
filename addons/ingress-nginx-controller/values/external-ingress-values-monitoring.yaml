@@ -23,3 +23,11 @@ controller:
     default: false
     controllerValue: "k8s.io/external-ingress-nginx"
   ingressClass: nginx-external # 하위버전의 호환성을 위한 세팅
+  # 리소스 사용량 제한 - Burstable
+  resources:
+    limits:
+      cpu: 1
+      memory: 512Mi
+    requests:
+      cpu: 500m
+      memory: 256Mi
