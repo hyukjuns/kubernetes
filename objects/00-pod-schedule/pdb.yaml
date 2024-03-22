@@ -1,0 +1,9 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mynginx-pdb
+spec:
+  minAvailable: 4
+  selector:
+    matchLabels:
+      app: mynginx
