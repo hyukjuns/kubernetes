@@ -1,23 +1,16 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  creationTimestamp: null
   name: test-pdb
 spec:
   minAvailable: 4
   selector:
     matchLabels:
       app: test-pdb-nginx
-status:
-  currentHealthy: 0
-  desiredHealthy: 0
-  disruptionsAllowed: 0
-  expectedPods: 0
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: test-pdb-nginx
   name: test-pdb-nginx
@@ -28,7 +21,6 @@ spec:
       app: test-pdb-nginx
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: test-pdb-nginx
     spec:
