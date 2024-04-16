@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-application
+  namespace: dev
+  labels:
+    part-of: dev-object
+    name: nginx-application
+    component: dev-application
+    instance: nginx-application-dev
+    managed-by: kubectl
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      instance: nginx-application-dev
+  template:
+    metadata:
+      labels:
+        part-of: dev-object
+        name: nginx-application
+        component: dev-application
+        instance: nginx-application-dev
+        managed-by: kubectl
+    spec:
+      containers:
+      - image: nginx
+        name: nginx
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 100m
+            memory: 256Mi
+        ports:
+          - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-application
+  namespace: dev
+  labels:
+    part-of: dev-object
+    name: nginx-application
+    component: dev-application
+    instance: nginx-application-dev
+    managed-by: kubectl
+spec:
+  type: LoadBalancer
+  selector:
+    instance: nginx-application-dev
+  ports:
+  - port: 80
+    targetPort: 80
