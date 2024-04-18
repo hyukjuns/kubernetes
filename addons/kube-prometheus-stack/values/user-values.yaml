@@ -90,9 +90,10 @@ prometheus:
     serviceMonitorSelectorNilUsesHelmValues: false
     
     # 메트릭 스크랩
+    # scrapeTimeout > scrapeInterval
     scrapeInterval: "15s"
-    scrapeTimeout: "30s"
-    evaluationInterval: "16s"
+    # scrapeTimeout: "30s"
+    # evaluationInterval: "16s"
 
     # 토폴로지 & 스케쥴링 옵션
     tolerations: []

@@ -1,15 +1,6 @@
-loki:
-  storage:
-    bucketNames:
-      chunks: chunks
-      ruler: ruler
-      admin: admin
-    type: azure
-    azure:
-      accountName: null
-      accountKey: null
-      useManagedIdentity: false
-      useFederatedToken: false
-      userAssignedId: null
-      requestTimeout: null
-      endpointSuffix: null
+persistence:
+  enabled: true
+  size: 5Gi
+
+serviceMonitor:
+  enabled: true
