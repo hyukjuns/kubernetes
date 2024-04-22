@@ -9,6 +9,11 @@
 - [loki](./addons/loki/)
 ## AKS and K8s Cheatsheet
 ```markdown
+# QoS에 따른 Node Request Sum 반영 여부
+- BestEffort -> 반영 X
+- Burstable -> 반영 O
+- Guaranteed -> 반영 O
+
 # Headless Service - Call Specific Pod
 POD-HOSTNAME.HEADLESS-SVCNAME
 POD-HOSTNAME.HEADLESS-SVCNAME.NAMESPACE
