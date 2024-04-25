@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: mynginx
   name: mynginx
@@ -12,7 +11,6 @@ spec:
       app: mynginx
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: mynginx
     spec:
@@ -32,5 +30,15 @@ spec:
             app: mynginx
         maxSkew: 1
         topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule # ScheduleAnyway
+        whenUnsatisfiable: ScheduleAnyway # ScheduleAnyway, DoNotSchedule
       
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mynginx-pdb
+spec:
+  minAvailable: 4
+  selector:
+    matchLabels:
+      app: mynginx
