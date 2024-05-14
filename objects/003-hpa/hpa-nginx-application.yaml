@@ -7,13 +7,13 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: nam-deploy-hpa
+    name: nginx-application
   minReplicas: 3
   maxReplicas: 6
   metrics:
     - type: Resource
       resource:
-        name: mycpu
+        name: cpu
         target:
           type: Utilization
           averageValue: 70
