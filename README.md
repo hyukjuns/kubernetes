@@ -1,4 +1,11 @@
 # Kubernetes
+## AKS Nodepool Taints
+az aks nodepool update \
+-g RGNAME \
+--cluster-name CLUSTERNAME \
+-n NODEPOOLNAME \
+--node-taints "CriticalAddonsOnly=true:NoSchedule"
+
 ## Azure Kubernetes Service
 ## Add on Application
 - [ingress-nginx-controller](./addons/ingress-nginx-controller/)
