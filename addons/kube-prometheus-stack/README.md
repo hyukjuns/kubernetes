@@ -12,13 +12,12 @@ helm 으로 Prometheus Stack 설치
     - App Version: v0.71.2
 
 ## Stack Component
-- The Prometheus Operator
-- Highly available Prometheus
-- Highly available Alertmanager
-- Prometheus node-exporter
-- Prometheus Adapter for Kubernetes Metrics APIs
-- kube-state-metrics
-- Grafana
+- Prometheus Operator
+- Prometheus Server
+- Alertmanager
+- Node-exporter
+- State-Metric Server
+- Grafana Server
 
 ## 설치 순서
 
@@ -41,7 +40,7 @@ helm 으로 Prometheus Stack 설치
     helm repo update
 
     # 차트 버전 확인
-    helm search repo prometheus-community/kube-prometheus-stack --versions
+    helm search repo prometheus-community/kube-prometheus-stack --versions | head
     ```
 
 2. 배포에 사용할 User Value 설정

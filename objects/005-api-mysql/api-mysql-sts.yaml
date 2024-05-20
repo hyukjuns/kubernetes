@@ -1,0 +1,59 @@
+# Headless Service
+# 개별 pod fqdn -> hostname.serviceName
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-headless-svc
+  namespace: api
+spec:
+  clusterIP: None
+  selector:
+    app: mysql
+  ports:
+    - port: 3306
+      protocol: TCP
+      targetPort: 3306
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mysql-sts
+  namespace: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  serviceName: mysql-headless-svc # 헤드리스 서비스(hostname.serviceName) 로 Pod의 DNS를 조회하기 위함
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - image: hyukjun/mysql-8.2.0-init-scheme-amd64:1.0 # From Dockerhub
+          name: mysql
+          ports:
+          - containerPort: 3306
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          envFrom:
+            - secretRef:
+                name: mysql-context
+          volumeMounts:
+            - name: mysql-vol
+              mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-vol
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: default
+      resources:
+        requests:
+          storage: 512Mi

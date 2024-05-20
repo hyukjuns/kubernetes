@@ -1,28 +1,13 @@
-# -------------------Global-------------------
-# 프로메테우스 스택의 레이블 설정 (Key: app)
-nameOverride: "kube-prometheus-stack-hyukjun"
-
-# 네임스페이스 Label 설정
-commonLabels:
-  mgmt: hyukjun
-
-global:
-  # 프라이빗 레지스트리 사용시 활용
-  imageRegistry: ""
-  imagePullSecrets: []
-
-# -------------------Global-Disable-------------------
-# ETCD / Controller Manager / Scheduler -> Control Plane Component (AKS)
-# Kube-Proxy
+# ---> Disable Control Plan Componnent
+# ETCD / Controller Manager / Scheduler
 kubeControllerManager:
   enabled: false
 kubeEtcd:
   enabled: false
 kubeScheduler:
   enabled: false
-kubeProxy:
-  enabled: false
-# -------------------Alertmanager-------------------
+
+# ---> Alertmanager
 alertmanager:
   # PDB 설정
   podDisruptionBudget:
@@ -39,15 +24,17 @@ alertmanager:
     # 파드개수
     replicas: 1
 
-    # 리소스 설정 - Guaranteed
+    # 리소스 설정
     resources:
       limits:
-        memory: 256Mi
+        cpu: 200m
+        memory: 200Mi
       requests:
-        memory: 256Mi
+        cpu: 100m
+        memory: 100Mi
 
 
-# -------------------Grafana-------------------
+# ---> Grafana
 grafana:
   # 대시보드 타임존
   defaultDashboardsTimezone: kst
@@ -59,8 +46,7 @@ grafana:
     portName: http-web
     targetPort: 3000
 
-# -------------------PrometheusOperator-------------------
-prometheusOperator:
+  # 리소스 설정
   resources:
     limits:
       cpu: 200m
@@ -69,7 +55,18 @@ prometheusOperator:
       cpu: 100m
       memory: 100Mi
 
-# -------------------Promtetheus-------------------
+# ---> PrometheusOperator
+prometheusOperator:
+  # 리소스 설정
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+# ---> Promtetheus Server
 prometheus:
   # 서비스 설정
   service:
@@ -130,3 +127,23 @@ prometheus:
           resources:
             requests:
               storage: 5Gi
+
+# ---> Node Exporter
+nodeExporter:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+# ---> Kube State Metrics
+kube-state-metrics:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
