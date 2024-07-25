@@ -93,3 +93,13 @@ helm install <RELEASE_NAME> <CHART> -n <NAMESPACE> -f <VALUEFILE>
 helm uninstall <RELEASE_NAME> -n <NAMESPACE>
 
 ```
+
+# Tip for Test
+```bash
+# Busybox running
+k run --rm -it tester --image=busybox
+# Curl to Wget, -q: 로깅 x, -O-: 다운로드 파일을 stdout으로 리다이렉팅하여 출력
+wget -q -O- [URL]
+# 외부에서 커맨드 전달 시 예시
+k exec tester -- wget -q -O- [URL] 
+```
