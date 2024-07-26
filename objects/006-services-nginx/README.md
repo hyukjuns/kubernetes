@@ -40,3 +40,8 @@ spec:
       - DOMAIN
       secretName: SECRETNAME
 ```
+
+# 노드 연결
+```
+kubectl debug node/NODENAME -it --image=mcr.microsoft.com/cbl-mariner/busybox:2.0
+```
