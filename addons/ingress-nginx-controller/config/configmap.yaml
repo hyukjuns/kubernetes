@@ -3,9 +3,12 @@ data:
   proxy-connect-timeout: "10"
   proxy-read-timeout: "60"
   proxy-send-timeout: "60"
+  use-forwarded-headers: "true"
+  real-ip-header: "X-Forwarded-For"
+  set-real-ip-from: "0.0.0.0/0"
   # allow-snippet-annotations: "true"
   # enable-modsecurity: "true"
 kind: ConfigMap
 metadata:
-  name: ingress-nginx-external-controller # Set <RELEASE_NAME>-controller
+  name: ingress-nginx-ext-controller # Set <RELEASE_NAME>-controller
   namespace: ingress-nginx
