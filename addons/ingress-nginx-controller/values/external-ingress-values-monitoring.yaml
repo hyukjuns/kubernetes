@@ -1,29 +1,36 @@
-# External Ingress Controller in AKS
+## External Ingress Controller Setting (AKS)
+
 controller:
-  # 프로메테우스 모니터링 세팅
+  ## Prometheus Monitoring (Diffrent Namespace)
   metrics:
     enabled: true
     serviceMonitor:
       enabled: true
       additionalLabels:
-        release: kube-prometheus-stack-dev # prometheus helm release 이름
-  # 프로메테우스 모니터링 세팅 - 프로메테우스와 같은 네임스페일 경우 사용
+        release: kube-prometheus-stack-dev # prometheus helm release name
+  ## Prometheus Monitoring (Same Namespace)
   # podAnnotations:
   #     prometheus.io/scrape: true
   #     prometheus.io/port: 10254
-  # Azure LB 프로브 세팅
+  
+  ## Azure LB 프로브 세팅
   service:
     annotations: 
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
-  # 인그래스 클래스 세팅
-  electionID: external-ingress-controller-leader # 인그레스 컨트롤러의 상태 업데이트를 위함
-  ingressClassResource: # 인그레스 클래스 세팅
+    ## Client Origin IP 보존 (X-Forwarded-For)
+    ## 트래픽을 받은 노드(노드포트)에 존재하는 백앤드 Pod로 트래픽을 전달한다 (다른 노드의 Pod로 전달 하지 않음)
+    externalTrafficPolicy: Local 
+  
+  ## Ingress Class
+  electionID: external-ingress-controller-leader # 인그레스 컨트롤러의 상태 업데이트
+  ingressClassResource:
     name: nginx-external
     enabled: true
     default: false
     controllerValue: "k8s.io/external-ingress-nginx"
-  ingressClass: nginx-external # 하위버전의 호환성을 위한 세팅
-  # 리소스 사용량 제한 - Burstable
+  ingressClass: nginx-external # 하위버전 호환성
+  
+  ## QoS: Burstable
   resources:
     limits:
       cpu: 1
