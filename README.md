@@ -1,21 +1,22 @@
-# Kubernetes
-## AKS Nodepool Taints
-az aks nodepool update \
--g RGNAME \
---cluster-name CLUSTERNAME \
--n NODEPOOLNAME \
---node-taints "CriticalAddonsOnly=true:NoSchedule"
+# Kubernetes & Azure Kubernetes Service
 
-## Azure Kubernetes Service
-## Add on Application
+## Add-On Application
 - [ingress-nginx-controller](./addons/ingress-nginx-controller/)
     - External Ingress Controller
     - Internal Ingress Controller
 - [kube-prometheus-stack](./addons/kube-prometheus-stack/)
     - Ingress Nginx Controller Monitoring
 - [loki](./addons/loki/)
+
 ## AKS and K8s Cheatsheet
 ```markdown
+# AKS Nodepool Taints
+az aks nodepool update \
+-g RGNAME \
+--cluster-name CLUSTERNAME \
+-n NODEPOOLNAME \
+--node-taints "CriticalAddonsOnly=true:NoSchedule"
+
 # QoS에 따른 Node Request Sum 반영 여부
 - BestEffort -> 반영 X
 - Burstable -> 반영 O
@@ -94,7 +95,7 @@ helm uninstall <RELEASE_NAME> -n <NAMESPACE>
 
 ```
 
-# Tip for Test
+## Tip for Test
 ```bash
 # Busybox running
 k run --rm -it tester --image=busybox
