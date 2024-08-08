@@ -8,8 +8,24 @@
     - Ingress Nginx Controller Monitoring
 - [loki](./addons/loki/)
 
-## AKS and K8s Cheatsheet
+## Cheatsheet
 ```markdown
+# ctr, crictl
+# ctr = containerd와 통신
+# crictl = ctr과 유사하게 컨테이너를 조회할 수 있지만 containerd 만을 위한 통신은 아니며, k8s 오브젝트인 pod를 조회하거나 생성할 수도 있다
+ctr ns list # ctr로 구성되어 있는 네임스페이스 조회
+ctr -n k8s.io container list # 컨테이너 목록 조회
+crictl pods # 노드에서 실행중인 파드 조회
+crictl ps # 노드에서 실행중인 컨테이너 조회
+crictl inspect <CONTAINERID> # 컨테이너 스펙 조회
+
+# Busybox running
+k run --rm -it tester --image=busybox
+# Curl to Wget, -q: 로깅 x, -O-: 다운로드 파일을 stdout으로 리다이렉팅하여 출력
+wget -q -O- [URL]
+# 외부에서 커맨드 전달 시 예시
+k exec tester -- wget -q -O- [URL] 
+
 # AKS Nodepool Taints
 az aks nodepool update \
 -g RGNAME \
@@ -55,17 +71,14 @@ az account set --subscription SUBID
 az aks get-credentials -g RG -n CLUSTER
 kubelogin convert-kubeconfig -l azurecli
 
-
 # AKS Node Scale-In (by Manual)
 1. AKS AutoScaleMode: Auto -> Manual
 2. Cordon Node (All Target Node)
 3. Drain Node
 4. Delete Node
 5. Azure > RG > MC_xxx > VMSS (AKS's NodePool) > Delete Instance (Drained Node)
-```
 
-## Helm Cheat Sheet
-```markdown
+# Helm Cheat Sheet
 # Update Release
 helm upgrade [RELEASE] [CHART] [flags]
 ex) helm upgrade kube-prometheus-stack prometheus-community/kube-prometheus-stack  -f ./values/user-values.yaml -n prometheus
@@ -93,14 +106,4 @@ helm install <RELEASE_NAME> <CHART> -n <NAMESPACE> -f <VALUEFILE>
 # Uninstall Chart
 helm uninstall <RELEASE_NAME> -n <NAMESPACE>
 
-```
-
-## Tip for Test
-```bash
-# Busybox running
-k run --rm -it tester --image=busybox
-# Curl to Wget, -q: 로깅 x, -O-: 다운로드 파일을 stdout으로 리다이렉팅하여 출력
-wget -q -O- [URL]
-# 외부에서 커맨드 전달 시 예시
-k exec tester -- wget -q -O- [URL] 
 ```
