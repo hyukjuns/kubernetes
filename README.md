@@ -1,12 +1,28 @@
 # Kubernetes & Azure Kubernetes Service
 
-## Add-On Application
+## Workspace Setting
+```bash
+# shell setting
+source <(kubectl completion zsh)
+alias k=kubectl
+compdef __start_kubectl k
+
+# vim setting
+vi ~/.vimrc
+set et
+set ts=2
+set sw=2
+set nu
+```
+
+## Addon
 - [ingress-nginx-controller](./addons/ingress-nginx-controller/)
-    - External Ingress Controller
-    - Internal Ingress Controller
+
 - [kube-prometheus-stack](./addons/kube-prometheus-stack/)
-    - Ingress Nginx Controller Monitoring
+
 - [loki](./addons/loki/)
+
+- [API Call by Pod](./document/APICALL.md)
 
 ## Cheatsheet
 ```markdown
