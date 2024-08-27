@@ -36,7 +36,7 @@ spec:
   tls:
     - hosts:
       - namutest.site
-      secretName: namutest-site-tls
+      secretName: namutest.site-20240809
   rules:
   - host: namutest.site
     http:
@@ -48,7 +48,6 @@ spec:
             name: mynginx-ingress-svc
             port: 
               number: 8080
-
 ---
 apiVersion: v1
 kind: Service

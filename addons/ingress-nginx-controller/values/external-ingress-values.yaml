@@ -7,7 +7,7 @@ controller:
     serviceMonitor:
       enabled: true
       additionalLabels:
-        release: kube-prometheus-stack-dev # prometheus helm release name
+        release: prom-stack-hyukjun # prometheus helm release name
   
   ## Azure LB 프로브 세팅
   service:

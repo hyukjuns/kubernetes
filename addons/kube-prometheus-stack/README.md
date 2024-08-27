@@ -85,7 +85,7 @@ kube-prometheus-stack 설치 및 관리
     helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
     ```
 ### 2. kuber-prometheus-stack Side
-3. kuber-prometheus-stack Helm Value 구성
+1. kuber-prometheus-stack Helm Value 구성
 
     ```yaml
     prometheus:
@@ -94,7 +94,7 @@ kube-prometheus-stack 설치 및 관리
         serviceMonitorSelectorNilUsesHelmValues: false
     ```
 
-4. 프로메테우스 차트 업그레이드
+2. 프로메테우스 차트 업그레이드
 
     ```bash
     helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
