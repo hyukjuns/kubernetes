@@ -55,6 +55,18 @@ grafana:
       cpu: 100m
       memory: 100Mi
 
+  # To make Grafana persistent (Using Statefulset)
+  #
+  persistence:
+    enabled: true
+    type: sts
+    storageClassName: "azuredisk-ssd-lrs"
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
+
 # ---> PrometheusOperator
 prometheusOperator:
   # 리소스 설정

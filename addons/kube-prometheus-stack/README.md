@@ -1,17 +1,13 @@
 # kube-prometheus-stack
 kube-prometheus-stack 설치 및 관리
 
-## Docs and Repos
+## Custom Point
+- Prometheus의 PV 회수정책 변경 (StorageClass 커스텀)
+- Grafana를 StatefulSet으로 배포하도록 세팅 (대시보드 저장)
+- 각 컴포넌트의 Resource Request/Limit 지정 (OOM 방지)
+- NGINX Ingress Controller에 대한 모니터링 설정 (ServiceMonitor)
 
-- [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
-
-- [prometheus-community/helm-charts Github](https://github.com/prometheus-community/helm-charts/)
-
-- [kube-prometheus-stack Github](https://github.com/prometheus-operator/kube-prometheus)
-
-- [Prometheus Operator](https://prometheus-operator.dev/)
-
-## Stack Component
+## Prom Stack Component
 - Prometheus Operator
 - Prometheus Server
 - Alertmanager
@@ -32,9 +28,6 @@ kube-prometheus-stack 설치 및 관리
     ```bash
     helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
     helm repo update
-
-    # Check Chart Version
-    helm search repo prometheus-community/kube-prometheus-stack --versions | head
     ```
 
 3. Setting Helm Value
@@ -51,10 +44,12 @@ kube-prometheus-stack 설치 및 관리
 4. Install Helm Chart
 
     ```bash
-    # helm install <RELEASE_NAME> <CHART_NAME> --version <CHART_VERSION> -f <VALUE_FILE> -n <NAMESPACE>
-    helm install nhj-kube-prometheus-stack prometheus-community/kube-prometheus-stack --version 61.9.0 -f ./values/user-values.yaml -n monitoring
-    ```
+    # Check Chart Version
+    helm search repo prometheus-community/kube-prometheus-stack --versions | head
 
+    # Install Helm Chart
+    helm install RELEASE prometheus-community/kube-prometheus-stack --version VERSION -f ./values/user-values.yaml -n monitoring
+    ```
 
 5. Verify
 
@@ -63,9 +58,6 @@ kube-prometheus-stack 설치 및 관리
     ```
 
 ## Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
-
-### 구성 방법
-[Prometheus and Grafana installation using Service Monitors](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#prometheus-and-grafana-installation-using-service-monitors)
 
 ### 1. Ingress Nginx Controller Side
 1. Ingress-Nginx Controller Helm Values 구성
@@ -99,3 +91,16 @@ kube-prometheus-stack 설치 및 관리
     ```bash
     helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
     ```
+
+*참고: [Prometheus and Grafana installation using Service Monitors](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#prometheus-and-grafana-installation-using-service-monitors)
+
+---
+## Docs and Official Repos
+
+- [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
+
+- [prometheus-community/helm-charts Github](https://github.com/prometheus-community/helm-charts/)
+
+- [kube-prometheus-stack Github](https://github.com/prometheus-operator/kube-prometheus)
+
+- [Prometheus Operator](https://prometheus-operator.dev/)
