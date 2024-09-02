@@ -1,8 +1,0 @@
-apiVersion: v1
-data:
-  index.html: hello /custom-path !
-kind: ConfigMap
-metadata:
-  creationTimestamp: null
-  name: nginx-custom-path-index
-  namespace: web
