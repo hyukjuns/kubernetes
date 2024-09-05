@@ -1,5 +1,8 @@
 # Install Loki on k8s cluster
-Helm 을 사용하여 Loki를 클러스터에 설치합니다.
+
+### Installation
+- Loki (Simple Scalable)
+- Promtail
 
 ### 참고
 ```markdown
