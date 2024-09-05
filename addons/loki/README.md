@@ -1,6 +1,8 @@
 # Install Loki on k8s cluster
 
 ### Installation
+- Cloud: Azure (AKS)
+- Storage: Azure Blob Storage
 - Loki (Simple Scalable)
 - Promtail
 
@@ -37,13 +39,7 @@ Install 커맨드에 --set loki.useTestSchem 설정
 
     ```
     helm show values grafana/loki > values.yaml
-    
-    # vi user-values.yaml
-    ...
-    loki:
-      storage:
-        bucketNames:
-    ...
+
     ```
 
 4. Install
