@@ -56,11 +56,10 @@ grafana:
       memory: 100Mi
 
   # To make Grafana persistent (Using Statefulset)
-  #
   persistence:
     enabled: true
     type: sts
-    storageClassName: "azuredisk-ssd-lrs"
+    storageClassName: default
     accessModes:
       - ReadWriteOnce
     size: 5Gi
@@ -139,6 +138,7 @@ prometheus:
           resources:
             requests:
               storage: 5Gi
+          # volumeName: restore-prometheus-pv # 프로메테우스의 PV 복구시 PV 먼저 만들고 입력
 
 # ---> Node Exporter
 nodeExporter:

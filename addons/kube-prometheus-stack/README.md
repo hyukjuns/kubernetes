@@ -92,7 +92,10 @@ kube-prometheus-stack 설치 및 관리
     helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
     ```
 
-*참고: [Prometheus and Grafana installation using Service Monitors](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#prometheus-and-grafana-installation-using-service-monitors)
+### Nginx Ingress Controller Grafana Official Dashabord
+- NGINX Ingress controller: 9614
+- Ingress Nginx / Request Handling Performance: 20510
+- Request Handling Performance: 12680
 
 ---
 ## Docs and Official Repos
@@ -104,3 +107,9 @@ kube-prometheus-stack 설치 및 관리
 - [kube-prometheus-stack Github](https://github.com/prometheus-operator/kube-prometheus)
 
 - [Prometheus Operator](https://prometheus-operator.dev/)
+
+- [Grafana Helm Values](https://github.com/grafana/helm-charts/tree/main/charts/grafana)
+
+- [Nginx Ingress Controller Dashabord](https://github.com/kubernetes/ingress-nginx/tree/main/deploy/grafana/dashboards)
+
+- [Prometheus and Grafana installation using Service Monitors](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#prometheus-and-grafana-installation-using-service-monitors)
