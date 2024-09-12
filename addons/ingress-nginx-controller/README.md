@@ -47,7 +47,12 @@ AKS 환경에서 Ingress NGINX Controller 설치 및 관리
     # Check value (user values)
     helm get values ingress-nginx -n ingress-nginx
     ```
-
+## Helm Value 참고
+```
+# Client Origin IP 보존 (X-Forwarded-For)
+# 트래픽을 받은 노드(노드포트)에 존재하는 백앤드 Pod로 트래픽을 전달한다 (다른 노드의 Pod로 전달 하지 않음)
+controller.service.externalTrafficPolicy=Local
+```
 ## Version Control
 k8s 버전 업그레이드시 Ingress Nginx Contorller Version 호환성 확인
 

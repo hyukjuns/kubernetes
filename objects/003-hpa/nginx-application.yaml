@@ -1,38 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-application
+  name: external-workload
   namespace: dev
   labels:
     part-of: dev-object
     name: nginx-application
     component: dev-application
-    instance: nginx-application-dev
+    instance: external-workload
     managed-by: kubectl
 spec:
-  replicas: 3
+  # replicas: 1 # 주석처리 in argocd
   selector:
     matchLabels:
-      instance: nginx-application-dev
+      instance: external-workload
   template:
     metadata:
       labels:
         part-of: dev-object
         name: nginx-application
         component: dev-application
-        instance: nginx-application-dev
+        instance: external-workload
         managed-by: kubectl
     spec:
       containers:
-      - image: nginx
-        name: nginx
+      - name: external-workload
+        image: nginx:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args: ["-c","echo \"You are connected through an External Ingress Controller! \n Hello from $(hostname)!\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
         resources:
-          requests:
-            cpu: 100m
-            memory: 256Mi
           limits:
-            cpu: 100m
-            memory: 256Mi
+            memory: "128Mi"
+            cpu: "500m"
         ports:
           - containerPort: 80
 ---
@@ -45,12 +45,32 @@ metadata:
     part-of: dev-object
     name: nginx-application
     component: dev-application
-    instance: nginx-application-dev
+    instance: external-workload
     managed-by: kubectl
 spec:
   type: LoadBalancer
   selector:
-    instance: nginx-application-dev
+    instance: external-workload
   ports:
   - port: 80
     targetPort: 80
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: hpa-external-workload
+  namespace: dev
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: external-workload
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 10
