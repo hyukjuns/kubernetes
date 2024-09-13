@@ -17,11 +17,7 @@ spec:
         image: nginx:latest
         imagePullPolicy: IfNotPresent
         command: ["/bin/bash"]
-        args: 
-          - |
-            "-c"
-            "echo \"You are connected through an External Ingress Controller! \n Hello from $(hostname)!\"
-            > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"
+        args: ["-c", "echo \"You came in through an external ingress controller \n Hello from $(hostname)!\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
         resources:
           limits:
             memory: "128Mi"

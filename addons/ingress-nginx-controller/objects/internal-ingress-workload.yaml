@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mynginx
+  name: internal-workload
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: mynginx
+      app: internal-workload
   template:
     metadata:
       labels:
-        app: mynginx
+        app: internal-workload
     spec:
       containers:
-      - name: mynginx
+      - name: internal-workload
         image: nginx:latest
         imagePullPolicy: IfNotPresent
         command: ["/bin/bash"]
-        args: ["-c", "echo \"hello from $(hostname)!\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+        args: ["-c", "echo \"You came in through an internal ingress controller \n Hello from $(hostname)!\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
         resources:
           limits:
             memory: "128Mi"
@@ -28,15 +28,11 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: myingress
+  name: internal-workload-ingress
   labels:
-    name: myingress
+    name: internal-workload-ingress
 spec:
-  ingressClassName: nginx-external
-  tls:
-    - hosts:
-      - namutest.site
-      secretName: namutest.site-20240809
+  ingressClassName: internal-ingress-nginx-class
   rules:
   - host: namutest.site
     http:
@@ -45,17 +41,17 @@ spec:
         path: "/"
         backend:
           service:
-            name: mynginx-ingress-svc
+            name: internal-ingress-svc
             port: 
               number: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: mynginx-ingress-svc
+  name: internall-workload-svc
 spec:
   selector:
-    app: mynginx
+    app: internal-workload
   ports:
   - port: 8080
     targetPort: 80

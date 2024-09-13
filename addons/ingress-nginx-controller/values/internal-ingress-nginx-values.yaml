@@ -1,4 +1,4 @@
-# Internal Ingress Controller in AKS
+# Internal Ingress Controller (AKS)
 controller:
   service:
     annotations: 
@@ -7,9 +7,9 @@ controller:
     # loadBalancerIP: 10.224.224.100
   electionID: internal-ingress-controller-leader
   ingressClassResource:
-    name: nginx-internal
+    name: internal-ingress-nginx-class
     enabled: true
     default: false
     controllerValue: "k8s.io/internal-ingress-nginx"
-  ingressClass: nginx-internal
+  ingressClass: internal-ingress-nginx-class
   healthCheckPath: "/healthz"

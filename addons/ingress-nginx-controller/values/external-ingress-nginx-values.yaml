@@ -1,27 +1,28 @@
 ## External Ingress Controller Setting (AKS)
 
 controller:
+  ## Preemption Priority Setting
+  priorityClassName: high-priority-nonpreempting
   ## Prometheus Monitoring (Diffrent Namespace)
-  metrics:
-    enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prom-stack-hyukjun # prometheus helm release name
+  # metrics:
+  #   enabled: true
+  #   serviceMonitor:
+  #     enabled: true
+  #     additionalLabels:
+  #       release: hyukjun-prometheus-stack # Prometheus Release Name
   
-  ## Azure LB 프로브 세팅
+  ## Azure LB Probe Setting
   service:
     annotations: 
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz 
   
   ## Ingress Class
-  electionID: external-ingress-controller-leader # 인그레스 컨트롤러의 상태 업데이트
+  electionID: external-ingress-controller-leader
   ingressClassResource:
     name: external-ingress-nginx-class
     enabled: true
     default: false
     controllerValue: "k8s.io/external-ingress-nginx"
-  ingressClass: external-ingress-nginx-class # 하위버전 호환성
   
   ## QoS: Burstable
   resources:

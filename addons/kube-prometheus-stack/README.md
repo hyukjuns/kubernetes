@@ -59,7 +59,23 @@ kube-prometheus-stack 설치 및 관리
 
 ## Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
 
-### 1. Ingress Nginx Controller Side
+### 1. kuber-prometheus-stack Side
+1. kuber-prometheus-stack Helm Value 구성
+
+    ```yaml
+    prometheus:
+      prometheusSpec:
+        podMonitorSelectorNilUsesHelmValues: false
+        serviceMonitorSelectorNilUsesHelmValues: false
+    ```
+
+2. 프로메테우스 차트 업그레이드
+
+    ```bash
+    helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
+    ```
+
+### 2. Ingress Nginx Controller Side
 1. Ingress-Nginx Controller Helm Values 구성
     ```yaml
     controller:
@@ -72,21 +88,6 @@ kube-prometheus-stack 설치 및 관리
     ```
 
 2. 인그레스 컨트롤러 차트 업그레이드
-
-    ```bash
-    helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
-    ```
-### 2. kuber-prometheus-stack Side
-1. kuber-prometheus-stack Helm Value 구성
-
-    ```yaml
-    prometheus:
-      prometheusSpec:
-        podMonitorSelectorNilUsesHelmValues: false
-        serviceMonitorSelectorNilUsesHelmValues: false
-    ```
-
-2. 프로메테우스 차트 업그레이드
 
     ```bash
     helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION

@@ -1,5 +1,5 @@
 # Ingress Nginx Controller In AKS
-AKS 환경에서 Ingress NGINX Controller 설치 및 관리
+AKS 환경에서 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-nginx) 설치 및 관리
 
 ## Installation
 
@@ -35,7 +35,7 @@ AKS 환경에서 Ingress NGINX Controller 설치 및 관리
     helm search repo ingress-nginx/ingress-nginx --versions | head
 
     # Install Helm Chart
-    helm install <RELEASE_NAME> ingress-nginx/ingress-nginx --version <CHART_VERSION> -n <NAMESPACE>> -f <USER_VALUE_FILE>.yaml
+    helm install RELEASE ingress-nginx/ingress-nginx --version VERSION -n NAMESPACE> -f VALUEFILE
     ```
 
 5. Verify
@@ -47,13 +47,14 @@ AKS 환경에서 Ingress NGINX Controller 설치 및 관리
     # Check value (user values)
     helm get values ingress-nginx -n ingress-nginx
     ```
-## Helm Value 참고
+## Operations
+### Traffic Manage
 ```
 # Client Origin IP 보존 (X-Forwarded-For)
 # 트래픽을 받은 노드(노드포트)에 존재하는 백앤드 Pod로 트래픽을 전달한다 (다른 노드의 Pod로 전달 하지 않음)
 controller.service.externalTrafficPolicy=Local
 ```
-## Version Control
+### Version Control
 k8s 버전 업그레이드시 Ingress Nginx Contorller Version 호환성 확인
 
 1. [공식 저장소](https://github.com/kubernetes/ingress-nginx#supported-versions-table)에서 업그레이드할 K8s 버전과 현재 Ingress Controller 버전의 호환성 확인
@@ -66,21 +67,16 @@ k8s 버전 업그레이드시 Ingress Nginx Contorller Version 호환성 확인
     helm search repo ingress-nginx/ingress-nginx --versions | head
 
     # helm upgrade [RELEASE] [CHART] [flags]
-    helm upgrade <RELEASE_NAME> ingress-nginx/ingress-nginx --version <CHART_VERSION> -n <NAMESPACE> [-f <USER_VALUE_FILE>.yaml | --reuse-values]
+    helm upgrade RELEASE ingress-nginx/ingress-nginx --version VERSION -n NAMESPACE [-f VALUEFILE.yaml | --reuse-values]
     ```
 
-## Operations
-### NGINX Configuration
+### [NGINX Configuration](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/#nginx-configuration)
 
-[공식문서](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/#nginx-configuration)
 
 - Configmap: 글로벌 설정, Ingress Controller 단위로 적용 (Namespace와 Name은 Controller와 동일하게 배포)
 - Annotation: 지역 설정, Ingress Object 생성 시 Annotation에 Nginx Configuration을 기입하여 인그레스 오브젝트 개별로 적용 가능
 
-### NGINX Prometheus Monitoring
-[Docs](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#monitoring)
-
-프로메테우스에 Nginx Controller 메트릭 수집가능하도록 Service Monitor 설정
+### [NGINX Prometheus Monitoring](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#monitoring)
 
 - Service Monitor 방식 (클러스터 단위)
 
@@ -106,12 +102,12 @@ k8s 버전 업그레이드시 Ingress Nginx Contorller Version 호환성 확인
     ```
 
 
-### NGINX Logging
-NGINX Controller Pod의 STDOUT으로 확인
+### [NGINX Logging](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/)
 
-[Log Format 변경 참고](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/)
+- NGINX Controller Pod의 STDOUT 확인
+- [Log Format 변경 참고](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/)
 
-### NGINX TLS Termination Setting
+### [NGINX TLS Termination Setting](https://kubernetes.github.io/ingress-nginx/user-guide/tls/)
 
 ```bash
 # [option] Self Example Cert
@@ -128,10 +124,7 @@ spec:
       secretName: SECRETNAME
 ```
 
-[Docs](https://kubernetes.github.io/ingress-nginx/user-guide/tls/)
-
-
-### Internal Ingress Class
+### Internal Ingress Controller
 
 1. Helm Value 설정
     ```yaml
@@ -157,11 +150,8 @@ spec:
     helm install ingress-nginx-internal ingress-nginx/ingress-nginx --version <CHART_VERSION> -n ingress-nginx -f internal-ingress-values.yaml
     ```
 
----
-## Docs and Official Repos
+## References
 
 - [Ingress Nginx Official Repo](https://github.com/kubernetes/ingress-nginx)
   
 - [AKS Docs](https://learn.microsoft.com/ko-kr/azure/aks/ingress-basic?tabs=azure-cli)
-  
-- [공식 저장소](https://github.com/kubernetes/ingress-nginx)
