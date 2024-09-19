@@ -22,7 +22,7 @@ Install 커맨드에 --set loki.useTestSchem 설정
 1. Create namespace
 
     ```
-    k create ns monitoring
+    k create ns loki
     ```
 
 2. Add Repo
@@ -60,3 +60,7 @@ Install 커맨드에 --set loki.useTestSchem 설정
 - Install Guide
 
     https://grafana.com/docs/loki/latest/installation/helm/install-scalable/
+
+- Install Guide on Azure
+
+    https://observability-360.com/docs/ViewDocument?id=grafana-loki-on-azure
