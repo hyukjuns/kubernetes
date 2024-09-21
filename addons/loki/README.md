@@ -1,24 +1,12 @@
-# Install Loki on k8s cluster
+# Loki on AKS
 
-### Installation
-- Cloud: Azure (AKS)
+### Environments
+- Cluster: AKS Cluster
 - Storage: Azure Blob Storage
-- Loki (Simple Scalable)
-- Promtail
+- Loki Mode: Simple Scalable
+- Log Aggregator: oTel collector
 
-### 참고
-```markdown
-# 테스트 설치 시
-Install 커맨드에 --set loki.useTestSchem 설정
-
-# Installed components:
-* gateway
-* read
-* write
-* backend
-``` 
-
-### Install Step
+### Installation - Loki
 1. Create namespace
 
     ```
@@ -27,40 +15,37 @@ Install 커맨드에 --set loki.useTestSchem 설정
 
 2. Add Repo
 
-    ```
+    ```bash
     helm repo add grafana https://grafana.github.io/helm-charts
     helm repo update
 
-    # 설치할 버전 확인
+    # Check Version to install
     helm search repo grafana/loki --versions | head
     ```
 
 3. Configure Values
 
-    ```
+    ```bash
+    # Get default Values
     helm show values grafana/loki > values.yaml
 
+    # Set up values in values/azure-values.yaml
+    loki.storage_config.azure.account_name
+    loki.storage_config.azure.account_key
     ```
 
-4. Install
+4. Install chart
 
     ```
-    helm install <RELEASE_NAME> grafana/loki --values ./values/user-values.yaml -n monitoring --version <VERSION>
+    helm install RELEASE grafana/loki --values ./values/azure-values.yaml -n loki --version VERSION
     ```
-5. Install - Promtail
 
-    ```
-    helm install dev-promtail grafana/promtail -n monitoring
-    ```
+### Installation - oTel Collector
+
 ### Ref
-- Loki github
+- [Loki github](https://github.com/grafana/loki)
 
-    https://github.com/grafana/loki
+- [Install Guide Docs](https://grafana.com/docs/loki/latest/installation/helm/install-scalable/)
 
-- Install Guide
 
-    https://grafana.com/docs/loki/latest/installation/helm/install-scalable/
-
-- Install Guide on Azure
-
-    https://observability-360.com/docs/ViewDocument?id=grafana-loki-on-azure
+- [Install Guide Medium (Azure Specified)](https://observability-360.com/docs/ViewDocument?id=grafana-loki-on-azure)

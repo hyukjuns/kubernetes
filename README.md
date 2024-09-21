@@ -1,5 +1,11 @@
 # Kubernetes & Azure Kubernetes Service
 
+### TODO
+- loki
+- argocd
+- jenkins
+- tls - keyvault manage
+
 ## Workspace Setting
 ```bash
 # shell setting
@@ -29,6 +35,9 @@ set nu
 
 ## Cheatsheet
 ```markdown
+# Helm 설치시 초기 출력 다시보기
+helm status RELEASE_NAME
+
 # ctr, crictl
 # ctr = containerd와 통신
 # crictl = ctr과 유사하게 컨테이너를 조회할 수 있지만 containerd 만을 위한 통신은 아니며, k8s 오브젝트인 pod를 조회하거나 생성할 수도 있다
