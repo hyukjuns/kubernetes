@@ -26,7 +26,7 @@ loki:
       # Comprehensive connection string for Azure Blob Storage account (Can be used to replace endpoint, accountName, and accountKey)
       #connectionString: <your-connection-string>
       # Flag indicating whether to use Azure Managed Identity for authentication
-      useManagedIdentity: false
+      useManagedIdentity: true
       # Flag indicating whether to use a federated token for authentication
       useFederatedToken: false
       # Client ID of the user-assigned managed identity (if applicable)
@@ -34,7 +34,8 @@ loki:
       # Timeout duration for requests made to the Azure Blob Storage account (in seconds)
       #requestTimeout: <your-request-timeout>
       # Domain suffix of the Azure Blob Storage service endpoint (e.g., core.windows.net)
-      #endpointSuffix: <your-endpoint-suffix>
+      endpointSuffix: 
+      # container_name: lokiblobcontainer
     bucketNames:
       chunks: "chunks"
       ruler: "ruler"

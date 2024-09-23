@@ -56,6 +56,18 @@ kube-prometheus-stack 설치 및 관리
     ```bash
     kubectl get all -n monitoring
     ```
+## Operation
+- Retain 된 PV 재사용
+
+    1. Retain 된 PV에 해당하는 Azure Managed Disk 식별
+    2. Managed Disk 사용해서 PV 생성, diskName, diskURI 입력
+
+        ```./objects/restore-prometheus-pv.yaml```
+
+    3.  Prometheus Helm Values에서 PV 정보 입력 후 업그레이드/재배포
+
+        ```prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName```
+
 
 ## Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
 
