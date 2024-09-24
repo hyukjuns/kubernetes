@@ -26,29 +26,54 @@ loki:
       # Comprehensive connection string for Azure Blob Storage account (Can be used to replace endpoint, accountName, and accountKey)
       #connectionString: <your-connection-string>
       # Flag indicating whether to use Azure Managed Identity for authentication
-      useManagedIdentity: true
+      useManagedIdentity: false
       # Flag indicating whether to use a federated token for authentication
       useFederatedToken: false
       # Client ID of the user-assigned managed identity (if applicable)
       #userAssignedId: <your-user-assigned-id>
       # Timeout duration for requests made to the Azure Blob Storage account (in seconds)
-      #requestTimeout: <your-request-timeout>
+      requestTimeout: 0
       # Domain suffix of the Azure Blob Storage service endpoint (e.g., core.windows.net)
-      endpointSuffix: 
-      # container_name: lokiblobcontainer
+      # endpointSuffix: 
     bucketNames:
-      chunks: "chunks"
-      ruler: "ruler"
-      admin: "admin"
-
+      chunks: "chunks-test"
+      ruler: "ruler-test"
+      admin: "admin-test"
 deploymentMode: SimpleScalable
 
 backend:
-  replicas: 3
+  replicas: 2
+  # Helm Package 삭제시 PVC도 함께 삭제
+  persistence:
+    enableStatefulSetAutoDeletePVC: true
+  # Autoscaling
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 60
 read:
-  replicas: 3
+  replicas: 2
+  persistence:
+    enableStatefulSetAutoDeletePVC: true
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 60
 write:
-  replicas: 3
+  replicas: 2
+  persistence:
+    enableStatefulSetAutoDeletePVC: true
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 6
+    targetCPUUtilizationPercentage: 60
+
+# Disable chunkCache
+chunksCache:
+  enabled: false
 
 # Disable minio storage
 minio:

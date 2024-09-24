@@ -6,14 +6,22 @@
 - Loki Mode: Simple Scalable
 - Log Aggregator: oTel collector
 
-### Installation - Loki
-1. Create namespace
+### Install Loki on Azure
+1. Create blob container
+    ```markdown
+    # Container Name == bucketNames in Value File
+    bucketNames:
+      chunks: "chunks-test"
+      ruler: "ruler-test"
+      admin: "admin-test"
+    ```
+2. Create Namespace
 
     ```
     k create ns loki
     ```
 
-2. Add Repo
+3. Add Repo
 
     ```bash
     helm repo add grafana https://grafana.github.io/helm-charts
@@ -23,7 +31,7 @@
     helm search repo grafana/loki --versions | head
     ```
 
-3. Configure Values
+4. Configure Values
 
     ```bash
     # Get default Values
@@ -34,13 +42,29 @@
     loki.storage_config.azure.account_key
     ```
 
-4. Install chart
+5. Install chart
 
     ```
     helm install RELEASE grafana/loki --values ./values/azure-values.yaml -n loki --version VERSION
     ```
 
-### Installation - oTel Collector
+### Install Promtail Agent
+
+1. Create Namespace
+
+    ```
+    k create ns promtail
+    ```
+
+2. Configure Value 
+
+    ```
+    config:
+      # publish data to loki
+      clients:
+      - url: http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
+          tenant_id: 1
+    ```
 
 ### Ref
 - [Loki github](https://github.com/grafana/loki)
