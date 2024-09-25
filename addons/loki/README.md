@@ -66,6 +66,24 @@
           tenant_id: 1
     ```
 
+### LogQL Sample
+```
+# Find String
+{"LABLE"="VALUE"} |="STRING" 
+
+# STDOUT Format
+{"LABLE"="VALUE"} |= `` 
+
+# Log Format
+{"LABLE"="VALUE"} |= `` | logfmt
+
+# JSON Format
+{"LABLE"="VALUE"} |= `` | json
+
+# JSON Format and filter 
+{"LABLE"="VALUE"} |= `` | json |spanid="5b5671aad21a81e3"
+
+```
 ### Ref
 - [Loki github](https://github.com/grafana/loki)
 

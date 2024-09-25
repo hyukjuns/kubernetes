@@ -1,3 +1,6 @@
+monitoring:
+  serviceMonitor:
+    enabled: true
 loki:
   auth_enabled: false
   schemaConfig:
@@ -26,21 +29,23 @@ loki:
       # Comprehensive connection string for Azure Blob Storage account (Can be used to replace endpoint, accountName, and accountKey)
       #connectionString: <your-connection-string>
       # Flag indicating whether to use Azure Managed Identity for authentication
-      useManagedIdentity: false
+      # useManagedIdentity: true
       # Flag indicating whether to use a federated token for authentication
-      useFederatedToken: false
+      # useFederatedToken: false
       # Client ID of the user-assigned managed identity (if applicable)
       #userAssignedId: <your-user-assigned-id>
       # Timeout duration for requests made to the Azure Blob Storage account (in seconds)
       requestTimeout: 0
-      # Domain suffix of the Azure Blob Storage service endpoint (e.g., core.windows.net)
-      # endpointSuffix: 
+    # Blob Container Name
     bucketNames:
       chunks: "chunks-test"
       ruler: "ruler-test"
       admin: "admin-test"
+
+# Loki Mode
 deploymentMode: SimpleScalable
 
+# Replica Setting
 backend:
   replicas: 2
   # Helm Package 삭제시 PVC도 함께 삭제
@@ -52,6 +57,14 @@ backend:
     minReplicas: 2
     maxReplicas: 6
     targetCPUUtilizationPercentage: 60
+  # resource
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1Gi
+    requests:
+      cpu: 250m
+      memory: 512Mi
 read:
   replicas: 2
   persistence:
@@ -61,6 +74,14 @@ read:
     minReplicas: 2
     maxReplicas: 6
     targetCPUUtilizationPercentage: 60
+  # resource
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
 write:
   replicas: 2
   persistence:
@@ -70,8 +91,16 @@ write:
     minReplicas: 2
     maxReplicas: 6
     targetCPUUtilizationPercentage: 60
+  # resource
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
 
-# Disable chunkCache
+# Disable chunkCache, 클러스터의 메모리가 충분하다면 Enable
 chunksCache:
   enabled: false
 

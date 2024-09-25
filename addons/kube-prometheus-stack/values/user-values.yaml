@@ -120,13 +120,13 @@ prometheus:
     # 파드 개수
     replicas: 1
 
-    # 리소스 설정 - Guaranteed
+    # 리소스 설정
     resources:
       limits:
-        cpu: 200m
-        memory: 1Gi
+        cpu: 1000m
+        memory: 2Gi
       requests:
-        cpu: 200m
+        cpu: 500m
         memory: 1Gi
     
     # 스토리지 설정
