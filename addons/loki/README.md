@@ -4,7 +4,7 @@
 - Cluster: AKS Cluster
 - Storage: Azure Blob Storage
 - Loki Mode: Simple Scalable
-- Log Aggregator: oTel collector
+- Log Aggregator: promtail
 
 ### Install Loki on Azure
 1. Create blob container
@@ -88,6 +88,5 @@
 - [Loki github](https://github.com/grafana/loki)
 
 - [Install Guide Docs](https://grafana.com/docs/loki/latest/installation/helm/install-scalable/)
-
 
 - [Install Guide Medium (Azure Specified)](https://observability-360.com/docs/ViewDocument?id=grafana-loki-on-azure)
