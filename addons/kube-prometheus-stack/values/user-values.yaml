@@ -1,4 +1,3 @@
-# ---> Disable Control Plan Componnent
 # ETCD / Controller Manager / Scheduler
 kubeControllerManager:
   enabled: false
@@ -7,24 +6,14 @@ kubeEtcd:
 kubeScheduler:
   enabled: false
 
-# ---> Alertmanager
+# Alertmanager
 alertmanager:
-  # PDB 설정
-  podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
-    maxUnavailable: ""
-  # 서비스 설정
   service:
     port: 9093
     targetPort: 9093
     type: LoadBalancer
-  # 파드 스펙 설정
   alertmanagerSpec:
-    # 파드개수
     replicas: 1
-
-    # 리소스 설정
     resources:
       limits:
         cpu: 200m
@@ -33,20 +22,26 @@ alertmanager:
         cpu: 100m
         memory: 100Mi
 
-
-# ---> Grafana
+# Grafana
 grafana:
-  # 대시보드 타임존
   defaultDashboardsTimezone: kst
-  # 어드민 암호
   adminPassword: admin
-  service:
-    type: LoadBalancer
-    port: 3000
-    portName: http-web
-    targetPort: 3000
+  ingress:
+    enabled: true
+    ingressClassName: nginx-external
+    hosts:
+      - grafana.namutest.site
+    path: /
+    # tls:
+    #   - secretName: namutest.site-20240809
+    #     hosts:
+    #     - grafana.namutest.site
+  # service:
+  #   type: LoadBalancer
+  #   port: 3000
+  #   portName: http-web
+  #   targetPort: 3000
 
-  # 리소스 설정
   resources:
     limits:
       cpu: 200m
@@ -66,10 +61,9 @@ grafana:
     finalizers:
       - kubernetes.io/pvc-protection
 
-# ---> PrometheusOperator
+# PrometheusOperator
 prometheusOperator:
-  # 리소스 설정
-  resources:
+   resources:
     limits:
       cpu: 200m
       memory: 200Mi
@@ -77,50 +71,24 @@ prometheusOperator:
       cpu: 100m
       memory: 100Mi
 
-# ---> Promtetheus Server
+# Promtetheus Server
 prometheus:
-  # 서비스 설정
   service:
     port: 9090
     targetPort: 9090
     type: LoadBalancer
-  # PDB 설정
-  podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
-    maxUnavailable: ""
-  # 파드 스펙 설정
   prometheusSpec:
     # 서비스모니터 설정 -> 다른 네임스페이스에 있는 Service Monitor 사용을 위해 설정
-    # By default, Prometheus only discovers PodMonitors within its own namespace.
-    # This should be disabled by setting podMonitorSelectorNilUsesHelmValues to false
     podMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelectorNilUsesHelmValues: false
     
-    # 메트릭 스크랩
-    # scrapeTimeout > scrapeInterval
+    # 메트릭 스크랩 scrapeTimeout > scrapeInterval
     scrapeInterval: "15s"
-    # scrapeTimeout: "30s"
-    # evaluationInterval: "16s"
-
-    # 토폴로지 & 스케쥴링 옵션
-    tolerations: []
-    topologySpreadConstraints: []
-    nodeSelector: {}
-    podAntiAffinity: ""
-    podAntiAffinityTopologyKey: kubernetes.io/hostname
-    affinity: {}
-
-    # 메트릭 보존 기간
+    scrapeTimeout: "30s" 
     retention:  7d 
-    
-    # 메트릭 최대 사이즈
     retentionSize: "5GiB"
-
-    # 파드 개수
+    
     replicas: 1
-
-    # 리소스 설정
     resources:
       limits:
         cpu: 1000m
@@ -129,7 +97,6 @@ prometheus:
         cpu: 500m
         memory: 1Gi
     
-    # 스토리지 설정
     storageSpec: 
       volumeClaimTemplate:
         spec:
@@ -140,7 +107,7 @@ prometheus:
               storage: 5Gi
           # volumeName: restore-prometheus-pv # 프로메테우스의 PV 복구시 PV 먼저 만들고 입력
 
-# ---> Node Exporter
+# Node Exporter
 nodeExporter:
   resources:
     limits:
@@ -150,7 +117,7 @@ nodeExporter:
       cpu: 50m
       memory: 128Mi
 
-# ---> Kube State Metrics
+# Kube State Metrics
 kube-state-metrics:
   resources:
     limits:

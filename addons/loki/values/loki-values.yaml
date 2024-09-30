@@ -22,19 +22,9 @@ loki:
   storage:
     type: azure
     azure:
-      # Name of the Azure Blob Storage account
+      # Azure Storage Account info
       accountName: ""
-      # Key associated with the Azure Blob Storage account
       accountKey: ""
-      # Comprehensive connection string for Azure Blob Storage account (Can be used to replace endpoint, accountName, and accountKey)
-      #connectionString: <your-connection-string>
-      # Flag indicating whether to use Azure Managed Identity for authentication
-      # useManagedIdentity: true
-      # Flag indicating whether to use a federated token for authentication
-      # useFederatedToken: false
-      # Client ID of the user-assigned managed identity (if applicable)
-      #userAssignedId: <your-user-assigned-id>
-      # Timeout duration for requests made to the Azure Blob Storage account (in seconds)
       requestTimeout: 0
     # Blob Container Name
     bucketNames:

@@ -18,6 +18,7 @@ kube-prometheus-stack 설치 및 관리
 ## Installation
 
 1. Create Namespace & Storage Class
+    
     ```bash
     k create ns monitoring
     k apply -f ./objects/storageclass.yaml
