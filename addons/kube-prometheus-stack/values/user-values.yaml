@@ -73,10 +73,17 @@ prometheusOperator:
 
 # Promtetheus Server
 prometheus:
-  service:
-    port: 9090
-    targetPort: 9090
-    type: LoadBalancer
+  ingress:
+    enabled: true
+    ingressClassName: nginx-external
+    hosts:
+      - prometheus.namutest.site
+    paths:
+      - /    
+  # service:
+  #   port: 9090
+  #   targetPort: 9090
+  #   type: LoadBalancer
   prometheusSpec:
     # 서비스모니터 설정 -> 다른 네임스페이스에 있는 Service Monitor 사용을 위해 설정
     podMonitorSelectorNilUsesHelmValues: false

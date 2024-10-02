@@ -1,11 +1,12 @@
 # kube-prometheus-stack
-kube-prometheus-stack 설치 및 관리
+AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) 헬름 차트 설치 및 관리
 
-## Custom Point
+## Custom Values
 - Prometheus의 PV 회수정책 변경 (StorageClass 커스텀)
 - Grafana를 StatefulSet으로 배포하도록 세팅 (대시보드 저장)
 - 각 컴포넌트의 Resource Request/Limit 지정 (OOM 방지)
 - NGINX Ingress Controller에 대한 모니터링 설정 (ServiceMonitor)
+- Grafana / Prometheus에 Ingress 연결
 
 ## Prom Stack Component
 - Prometheus Operator
@@ -50,6 +51,9 @@ kube-prometheus-stack 설치 및 관리
 
     # Install Helm Chart
     helm install RELEASE prometheus-community/kube-prometheus-stack --version VERSION -f ./values/user-values.yaml -n monitoring
+
+    # Upgrade or Install Helm Chart
+    helm upgrade --install -n NAMESPACE RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE --version VERSION
     ```
 
 5. Verify
@@ -58,7 +62,7 @@ kube-prometheus-stack 설치 및 관리
     kubectl get all -n monitoring
     ```
 ## Operation
-- Retain 된 PV 재사용
+1. Retain 된 PV 재사용
 
     1. Retain 된 PV에 해당하는 Azure Managed Disk 식별
     2. Managed Disk 사용해서 PV 생성, diskName, diskURI 입력
@@ -70,9 +74,10 @@ kube-prometheus-stack 설치 및 관리
         ```prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName```
 
 
-## Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
+2. Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
 
-### 1. kuber-prometheus-stack Side
+> 1. kuber-prometheus-stack Side
+
 1. kuber-prometheus-stack Helm Value 구성
 
     ```yaml
@@ -85,10 +90,11 @@ kube-prometheus-stack 설치 및 관리
 2. 프로메테우스 차트 업그레이드
 
     ```bash
-    helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
+    helm upgrade -n NAMESPACE RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE --version VERSION
     ```
 
-### 2. Ingress Nginx Controller Side
+> 2. Ingress Nginx Controller Side
+
 1. Ingress-Nginx Controller Helm Values 구성
     ```yaml
     controller:
@@ -97,7 +103,7 @@ kube-prometheus-stack 설치 및 관리
         serviceMonitor:
             enabled: true
             additionalLabels:
-            release: prometheus # kuber-prometheus-stack's Release Name
+            release: RELEASE # kuber-prometheus-stack's Release Name
     ```
 
 2. 인그레스 컨트롤러 차트 업그레이드
@@ -106,10 +112,11 @@ kube-prometheus-stack 설치 및 관리
     helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
     ```
 
-### Nginx Ingress Controller Grafana Official Dashabord
-- NGINX Ingress controller: 9614
-- Ingress Nginx / Request Handling Performance: 20510
-- Request Handling Performance: 12680
+3. Nginx Ingress Controller Grafana Official Dashabord
+
+    - NGINX Ingress controller: 9614
+    - Ingress Nginx / Request Handling Performance: 20510
+    - Request Handling Performance: 12680
 
 ---
 ## Docs and Official Repos
