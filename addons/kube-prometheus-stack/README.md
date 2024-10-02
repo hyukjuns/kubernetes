@@ -1,14 +1,14 @@
 # Kube Prometheus Stack
 AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) 헬름 차트 설치 및 관리
 
-## Custom Values
+### Custom Values
 - Prometheus의 PV 회수정책 변경 (StorageClass 커스텀)
 - Grafana를 StatefulSet으로 배포하도록 세팅 (대시보드 저장)
 - 각 컴포넌트의 Resource Request/Limit 지정 (OOM 방지)
 - NGINX Ingress Controller에 대한 모니터링 설정 (ServiceMonitor)
 - Grafana / Prometheus에 Ingress 연결
 
-## Prom Stack Component
+### Prom Stack Component
 - Prometheus Operator
 - Prometheus Server
 - Alertmanager
@@ -16,7 +16,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 - State-Metric Server
 - Grafana Server
 
-## Installation
+### Installation
 
 1. Create Namespace & Storage Class
     
@@ -61,7 +61,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     ```bash
     kubectl get all -n monitoring
     ```
-## Operation
+### Operation
 1. Retain 된 PV 재사용
 
     1. Retain 된 PV에 해당하는 Azure Managed Disk 식별
@@ -118,8 +118,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     - Ingress Nginx / Request Handling Performance: 20510
     - Request Handling Performance: 12680
 
----
-## Docs and Official Repos
+### Reference
 
 - [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)
 

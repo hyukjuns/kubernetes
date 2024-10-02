@@ -84,7 +84,7 @@ AKS 환경에 [Loki](https://github.com/grafana/loki) 헬름 차트 설치 및 �
 # JSON Format and filter 
 {"LABLE"="VALUE"} |= `` | json |spanid="5b5671aad21a81e3"
 ```
-### Ref
+### Reference
 - [Loki github](https://github.com/grafana/loki)
 
 - [Install Guide Docs](https://grafana.com/docs/loki/latest/installation/helm/install-scalable/)

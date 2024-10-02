@@ -47,7 +47,7 @@ AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-n
     # Check value (user values)
     helm get values ingress-nginx -n ingress-nginx
     ```
-### Operations
+### Operation
 1. NGINX 트래픽 관리
 
     ```
@@ -118,7 +118,7 @@ AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-n
     - [NGINX TLS Termination Setting 문서](https://kubernetes.github.io/ingress-nginx/user-guide/tls/)
 
     - TLS Termination 설정
-    
+
         ```bash
         # [option] Self Example Cert
         openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=example.com/O=example.com"
@@ -160,7 +160,7 @@ AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-n
         helm install ingress-nginx-internal ingress-nginx/ingress-nginx --version <CHART_VERSION> -n ingress-nginx -f internal-ingress-values.yaml
         ```
 
-## References
+## Reference
 
 - [Ingress Nginx Official Repo](https://github.com/kubernetes/ingress-nginx)
   
