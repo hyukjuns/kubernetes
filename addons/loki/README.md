@@ -1,4 +1,4 @@
-# Loki on AKS
+# Loki
 AKS 환경에 [Loki](https://github.com/grafana/loki) 헬름 차트 설치 및 관리
 
 ### Environments
@@ -10,7 +10,7 @@ AKS 환경에 [Loki](https://github.com/grafana/loki) 헬름 차트 설치 및 �
 ### Install Loki on Azure
 1. Create blob container
     ```markdown
-    # Container Name == bucketNames in Value File
+    # Blob Container Name == bucketNames in Value File
     bucketNames:
       chunks: "chunks-test"
       ruler: "ruler-test"
@@ -83,7 +83,6 @@ AKS 환경에 [Loki](https://github.com/grafana/loki) 헬름 차트 설치 및 �
 
 # JSON Format and filter 
 {"LABLE"="VALUE"} |= `` | json |spanid="5b5671aad21a81e3"
-
 ```
 ### Ref
 - [Loki github](https://github.com/grafana/loki)

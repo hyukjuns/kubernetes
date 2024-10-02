@@ -1,4 +1,4 @@
-# kube-prometheus-stack
+# Kube Prometheus Stack
 AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) 헬름 차트 설치 및 관리
 
 ## Custom Values
@@ -76,41 +76,41 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 
 2. Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
 
-> 1. kuber-prometheus-stack Side
+    1. kuber-prometheus-stack Side
 
-1. kuber-prometheus-stack Helm Value 구성
+        1. kuber-prometheus-stack Helm Value 설정 편집
 
-    ```yaml
-    prometheus:
-      prometheusSpec:
-        podMonitorSelectorNilUsesHelmValues: false
-        serviceMonitorSelectorNilUsesHelmValues: false
-    ```
+            ```yaml
+            prometheus:
+            prometheusSpec:
+                podMonitorSelectorNilUsesHelmValues: false
+                serviceMonitorSelectorNilUsesHelmValues: false
+            ```
 
-2. 프로메테우스 차트 업그레이드
+        2. 프로메테우스 차트 업그레이드
 
-    ```bash
-    helm upgrade -n NAMESPACE RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE --version VERSION
-    ```
+            ```bash
+            helm upgrade -n NAMESPACE RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE --version VERSION
+            ```
 
-> 2. Ingress Nginx Controller Side
+    2. Ingress Nginx Controller Side
 
-1. Ingress-Nginx Controller Helm Values 구성
-    ```yaml
-    controller:
-        metrics:
-        enabled: true
-        serviceMonitor:
-            enabled: true
-            additionalLabels:
-            release: RELEASE # kuber-prometheus-stack's Release Name
-    ```
+        1. Ingress-Nginx Controller Helm Values 설정 편집
+            ```yaml
+            controller:
+                metrics:
+                enabled: true
+                serviceMonitor:
+                    enabled: true
+                    additionalLabels:
+                    release: RELEASE # kuber-prometheus-stack's Release Name
+            ```
 
-2. 인그레스 컨트롤러 차트 업그레이드
+        2. 인그레스 컨트롤러 차트 업그레이드
 
-    ```bash
-    helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
-    ```
+            ```bash
+            helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
+            ```
 
 3. Nginx Ingress Controller Grafana Official Dashabord
 

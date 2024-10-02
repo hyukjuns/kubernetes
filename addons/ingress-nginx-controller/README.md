@@ -1,4 +1,4 @@
-# Ingress Nginx Controller In AKS
+# Ingress Nginx Controller
 AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-nginx) 헬름 차트 설치 및 관리
 
 ### Installation
@@ -61,16 +61,16 @@ AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-n
 
     - [공식 저장소](https://github.com/kubernetes/ingress-nginx#supported-versions-table)에서 업그레이드할 K8s 버전과 현재 Ingress Controller 버전의 호환성 확인
 
-    > 버전 업그레이드
+    - 버전 업그레이드
 
-    ```bash
-    # Update & Check Chart Version
-    helm repo update
-    helm search repo ingress-nginx/ingress-nginx --versions | head
+        ```bash
+        # Update & Check Chart Version
+        helm repo update
+        helm search repo ingress-nginx/ingress-nginx --versions | head
 
-    # helm upgrade [RELEASE] [CHART] [flags]
-    helm upgrade RELEASE ingress-nginx/ingress-nginx --version VERSION -n NAMESPACE [-f VALUEFILE.yaml | --reuse-values]
-    ```
+        # helm upgrade [RELEASE] [CHART] [flags]
+        helm upgrade RELEASE ingress-nginx/ingress-nginx --version VERSION -n NAMESPACE [-f VALUEFILE.yaml | --reuse-values]
+        ```
 
 3. NGINX 설정 관리
 
@@ -114,23 +114,25 @@ AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-n
     - [NGINX Logging 문서](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/)
     - [Log Format 변경 참고](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/)
 
-6. TLS Termination 설정
+6. TLS Termination 관리
     - [NGINX TLS Termination Setting 문서](https://kubernetes.github.io/ingress-nginx/user-guide/tls/)
 
-    ```bash
-    # [option] Self Example Cert
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=example.com/O=example.com"
+    - TLS Termination 설정
+    
+        ```bash
+        # [option] Self Example Cert
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=example.com/O=example.com"
 
-    # Create TLS Secret
-    kubectl create secret tls NAME --cert=tls.crt --key=tls.key
+        # Create TLS Secret
+        kubectl create secret tls NAME --cert=tls.crt --key=tls.key
 
-    # Set ingress manifest
-    spec:
-    tls:
-        - hosts:
-        - DOMAIN
-        secretName: SECRETNAME
-    ```
+        # Set ingress manifest
+        spec:
+        tls:
+            - hosts:
+            - DOMAIN
+            secretName: SECRETNAME
+        ```
 
 7. Internal Ingress Controller 배포 방법
 
