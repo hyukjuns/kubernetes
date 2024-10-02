@@ -160,7 +160,7 @@ AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-n
         helm install ingress-nginx-internal ingress-nginx/ingress-nginx --version <CHART_VERSION> -n ingress-nginx -f internal-ingress-values.yaml
         ```
 
-## Reference
+### Reference
 
 - [Ingress Nginx Official Repo](https://github.com/kubernetes/ingress-nginx)
   
