@@ -112,7 +112,6 @@ AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-n
 
     - NGINX Controller Pod의 STDOUT 확인
     - [NGINX Logging 문서](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/)
-    - [Log Format 변경 참고](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/log-format/)
 
 6. TLS Termination 관리
     - [NGINX TLS Termination Setting 문서](https://kubernetes.github.io/ingress-nginx/user-guide/tls/)

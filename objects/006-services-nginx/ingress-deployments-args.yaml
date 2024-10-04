@@ -32,7 +32,7 @@ metadata:
   labels:
     name: myingress
 spec:
-  ingressClassName: nginx-external
+  ingressClassName: external-ingress-nginx-class
   tls:
     - hosts:
       - namutest.site

@@ -28,7 +28,7 @@ grafana:
   adminPassword: admin
   ingress:
     enabled: true
-    ingressClassName: nginx-external
+    ingressClassName: external-ingress-nginx-class
     hosts:
       - grafana.namutest.site
     path: /
@@ -75,7 +75,7 @@ prometheusOperator:
 prometheus:
   ingress:
     enabled: true
-    ingressClassName: nginx-external
+    ingressClassName: external-ingress-nginx-class
     hosts:
       - prometheus.namutest.site
     paths:

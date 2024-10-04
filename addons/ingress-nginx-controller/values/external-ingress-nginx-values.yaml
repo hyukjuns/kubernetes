@@ -4,16 +4,17 @@ controller:
   ## Preemption Priority Setting
   priorityClassName: high-priority-nonpreempting
   ## Prometheus Monitoring (Diffrent Namespace)
-  # metrics:
-  #   enabled: true
-  #   serviceMonitor:
-  #     enabled: true
-  #     additionalLabels:
-  #       release: hyukjun-prometheus-stack # Prometheus Release Name
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prom-stack-hyukjun # Prometheus Release Name
   
   ## Azure LB Probe Setting
   service:
     annotations: 
+      externalTrafficPolicy: Local
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz 
   
   ## Ingress Class
