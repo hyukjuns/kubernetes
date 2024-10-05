@@ -1,13 +1,11 @@
-# Kubernetes & Azure Kubernetes Service
+# Kubernetes
 
-### TODO
-- loki
-- argocd
-- jenkins
-- tls - keyvault manage
+### Environment
+- Azure Kubernetes Service
 
+### Cheatsheet
+```markdown
 ## Workspace Setting
-```bash
 # shell setting
 source <(kubectl completion zsh)
 alias k=kubectl
@@ -19,22 +17,30 @@ set et
 set ts=2
 set sw=2
 set nu
-```
 
-## Addon
-- [ingress-nginx-controller](./addons/ingress-nginx-controller/)
+## df-pv
+https://github.com/yashbhutwala/kubectl-df-pv
 
-- [kube-prometheus-stack](./addons/kube-prometheus-stack/)
+## Check Container Image Arch
+docker inspect IMAGE | grep -i arch
 
-- [loki](./addons/loki/)
+## Pod에 K8s API 권한 부여
+# 1. SA, Role, Rolebinding 생성
+k create sa SA_NAME -n NAMESAPCE
+k create role ROLE_NAME -n NAMESAPCE --verb=list,get --resource=pod
+k create rolebinding ROLE_BINDING_NAME -n NAMESAPCE --role=ROLE_NAME --serviceaccount=NAMESAPCE:SA_NAME 
 
-- [API Call by Pod](./document/APICALL.md)
+# 2. 권한 테스트
+k auth can-i list pod -n api --as system:serviceaccount:api:api-sa
 
-##  Useful Tools
-- [df-pv](https://github.com/yashbhutwala/kubectl-df-pv)
+# 3. Pod 가 SA 사용하도록 연결
+...
+spec:
+  serviceAccountName: SA_NAME
+  containers:
+...
 
-## Cheatsheet
-```markdown
+
 # Helm 설치시 초기 출력 다시보기
 helm status RELEASE_NAME
 
