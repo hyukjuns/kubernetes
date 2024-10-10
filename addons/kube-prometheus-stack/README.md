@@ -1,6 +1,13 @@
 # Kube Prometheus Stack
 AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) 헬름 차트 설치 및 관리
 
+### TODO - Alert List 만들기
+- 컨테이너 재시작
+- CPU/Mem 부하
+- 스케일링 (노드/파드)
+- 네임스페잉스별 알람 체계
+- 스케쥴링 실패
+
 ### Custom Values
 - Prometheus의 PV 회수정책 변경 (StorageClass 커스텀)
 - Grafana를 StatefulSet으로 배포하도록 세팅 (대시보드 저장)

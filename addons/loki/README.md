@@ -46,7 +46,7 @@ AKS 환경에 [Loki](https://github.com/grafana/loki) 헬름 차트 설치 및 �
 5. Install chart
 
     ```
-    helm install RELEASE grafana/loki --values ./values/azure-values.yaml -n loki --version VERSION
+    helm install RELEASE grafana/loki --values ./values/loki-values.yaml -n loki --version VERSION
     ```
 
 ### Install Promtail Agent
