@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: test
+  labels:
+    run: rbac-pod
+  name: rbac-pod
+spec:
+  serviceAccountName: test-sa
+  containers:
+  - image: alpine
+    name: rbac-pod
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo test; sleep 10s;done"]
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: test
+  labels:
+    run: rbac-pod-02
+  name: rbac-po-02
+spec:
+  serviceAccountName: test-sa
+  containers:
+  - image: alpine
+    name: rbac-po-02
+    resources:
+      limits:
+        cpu: 500m
+        memory: 256Mi
+    command: ["/bin/sh","-c", "while true; do echo test; sleep 10s;done"]
