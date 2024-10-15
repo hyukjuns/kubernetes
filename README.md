@@ -140,4 +140,16 @@ helm install <RELEASE_NAME> <CHART> -n <NAMESPACE> -f <VALUEFILE>
 # Uninstall Chart
 helm uninstall <RELEASE_NAME> -n <NAMESPACE>
 
+
+# Dry-Run
+# pod
+k run <pod-name> --image=<image> --port=<port> --expose=true
+k run <pod-name> --image=<image> --port=<port> --dry-run=client -o yaml > pod.yaml
+
+# rs,dp
+k create deployment <dpname> --replicas=2 --image=nginx --dry-run=client -o yaml > dp.yaml
+
+# svc
+k create svc <svctype> <svcname> --tcp='port:targetport'
+
 ```
