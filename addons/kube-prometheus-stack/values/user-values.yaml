@@ -1,11 +1,13 @@
-# ETCD / Controller Manager / Scheduler
+# ETCD / Controller Manager / Scheduler / kubeProxy
 kubeControllerManager:
   enabled: false
 kubeEtcd:
   enabled: false
 kubeScheduler:
   enabled: false
-
+kubeProxy:
+  enabled: false
+  
 # Alertmanager
 alertmanager:
   service:
@@ -91,7 +93,9 @@ prometheus:
     
     # 메트릭 스크랩 scrapeTimeout > scrapeInterval
     scrapeInterval: "15s"
-    scrapeTimeout: "30s" 
+    evaluationInterval: "15s"
+    scrapeTimeout: "10s"
+
     retention:  7d 
     retentionSize: "5GiB"
     
