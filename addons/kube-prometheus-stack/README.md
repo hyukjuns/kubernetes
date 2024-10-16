@@ -198,7 +198,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
                 expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
             ```
     - Service Monitor
-        
+        k8s에서 메트릭 수집을 위한 프로메테우스 Rule 설정을 위한 객체, 즉 CRD로 프로메테우스 룰을 구성하는 용도
 
 5. Uninstall
 
