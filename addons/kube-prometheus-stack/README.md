@@ -155,10 +155,50 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     - Ingress Nginx / Request Handling Performance: 20510
     - Request Handling Performance: 12680
 
-4. Config File Path (in prometheus server) (created by Custom Resource)
+4. Configiguration
 
-    - configfile: /etc/prometheus/config_out/prometheus.env.yaml
-    - rulefile: /etc/prometheus/rules/prometheus-prom-stack-hyukjun-kube-pr-prometheus-rulefiles-0/*.yaml
+    - File Path (in prometheus server) (created by Custom Resource)
+
+        - configfile: /etc/prometheus/config_out/prometheus.env.yaml
+        - rulefile: /etc/prometheus/rules/prometheus-prom-stack-hyukjun-kube-pr-prometheus-rulefiles-0/*.yaml
+
+    - 기본 Config
+
+        ```
+        # 전역설정
+        global:
+            scrape_interval:
+        # 별도 Rule 파일 경로
+        rule_files:
+            - 'prometheus.rules.yml'
+        # 개별 수집 설정
+        scrape_configs:
+            # 개별 수집 항목 (job은 레이블, `job=<job_name>`)
+            - job_name: 'prometheus'
+              scrape_interval: 5s
+              # 타겟 설정 (label로 그룹화 가능)
+              static_configs:
+              - targets: ['localhost:8080', 'localhost:8081']
+                  labels:
+                    group: 'production'
+
+              - targets: ['localhost:8082']
+                  labels:
+                    group: 'canary'
+        ```
+
+    - Rule 설정 (특정 쿼리를 메트릭 지표로 만들어서 수집 가능, 성능 향상)
+        - prometheus.rules.yml
+
+            ```
+            groups:
+            - name: cpu-node
+              rules:
+              - record: job_instance_mode:node_cpu_seconds:avg_rate5m
+                expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
+            ```
+    - Service Monitor
+        
 
 5. Uninstall
 
@@ -176,7 +216,6 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
         kubectl delete crd servicemonitors.monitoring.coreos.com
         kubectl delete crd thanosrulers.monitoring.coreos.com
         ```
-
 ### Reference
 - [prometheus-docs](https://prometheus.io/docs/introduction/overview/)
 
