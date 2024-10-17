@@ -1,9 +1,19 @@
 ### NGINX Application의 메트릭 수집 (프로메테우스)
 
 ### Step
-1. nginx config에서 stub_status 활성화
+1. nginx config에서 stub_status 활성화 
+    
+    설정 파일을 컨피그맵으로 생성 후 볼륨으로 컨테이너에 파일 마운트
+
+    ```k create cm nginx-metrics-conf --from-file nginx-metrics.conf```
+
 2. nginx 컨테이너와 nginx-metric-exporter 컨테이너 실행
-3. Service Monitor 설정
+
+    ```k apply -f application-nginx.yaml```
+
+3. Service Monitor 설정 및 배포
+
+    ```k apply -f servicemonitor-nginx.yaml ```
 
 ### stub_status / nginx-metric-exporter / Service Monitor
 - stub_status: NGINX 기본 설정 중 하나로 NGINX의 기본 메트릭 노출을 활성화 시킴
