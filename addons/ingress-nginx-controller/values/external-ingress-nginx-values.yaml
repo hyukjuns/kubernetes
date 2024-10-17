@@ -3,13 +3,13 @@
 controller:
   ## Preemption Priority Setting
   priorityClassName: high-priority-nonpreempting
-  ## Prometheus Monitoring (Diffrent Namespace)
+  ## Prometheus Monitoring (serviceMonitor - Diffrent Namespace)
   metrics:
     enabled: true
     serviceMonitor:
       enabled: true
       additionalLabels:
-        release: prom-stack-hyukjun # Prometheus Release Name
+        release: prometheus # Prometheus Release Name
   
   ## Azure LB Probe Setting
   service:

@@ -10,7 +10,7 @@ spec:
     - ReadWriteOnce
   storageClassName: azuredisk-ssd-lrs
   azureDisk:
-    diskName: "DISKNAME"
-    diskURI: "DISKURI"
+    diskName: ""
+    diskURI: ""
     kind: Managed
     cachingMode: None

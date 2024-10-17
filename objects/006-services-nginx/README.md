@@ -1,18 +1,31 @@
 - document root
-```
-/usr/share/nginx/html/index.html
-```
+  ```
+  /usr/share/nginx/html/index.html
+  ```
 - config
-```
-/etc/nginx/nginx.conf
-/etc/nginx/conf.d/default.conf
-```
+  ```
+  /etc/nginx/nginx.conf
+  /etc/nginx/conf.d/default.conf
+  ```
 - log
-```
-/var/log/nginx/access.log
-/var/log/nginx/error.log
-```
+  ```
+  /var/log/nginx/access.log
+  /var/log/nginx/error.log
+  ```
+- Enable Metrics
+  > /etc/nginx/conf.d/FILE.conf
+    ```
+    server {
+      listen 80;
+      server_name localhost;
 
+      location /metrics {
+        stub_status on; # stub_status 활성화
+        allow all; # allow 접근을 허용할 주소 설정
+        # deny 접근을 허용하지 않을 주소 설정
+      }
+    }
+    ```
 # Tip for Test
 ```bash
 # Busybox running

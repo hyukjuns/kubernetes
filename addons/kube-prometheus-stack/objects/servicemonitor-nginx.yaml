@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: external-workload
+  labels:
+    software: nginx
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: external-workload
+  endpoints:
+  - port: metrics

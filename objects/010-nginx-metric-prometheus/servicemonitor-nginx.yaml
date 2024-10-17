@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: external-workload
+  labels:
+    software: nginx
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: external-workload
+  endpoints:
+  - port: metrics # nginx exporter 의 9113 포트 (서비스 오브젝트의 포트)

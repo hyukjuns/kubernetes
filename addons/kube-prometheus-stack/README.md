@@ -99,6 +99,46 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     kubectl get all -n monitoring
     ```
 ### Operation
+1. 특정 Application에 대한 Service Monitor 구성
+
+    1. 프로메테우스와 다른 네임스페이스에 존재하는 Service Monitor를 식별하기 위해 아래와 같이 Helm Value 설정 되었는지 확인
+
+        ```
+        prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues = false
+        prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues = false
+        ```
+    
+    2. Application, Pod, Service 구성
+        
+        - Application이 자신의 메트릭을 수집할 수 있도록 엔드포인트를 제공하는지 확인 
+            
+            - nginx application의 경우 stub_status 설정을 On 하면 메트릭 노출되며, nginx-prometheus-exporter application을 통해 프로메테우스 시계열 데이터로 변환해서 노출시킴
+    
+        - Pod에서 메트릭 노출 엔드포인트 포트를 설정 하고 Service에서 이를 특정 포트로 노출
+
+
+    3. Service Monitor 세팅 및 배포
+
+        - 수집할 Service를 Label로 선택하고, Service에서 노출한 메트릭 수집 엔드포인트 포트를 설정
+    
+        ```yaml
+        apiVersion: monitoring.coreos.com/v1
+        kind: ServiceMonitor
+        metadata:
+          name: example-app
+        labels:
+          team: frontend
+          release: prometheus # 프로메테우스 헬름 릴리즈 이름
+        spec:
+          selector:
+              matchLabels:
+                  app: example-app # Service Object의 Label
+          endpoints:
+          - port: web # Service Object의 Port Name
+
+        ```
+
+
 1. Retain 된 PV 재사용
 
     1. Retain 된 PV에 해당하는 Azure Managed Disk 식별
@@ -119,9 +159,9 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 
             ```yaml
             prometheus:
-            prometheusSpec:
-                podMonitorSelectorNilUsesHelmValues: false
-                serviceMonitorSelectorNilUsesHelmValues: false
+                prometheusSpec:
+                    podMonitorSelectorNilUsesHelmValues: false
+                    serviceMonitorSelectorNilUsesHelmValues: false
             ```
 
         2. 프로메테우스 차트 업그레이드
@@ -136,11 +176,11 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
             ```yaml
             controller:
                 metrics:
-                enabled: true
-                serviceMonitor:
                     enabled: true
-                    additionalLabels:
-                    release: RELEASE # kuber-prometheus-stack's Release Name
+                    serviceMonitor:
+                        enabled: true
+                        additionalLabels:
+                            release: RELEASE # kuber-prometheus-stack's Release Name
             ```
 
         2. 인그레스 컨트롤러 차트 업그레이드
@@ -231,4 +271,4 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 
 - [Nginx Ingress Controller Dashabord](https://github.com/kubernetes/ingress-nginx/tree/main/deploy/grafana/dashboards)
 
-- [Prometheus and Grafana installation using Service Monitors](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#prometheus-and-grafana-installation-using-service-monitors)
+- [Monitor Ingress NGINX Controller](https://github.com/kubernetes/ingress-nginx/blob/main/docs/user-guide/monitoring.md#prometheus-and-grafana-installation-using-service-monitors)
