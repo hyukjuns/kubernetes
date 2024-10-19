@@ -4,7 +4,7 @@ metadata:
   name: external-workload
   labels:
     software: nginx
-    release: prometheus
+    release: prometheus # 프로메테우스 릴리즈 이름
 spec:
   selector:
     matchLabels:

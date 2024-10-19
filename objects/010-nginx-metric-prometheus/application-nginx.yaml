@@ -36,6 +36,7 @@ spec:
             cpu: "100m"
         ports:
         - containerPort: 80
+        # 볼륨으로 ConfigMap 마운트 (Stub Status 설정파일)
         volumeMounts:
           - name: volume-nginx-metrics-conf
             mountPath: /etc/nginx/conf.d
@@ -49,7 +50,7 @@ kind: Service
 metadata:
   name: external-workload-svc
   labels:
-    app: external-workload
+    app: external-workload # 서비스 모니터에서 Selector 설정에 사용됨
 spec:
   selector:
     app: external-workload
@@ -57,6 +58,6 @@ spec:
   - name: web
     port: 8080
     targetPort: 80
-  - name: metrics # 서비스 모니터에서 바라보는 엔드포인트
+  - name: metrics # 서비스 모니터에서 바라보는 엔드포인트, Endpoints 설정에 사용됨
     port: 9113
     targetPort: 9113
