@@ -99,9 +99,37 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     kubectl get all -n monitoring
     ```
 ### Operation
-1. 특정 Application에 대한 Service Monitor 구성
+- Alert Manager로 알람 생성
 
-    1. 프로메테우스와 다른 네임스페이스에 존재하는 Service Monitor를 식별하기 위해 아래와 같이 Helm Value 설정 되었는지 확인
+    - Slack 채널 추가
+
+        ```yaml
+        alertmanager:
+          config:
+            route:
+              receiver: 'slack-notification' # receiver 이름
+            receivers:
+            - name: 'null' # default watchdog 경고 에서 사용
+            - name: 'slack-notification' # receiver 이름
+              slack_configs:
+                - channel: '#alert-test' # 슬랙 채널 이름
+                  send_resolved: true
+                  api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
+                  http_config:
+                    authorization:
+                      type: Bearer 
+                      credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
+        ```
+
+- ServiceMonitor
+
+    1. 동작방식
+
+        - ServiceMonitor <- Watch -> Prometheus Operator -> Update -> Prometheus
+
+    1. 프로메테우스가 클러스터 내 모든 Service Monitor를 식별할 수 있도록 설정
+
+        - 아래 설정을 하게 되면 service monitor selector 설정을 하지 않아도 모든 service monitor 식별 가능 (ServiceMonitor의 metadata.labels 설정 불필요 (release: "RELEASE"))
 
         ```
         prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues = false
@@ -114,7 +142,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
             
             - nginx application의 경우 stub_status 설정을 On 하면 메트릭 노출되며, nginx-prometheus-exporter application을 통해 프로메테우스 시계열 데이터로 변환해서 노출시킴
     
-        - Pod에서 메트릭 노출 엔드포인트 포트를 설정 하고 Service에서 이를 특정 포트로 노출
+        - Pod에서 메트릭 노출 엔드포인트 포트를 설정 하고 Service에서 이를 특정 포트로 메트릭 노출
 
 
     3. Service Monitor 세팅 및 배포
@@ -139,7 +167,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
         ```
 
 
-1. Retain 된 PV 재사용
+- Retain 된 PV 재사용
 
     1. Retain 된 PV에 해당하는 Azure Managed Disk 식별
     2. Managed Disk 사용해서 PV 생성, diskName, diskURI 입력
@@ -151,7 +179,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
         ```prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName```
 
 
-2. Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
+- Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
 
     1. kuber-prometheus-stack Side
 
@@ -189,20 +217,20 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
             helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
             ```
 
-3. Nginx Ingress Controller Grafana Official Dashabord
+- Nginx Ingress Controller Grafana Official Dashabord
 
     - NGINX Ingress controller: 9614
     - Ingress Nginx / Request Handling Performance: 20510
     - Request Handling Performance: 12680
 
-4. Configiguration
+4- Configiguration Path
 
-    - File Path (in prometheus server) (created by Custom Resource)
+    - Prometheus: File Path (in prometheus server) (created by Custom Resource)
 
         - configfile: /etc/prometheus/config_out/prometheus.env.yaml
         - rulefile: /etc/prometheus/rules/prometheus-prom-stack-hyukjun-kube-pr-prometheus-rulefiles-0/*.yaml
 
-    - 기본 Config
+    - Prometheus: 기본 Config
 
         ```
         # 전역설정
@@ -227,7 +255,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
                     group: 'canary'
         ```
 
-    - Rule 설정 (특정 쿼리를 메트릭 지표로 만들어서 수집 가능, 성능 향상)
+    - Prometheus: Rule 설정 (특정 쿼리를 메트릭 지표로 만들어서 수집 가능, 성능 향상)
         - prometheus.rules.yml
 
             ```
@@ -237,13 +265,13 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
               - record: job_instance_mode:node_cpu_seconds:avg_rate5m
                 expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
             ```
-    - Service Monitor
+    - Prometheus: Service Monitor
         k8s에서 메트릭 수집을 위한 프로메테우스 Rule 설정을 위한 객체, 즉 CRD로 프로메테우스 룰을 구성하는 용도
 
-5. Uninstall
+- Uninstall
 
-    1. helm uninstall release
-    2. delete crd manually
+    1. Uninstall Helm Release
+    2. Delete crd manually
         ```bash
         kubectl delete crd alertmanagerconfigs.monitoring.coreos.com
         kubectl delete crd alertmanagers.monitoring.coreos.com
@@ -256,7 +284,11 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
         kubectl delete crd servicemonitors.monitoring.coreos.com
         kubectl delete crd thanosrulers.monitoring.coreos.com
         ```
+    3. Delete Service in kube-system (for kubelet)
+
 ### Reference
+- [Prometheus Alert Runbook](https://runbooks.prometheus-operator.dev/)
+
 - [prometheus-docs](https://prometheus.io/docs/introduction/overview/)
 
 - [kube-prometheus-stack](https://artifacthub.io/packages/helm/prometheus-community/kube-prometheus-stack)

@@ -10,6 +10,20 @@ kubeProxy:
   
 # Alertmanager
 alertmanager:
+  config:
+    route:
+      receiver: 'slack-notification' # receiver 이름
+    receivers:
+    - name: 'null' # default watchdog 경고 에서 사용
+    - name: 'slack-notification' # receiver 이름
+      slack_configs:
+        - channel: '#alert-test' # 슬랙 채널 이름
+          send_resolved: true
+          api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
+          http_config:
+            authorization:
+              type: Bearer 
+              credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
   service:
     port: 9093
     targetPort: 9093
@@ -43,7 +57,10 @@ grafana:
   #   port: 3000
   #   portName: http-web
   #   targetPort: 3000
-
+  serviceMonitor:
+    enabled: true
+    path: "/metrics"
+    scrapeTimeout: 10s
   resources:
     limits:
       cpu: 200m
@@ -87,7 +104,7 @@ prometheus:
   #   targetPort: 9090
   #   type: LoadBalancer
   prometheusSpec:
-    # 서비스모니터 설정 -> 다른 네임스페이스에 있는 Service Monitor 사용을 위해 설정
+    # Detect All Service Monitor & Pod Monitor
     podMonitorSelectorNilUsesHelmValues: false
     serviceMonitorSelectorNilUsesHelmValues: false
     
