@@ -99,27 +99,44 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     kubectl get all -n monitoring
     ```
 ### Operation
-- Alert Manager로 알람 생성
+- AlertManager Alert 구성
 
-    - Slack 채널 추가
+    - Alertmanager Config 경로 (컨테이너 파일시스템)
 
-        ```yaml
-        alertmanager:
-          config:
-            route:
-              receiver: 'slack-notification' # receiver 이름
-            receivers:
-            - name: 'null' # default watchdog 경고 에서 사용
-            - name: 'slack-notification' # receiver 이름
-              slack_configs:
-                - channel: '#alert-test' # 슬랙 채널 이름
-                  send_resolved: true
-                  api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
-                  http_config:
-                    authorization:
-                      type: Bearer 
-                      credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
-        ```
+        - /etc/alertmanager/config_out/alertmanager.env.yaml
+
+    - [By Prometheus Operator - AlertmanagerConfig(CRD)](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md)
+
+        - 알람 기본 설정: AlertManager(CRD) -> AlertmanagerConfig(route/receivers) 
+        - 경고 조건 설정: Prometheus(CRD) -> PrometheusRule(Alert Condition)
+
+        1. 슬랙 봇 토큰 및 API 정보 담은 Secret 생성
+        2. AlertmanagerConfig Object 생성 -> 경고 채널 등록 (1에서 만든 시크릿 참조)
+        3. PromehteusRule Object 생성 -> 경고 조건 등록
+    
+    - [By Alertmanager Native - Helm Value to Secret(alertmanager.yaml)](https://prometheus.io/docs/alerting/latest/configuration/)
+        
+        1. Helm Value 파일에 Slack 채널 추가
+
+            ```yaml
+            alertmanager:
+            config:
+                route:
+                receiver: 'slack-notification' # receiver 이름
+                receivers:
+                - name: 'null' # default watchdog 경고 에서 사용
+                - name: 'slack-notification' # receiver 이름
+                slack_configs:
+                    - channel: '#alert-test' # 슬랙 채널 이름
+                    send_resolved: true
+                    api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
+                    http_config:
+                        authorization:
+                        type: Bearer 
+                        credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
+            ```
+
+        2. PrometheusRule Object 생성 -> 경고 조건 등록
 
 - ServiceMonitor
 
@@ -287,6 +304,8 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     3. Delete Service in kube-system (for kubelet)
 
 ### Reference
+- [Prometheus Operator User Guide](https://github.com/prometheus-operator/prometheus-operator/tree/main/Documentation/user-guides)
+
 - [Prometheus Alert Runbook](https://runbooks.prometheus-operator.dev/)
 
 - [prometheus-docs](https://prometheus.io/docs/introduction/overview/)

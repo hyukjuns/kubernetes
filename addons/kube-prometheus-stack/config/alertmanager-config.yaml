@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: slack
+  namespace: monitoring
+  labels:
+    alertmanagerConfig: slack
+spec:
+  route:
+    groupBy: ['job']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 12h
+    receiver: 'slack-notification'  # receiver 이름
+  receivers:
+  - name: 'slack-notification'  # receiver 이름
+    slackConfigs:
+    - channel: '#alert-test' # 슬랙 채널 이름
+      sendResolved: true
+      apiURL: 
+        name: slack-bot-info
+        key: apiurl 
+      httpConfig:
+        authorization:
+          type: Bearer 
+          credentials: 
+            name: slack-bot-info
+            key: token
