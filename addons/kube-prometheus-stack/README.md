@@ -98,23 +98,38 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     ```bash
     kubectl get all -n monitoring
     ```
-### Operation
-- AlertManager Alert 구성
+### Operations
+- AlertManager 참고
 
     - Alertmanager Config 경로 (컨테이너 파일시스템)
 
         - /etc/alertmanager/config_out/alertmanager.env.yaml
+    
+    - Alertmanager 구성파일 secret 내용 확인
 
-    - [By Prometheus Operator - AlertmanagerConfig(CRD)](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md)
+        ```
+        k get secret alertmanager-RELEASE-kube-prometheus-alertmanager -o jsonpath='{.data.alertmanager\.yaml}' | base64 -d
+        ```
 
-        - 알람 기본 설정: AlertManager(CRD) -> AlertmanagerConfig(route/receivers) 
+- AlertManager Alert 구성 방법
+
+    - [By Prometheus Operator Config - AlertmanagerConfig(CRD)](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md)
+
+        - 알람 기본 설정: AlertManager(CRD) -> AlertmanagerConfig(route/receivers)
         - 경고 조건 설정: Prometheus(CRD) -> PrometheusRule(Alert Condition)
 
         1. 슬랙 봇 토큰 및 API 정보 담은 Secret 생성
-        2. AlertmanagerConfig Object 생성 -> 경고 채널 등록 (1에서 만든 시크릿 참조)
-        3. PromehteusRule Object 생성 -> 경고 조건 등록
+        2. AlertmanagerConfig Object 생성 -> 경고 채널 및 경고 라우팅 설정 (1에서 만든 시크릿 참조)
+
+            - AlertManager.spec.alertmanagerConfigSelector 에 선언된 Label 작성 (모든 Label일 경우 생략)
+            - Alertmanager Pod의 설정 파일에 설정됨 (인메모리, tmpfs)
+
+        3. PromehteusRule Object 생성 -> 경고 조건 설정
+
+            - Prometheus.ruleSelector 에 선언된 Label 작성(기본값: 'release: RELEASE', 모든 Label일 경우 생략)
+            - Prometheus Rule 파일 경로에 추가됨 (인메모리, tmpfs)
     
-    - [By Alertmanager Native - Helm Value to Secret(alertmanager.yaml)](https://prometheus.io/docs/alerting/latest/configuration/)
+    - [By Alertmanager Native Config - Helm Value to Secret(alertmanager.yaml)](https://prometheus.io/docs/alerting/latest/configuration/)
         
         1. Helm Value 파일에 Slack 채널 추가
 
@@ -240,7 +255,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     - Ingress Nginx / Request Handling Performance: 20510
     - Request Handling Performance: 12680
 
-4- Configiguration Path
+- Configiguration Path
 
     - Prometheus: File Path (in prometheus server) (created by Custom Resource)
 
@@ -304,6 +319,9 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     3. Delete Service in kube-system (for kubelet)
 
 ### Reference
+
+- [Awesome Prometheus alerts](https://samber.github.io/awesome-prometheus-alerts/)
+
 - [Prometheus Operator User Guide](https://github.com/prometheus-operator/prometheus-operator/tree/main/Documentation/user-guides)
 
 - [Prometheus Alert Runbook](https://runbooks.prometheus-operator.dev/)

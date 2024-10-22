@@ -1,3 +1,4 @@
+# Alertmanager Config
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
@@ -7,16 +8,22 @@ metadata:
     alertmanagerConfig: slack
 spec:
   route:
-    groupBy: ['job']
-    groupWait: 30s
+    groupBy: ['job'] # 알람 그룹핑
+    groupWait: 10s # 초기 알람 대기시간
     groupInterval: 5m
     repeatInterval: 12h
     receiver: 'slack-notification'  # receiver 이름
+    # And 조건, 모든 matcher 일치 필요
+    matchers:
+      - matchType: '='
+        name: custom
+        value: value
   receivers:
   - name: 'slack-notification'  # receiver 이름
     slackConfigs:
     - channel: '#alert-test' # 슬랙 채널 이름
-      sendResolved: true
+      sendResolved: true # 경고 해제 알림 전송
+      # Secret 정보 입력
       apiURL: 
         name: slack-bot-info
         key: apiurl 
