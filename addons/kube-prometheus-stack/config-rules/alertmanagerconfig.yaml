@@ -2,10 +2,10 @@
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
-  name: slack
+  name: alertmanager-slack-config
   namespace: monitoring
   labels:
-    alertmanagerConfig: slack
+    team: infra
 spec:
   route:
     groupBy: ['job'] # 알람 그룹핑
@@ -15,9 +15,9 @@ spec:
     receiver: 'slack-notification'  # receiver 이름
     # And 조건, 모든 matcher 일치 필요
     matchers:
-      - matchType: '='
-        name: custom
-        value: value
+      - matchType:  "="
+        name: severity
+        value: warning|info|critical
   receivers:
   - name: 'slack-notification'  # receiver 이름
     slackConfigs:

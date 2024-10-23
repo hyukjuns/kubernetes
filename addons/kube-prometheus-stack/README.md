@@ -1,49 +1,19 @@
 # Kube Prometheus Stack
 AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) 헬름 차트 설치 및 관리
+### TODO
+- prometheus, alertmanager configuration 정리
 
 ### Alert List
 - Cluster Level
-
 - Node Level
-
 - Pod Level
 
-- 컨테이너 재시작
-- CPU/Mem 부하
-- 스케일링 (노드/파드)
-- 네임스페잉스별 알람 체계
-- 스케쥴링 실패
-
-### Config
-- Config Reload: ```kill -s SIGHUP <PID>```
-- Shutdown: ```kill -s SIGTERM <PID>```
-- Filter: METRIC{LABEL="VALUE"}
-- Function: sum(METRIC)
-- Time duration: METRIC[1m]
-- Group by: avg by (LABEL) (METRIC) (ex: count by (service) (kubelet_node_name))
-- 쿼리 실행시간이 길면 새로운 메트릭으로 만들어서 사용 가능
-
-    >Example
-
-    - prometheus.rules.yml
-        ```
-        groups:
-        - name: cpu-node
-        rules:
-        - record: job_instance_mode:node_cpu_seconds:avg_rate5m
-            expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
-        ```
-    - prometheus.yml
-        ```
-        rule_files:
-        - 'prometheus.rules.yml'
-        ```
-### Custom Values
+### Helm User Value Setting
 - Prometheus의 PV 회수정책 변경 (StorageClass 커스텀)
 - Grafana를 StatefulSet으로 배포하도록 세팅 (대시보드 저장)
 - 각 컴포넌트의 Resource Request/Limit 지정 (OOM 방지)
 - NGINX Ingress Controller에 대한 모니터링 설정 (ServiceMonitor)
-- Grafana / Prometheus에 Ingress 연결
+- Grafana / Prometheus / Alertmanager에 Ingress 연결
 
 ### Prom Stack Component
 - Prometheus Operator
@@ -99,7 +69,36 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     kubectl get all -n monitoring
     ```
 ### Operations
-- AlertManager 참고
+- Prometheus Configuration
+    - Prometheus Native: promethues.yaml / rulefiles.yaml
+    - Prometheus Operator: PrometheusRule
+
+    - Config Reload: ```kill -s SIGHUP <PID>```
+    - Shutdown: ```kill -s SIGTERM <PID>```
+    - Filter: METRIC{LABEL="VALUE"}
+    - Function: sum(METRIC)
+    - Time duration: METRIC[1m]
+    - Group by: avg by (LABEL) (METRIC) (ex: count by (service) (kubelet_node_name))
+    - 쿼리 실행시간이 길면 새로운 메트릭으로 만들어서 사용 가능
+
+        >Example
+
+        - prometheus.rules.yml
+            ```
+            groups:
+            - name: cpu-node
+            rules:
+            - record: job_instance_mode:node_cpu_seconds:avg_rate5m
+                expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
+            ```
+        - prometheus.yml
+            ```
+            rule_files:
+            - 'prometheus.rules.yml'
+            ```
+- AlertManager Configuration
+    - Alertmanager Native: alertmanager.yaml
+    - Prometheus Operator: AlertmanagerConfig
 
     - Alertmanager Config 경로 (컨테이너 파일시스템)
 
@@ -137,7 +136,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
             alertmanager:
             config:
                 route:
-                receiver: 'slack-notification' # receiver 이름
+                  receiver: 'slack-notification' # receiver 이름
                 receivers:
                 - name: 'null' # default watchdog 경고 에서 사용
                 - name: 'slack-notification' # receiver 이름
@@ -188,7 +187,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
           name: example-app
         labels:
           team: frontend
-          release: prometheus # 프로메테우스 헬름 릴리즈 이름
+          release: prometheus # 프로메테우스 헬름 릴리즈 이름 (필요시)
         spec:
           selector:
               matchLabels:
@@ -321,6 +320,8 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 ### Reference
 
 - [Awesome Prometheus alerts](https://samber.github.io/awesome-prometheus-alerts/)
+
+- [creating-awesome-alertmanager-templates-for-slack](https://hodovi.cc/blog/creating-awesome-alertmanager-templates-for-slack/)
 
 - [Prometheus Operator User Guide](https://github.com/prometheus-operator/prometheus-operator/tree/main/Documentation/user-guides)
 

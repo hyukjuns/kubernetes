@@ -10,10 +10,20 @@ kubeProxy:
   
 # Alertmanager
 alertmanager:
-  service:
-    port: 9093
-    targetPort: 9093
-    type: LoadBalancer
+  ingress:
+    enabled: true
+    ingressClassName: external-ingress-nginx-class
+    hosts:
+      - alertmanager.namutest.site
+    path: /
+    # tls:
+    #   - secretName: namutest.site-20240809
+    #     hosts:
+    #     - alertmanager.namutest.site
+  # service:
+  #   port: 9093
+  #   targetPort: 9093
+  #   type: LoadBalancer
   alertmanagerSpec:
     replicas: 1
     resources:
