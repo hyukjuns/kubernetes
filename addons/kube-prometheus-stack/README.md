@@ -98,7 +98,44 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
             ```
 - AlertManager Configuration
     - Alertmanager Native: alertmanager.yaml
-    - Prometheus Operator: AlertmanagerConfig
+
+        ```yaml
+        global: # map, 글로벌 설정
+        route:
+          receiver: # str, 디폴트 라우팅
+          group_by: # list, 디폴트 그룹핑
+          routes: # list, 개별 라우팅 설정
+          - receiver: # str, 라우팅할 리시버 이름
+            matchers: # list, 경고 레이블과 일치하는지 검사, matchers 의 모든 레이블이 경고의 레이블과 일치해야 유효
+        inhibit_rules: list, # 경고 억제 규칙
+        - source_matchers: # 아래 레이블이 있는 경고가 발생하면
+            - severity="critical"
+          target_matchers: # 아래 레이블이 있는 경고는 억제됨
+            - severity=~"warning|info"
+          equal: # 조건은 아래 레이블의 key: value가 같아야 함
+            - namespace
+            - alertname
+        receivers: # list, 각 리시버 설정 (슬랙,이메일 등)
+        templates: # list, 경고 템플릿 파일 위치 
+        ```
+
+    - AlertmanagerConfig (Prometheus Operator)
+
+        - Alertmanager의 Global 설정
+            
+            글로벌 설정을 위한 AlertmanagerConfig는 Alertmanager와 같은 네임스페이스에 존재, Alertmanager 스펙에서 alertmanagerConfiguration.name에 AlertmanagerConfig 이름 입력
+
+        - AlertmanagerConfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 강제 등록되는것을 방지 (기본값: OnNamespace)
+
+            ```yaml
+            alertmanager:
+              alertmanagerSpec:
+                alertmanagerConfigMatcherStrategy:
+                  type: None
+            ```
+        - Alertmanager의 alertmanagerConfigNamespaceSelector 항목으로 AlertmanagerConfig 선택 하도록 설정
+
+            - 프로메테우스 오퍼레이터는 Namespace의 Label을 기준으로 AlertmanagerConfig 선택
 
     - Alertmanager Config 경로 (컨테이너 파일시스템)
 
@@ -117,7 +154,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
         - 알람 기본 설정: AlertManager(CRD) -> AlertmanagerConfig(route/receivers)
         - 경고 조건 설정: Prometheus(CRD) -> PrometheusRule(Alert Condition)
 
-        1. 슬랙 봇 토큰 및 API 정보 담은 Secret 생성
+        1. 슬랙 봇 토큰 및 API 정보 담은 Secret 생성 (AlertmanagerConfig과 같은 네임스페이스)
         2. AlertmanagerConfig Object 생성 -> 경고 채널 및 경고 라우팅 설정 (1에서 만든 시크릿 참조)
 
             - AlertManager.spec.alertmanagerConfigSelector 에 선언된 Label 작성 (모든 Label일 경우 생략)
@@ -145,7 +182,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
                     send_resolved: true
                     api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
                     http_config:
-                        authorization:
+                      authorization:
                         type: Bearer 
                         credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
             ```
@@ -321,7 +358,11 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 
 - [Awesome Prometheus alerts](https://samber.github.io/awesome-prometheus-alerts/)
 
+- [Alertmanager Matcher Type Enforce Disable](https://github.com/prometheus-operator/prometheus-operator/issues/3737)
+
 - [creating-awesome-alertmanager-templates-for-slack](https://hodovi.cc/blog/creating-awesome-alertmanager-templates-for-slack/)
+
+- [Prometheus Operator API](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.AlertmanagerConfigMatcherStrategy)
 
 - [Prometheus Operator User Guide](https://github.com/prometheus-operator/prometheus-operator/tree/main/Documentation/user-guides)
 

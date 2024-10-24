@@ -25,6 +25,27 @@ alertmanager:
   #   targetPort: 9093
   #   type: LoadBalancer
   alertmanagerSpec:
+    alertmanagerConfiguration:
+      name: global-alertmanager-config
+    alertmanagerConfigMatcherStrategy:
+      type: None # alertmanagerconfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 등록되는것을 방지 (기본값: OnNamespace)
+    
+    # NamespaceSelector 가 없을 경우 alertmanager와 같은 namespace에 있는 alertmanagerconfig 만 식별, selector가 있을 경우 selector 적용됨
+    alertmanagerConfigNamespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: In
+          values:
+            - dev
+            - default
+            - monitoring
+    # alertmanagerConfigSelector:
+    #     matchExpressions:
+    #       - key: team
+    #         operator: In
+    #         values:
+    #           - dev
+    #           - infra
     replicas: 1
     resources:
       limits:
