@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webserver
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: webserver
+      env: dev
+      team: infra
+  template:
+    metadata:
+      labels:
+        app: webserver
+        env: dev
+        team: infra
+    spec:
+      containers:
+      - name: webserver
+        image: nginx:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash","-c"]
+        args:
+        - |
+          echo Hello from $(hostname)! > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webserver
+  labels:
+    app: webserver
+    env: dev
+    team: infra
+spec:
+  ingressClassName: external-ingress-nginx-class
+  rules:
+  - host: namutest.site
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: webserver
+            port: 
+              number: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webserver
+  labels:
+    app: webserver
+    env: dev
+    team: infra
+spec:
+  selector:
+    app: webserver
+  ports:
+  - name: web
+    port: 8080
+    targetPort: 80

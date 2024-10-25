@@ -68,174 +68,239 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     ```bash
     kubectl get all -n monitoring
     ```
+
 ### Operations
-- Prometheus Configuration
-    - Prometheus Native: promethues.yaml / rulefiles.yaml
-    - Prometheus Operator: PrometheusRule
 
-    - Config Reload: ```kill -s SIGHUP <PID>```
-    - Shutdown: ```kill -s SIGTERM <PID>```
-    - Filter: METRIC{LABEL="VALUE"}
-    - Function: sum(METRIC)
-    - Time duration: METRIC[1m]
-    - Group by: avg by (LABEL) (METRIC) (ex: count by (service) (kubelet_node_name))
-    - 쿼리 실행시간이 길면 새로운 메트릭으로 만들어서 사용 가능
+#### Configuration File and Object
+- prometheuses.yaml
+    - Resource: Secret -> Volume -> Pod
+    - Default Path: /etc/prometheus/config
+    - 실행시 Flag Path: /etc/prometheus/config_out/
+    - ShareVolume(EmptyDir) - config-reloader   
+        - path: /etc/prometheus/config_out/prometheus.env.yaml
 
-        >Example
+- PrometheusRules (CRD)
+    
+    - Resource: ConfigMap -> Volume -> Pod
+    - path: /etc/prometheus/rules/prometheus-prometheus-kube-prometheus-prometheus-rulefiles-0
 
-        - prometheus.rules.yml
-            ```
-            groups:
-            - name: cpu-node
-            rules:
-            - record: job_instance_mode:node_cpu_seconds:avg_rate5m
-                expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
-            ```
-        - prometheus.yml
-            ```
-            rule_files:
-            - 'prometheus.rules.yml'
-            ```
-- AlertManager Configuration
-    - Alertmanager Native: alertmanager.yaml
+- alertmanager.yaml
+
+    - Resource: Secret -> Volume -> Pod
+    - Default Path: /etc/alertmanager/config
+    - 실행시 Flag Path: /etc/alertmanager/config_out
+    - ShareVolume(EmptyDir) - config-reloader
+        - path: /etc/alertmanager/config_out/alertmanager.env.yaml
+
+- AlertmanagerConfig (CRD)
+
+    - Direct Reconciled by Prometheus Operator (into alertmanager.yaml)
+
+#### Prometheus Configuration File (prometheus.yaml)
+
+```yaml
+# 전역설정
+global:
+  scrape_interval:
+# 별도 Rule 파일 경로
+rule_files:
+  - 'prometheus.rules.yml'
+# 개별 수집 설정
+scrape_configs:
+  # 개별 수집 항목 (job은 레이블, `job=<job_name>`)
+  - job_name: 'prometheus'
+      scrape_interval: 5s
+      # 타겟 설정 (label로 그룹화 가능)
+      static_configs:
+      - targets: ['localhost:8080', 'localhost:8081']
+          labels:
+          group: 'production'
+      - targets: ['localhost:8082']
+          labels:
+          group: 'canary'
+rule_files:
+  - 'prometheus.rules.yml'
+```
+
+#### Prometheus Rule File (Record Rule, Alert Rule)
+```yaml
+groups:
+- name: cpu-node
+    rules:
+    # Record Rule
+    - record: job_instance_mode:node_cpu_seconds:avg_rate5m
+      expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
+    # Alert Rule
+    - alert: KubernetesPodNotHealthy
+      expr: sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed|Waiting"}) > 0
+      for: 10s
+      # Alertmanager.matchers 와 일치 시켜야 함 -> 경고 발송 채널 설정
+      labels:
+        custom: value
+      annotations:
+        summary: Kubernetes Pod not healthy (instance {{ $labels.instance }})
+        description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-running state for longer than 15 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+
+```
+
+#### Prometheus ServiceMonitor
+> ServiceMonitor <- Watch -> Prometheus Operator -> Update -> Prometheus Server
+
+메트릭 수집 엔드포인트를 정의한 ServiceMonitor를 Prometheus Operator가 식별하여 Prometheus Server의 서비스 디스커버리 설정(job)을 업데이트 시킴
+
+(세팅순서)
+1. Helm Value Setting: 프로메테우스 오퍼레이터가 클러스터의 모든 ServiceMonitor를 별도 Label과 Namespace에 관계 없이 식별할 수 있도록 설정 (metadata.labels 설정 불필요 (release: "RELEASE"))
+
+    ```yaml
+    prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues = false
+    prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues = false
+    ```
+    
+2. Application 메트릭 노출 여부 확인
+   
+   Application의 메트릭 엔드포인트 존재 여부와 익스포터 필요 여부 확인 (Ex: nginx-prometheus-exporter)
+
+
+3. Pod, Service, ServiceMonitor 오브젝트 생성
+    ```yaml
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+    name: external-workload-svc
+    labels:
+      app: external-workload # 서비스 모니터에서 Selector 설정에 사용됨
+    spec:
+      selector:
+        app: external-workload
+    ports:
+    - name: web
+      port: 8080
+      targetPort: 80
+    - name: metrics # 서비스 모니터에서 바라보는 엔드포인트, Endpoints 설정에 사용됨
+      port: 9113
+      targetPort: 9113
+    ---
+    apiVersion: monitoring.coreos.com/v1
+    kind: ServiceMonitor
+    metadata:
+    name: external-workload
+    labels:
+      software: nginx
+      release: prometheus # 프로메테우스 헬름 릴리즈 이름 (필요시)
+    spec:
+      selector:
+        matchLabels:
+          app: external-workload # Service Object의 Label
+        endpoints:
+        - port: metrics # Service Object의 Port Name
+
+    ```
+#### PromQL & ETC
+```markdown
+- Config Reload: ```kill -s SIGHUP <PID>```
+- Shutdown: ```kill -s SIGTERM <PID>```
+- Filter: METRIC{LABEL="VALUE"}
+- Function: sum(METRIC)
+- Time duration: METRIC[1m]
+- Group by: avg by (LABEL) (METRIC) (ex: count by (service) (kubelet_node_name))
+- 쿼리 실행시간이 길면 새로운 메트릭으로 만들어서 사용 가능
+```
+
+#### AlertManager Configuration (alertmanager.yaml)
+```yaml
+global: # map, 글로벌 설정
+route:
+  receiver: # str, 디폴트 라우팅
+  group_by: # list, 디폴트 그룹핑
+  routes: # list, 개별 라우팅 설정
+  - receiver: # str, 라우팅할 리시버 이름
+    matchers: # list, 경고 레이블과 일치하는지 검사, matchers 의 모든 레이블이 경고의 레이블과 일치해야 유효
+inhibit_rules: list, # 경고 억제 규칙
+- source_matchers: # 아래 레이블이 있는 경고가 발생하면
+  - severity="critical"
+  target_matchers: # 아래 레이블이 있는 경고는 억제됨
+  - severity=~"warning|info"
+  equal: # 조건은 아래 레이블의 key: value가 같아야 함
+  - namespace
+  - alertname
+receivers: # list, 각 리시버 설정 (슬랙,이메일 등)
+templates: # list, 경고 템플릿 파일 위치 
+```
+
+#### AlertmanagerConfig - Prometheus Operator
+
+- Alertmanager의 Global 설정
+    
+    글로벌 설정을 위한 AlertmanagerConfig는 Alertmanager와 같은 네임스페이스에 존재, Alertmanager 스펙에서 alertmanagerConfiguration.name에 AlertmanagerConfig 이름 입력
+
+- AlertmanagerConfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 강제 등록되는것을 방지 (기본값: OnNamespace)
+
+    ```yaml
+    alertmanager:
+        alertmanagerSpec:
+        alertmanagerConfigMatcherStrategy:
+            type: None
+    ```
+- Alertmanager의 alertmanagerConfigNamespaceSelector 항목으로 AlertmanagerConfig 선택 하도록 설정
+
+    - 프로메테우스 오퍼레이터는 Namespace의 Label을 기준으로 AlertmanagerConfig 선택
+
+- Alertmanager Config 경로 (컨테이너 파일시스템)
+
+- /etc/alertmanager/config_out/alertmanager.env.yaml
+
+- Alertmanager 구성파일 secret 내용 확인
+
+```
+k get secret alertmanager-RELEASE-kube-prometheus-alertmanager -o jsonpath='{.data.alertmanager\.yaml}' | base64 -d
+```
+
+#### AlertManager Alert 구성 방법
+
+- [By Prometheus Operator Config - AlertmanagerConfig(CRD)](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md)
+
+    - 알람 기본 설정: AlertManager(CRD) -> AlertmanagerConfig(route/receivers)
+    - 경고 조건 설정: Prometheus(CRD) -> PrometheusRule(Alert Condition)
+
+    1. 슬랙 봇 토큰 및 API 정보 담은 Secret 생성 (AlertmanagerConfig과 같은 네임스페이스)
+    2. AlertmanagerConfig Object 생성 -> 경고 채널 및 경고 라우팅 설정 (1에서 만든 시크릿 참조)
+
+        - AlertManager.spec.alertmanagerConfigSelector 에 선언된 Label 작성 (모든 Label일 경우 생략)
+        - Alertmanager Pod의 설정 파일에 설정됨 (인메모리, tmpfs)
+
+    3. PromehteusRule Object 생성 -> 경고 조건 설정
+
+        - Prometheus.ruleSelector 에 선언된 Label 작성(기본값: 'release: RELEASE', 모든 Label일 경우 생략)
+        - Prometheus Rule 파일 경로에 추가됨 (인메모리, tmpfs)
+
+- [By Alertmanager Native Config - Helm Value to Secret(alertmanager.yaml)](https://prometheus.io/docs/alerting/latest/configuration/)
+    
+    1. Helm Value 파일에 Slack 채널 추가
 
         ```yaml
-        global: # map, 글로벌 설정
-        route:
-          receiver: # str, 디폴트 라우팅
-          group_by: # list, 디폴트 그룹핑
-          routes: # list, 개별 라우팅 설정
-          - receiver: # str, 라우팅할 리시버 이름
-            matchers: # list, 경고 레이블과 일치하는지 검사, matchers 의 모든 레이블이 경고의 레이블과 일치해야 유효
-        inhibit_rules: list, # 경고 억제 규칙
-        - source_matchers: # 아래 레이블이 있는 경고가 발생하면
-            - severity="critical"
-          target_matchers: # 아래 레이블이 있는 경고는 억제됨
-            - severity=~"warning|info"
-          equal: # 조건은 아래 레이블의 key: value가 같아야 함
-            - namespace
-            - alertname
-        receivers: # list, 각 리시버 설정 (슬랙,이메일 등)
-        templates: # list, 경고 템플릿 파일 위치 
+        alertmanager:
+        config:
+            route:
+                receiver: 'slack-notification' # receiver 이름
+            receivers:
+            - name: 'null' # default watchdog 경고 에서 사용
+            - name: 'slack-notification' # receiver 이름
+            slack_configs:
+                - channel: '#alert-test' # 슬랙 채널 이름
+                send_resolved: true
+                api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
+                http_config:
+                    authorization:
+                    type: Bearer 
+                    credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
         ```
 
-    - AlertmanagerConfig (Prometheus Operator)
-
-        - Alertmanager의 Global 설정
-            
-            글로벌 설정을 위한 AlertmanagerConfig는 Alertmanager와 같은 네임스페이스에 존재, Alertmanager 스펙에서 alertmanagerConfiguration.name에 AlertmanagerConfig 이름 입력
-
-        - AlertmanagerConfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 강제 등록되는것을 방지 (기본값: OnNamespace)
-
-            ```yaml
-            alertmanager:
-              alertmanagerSpec:
-                alertmanagerConfigMatcherStrategy:
-                  type: None
-            ```
-        - Alertmanager의 alertmanagerConfigNamespaceSelector 항목으로 AlertmanagerConfig 선택 하도록 설정
-
-            - 프로메테우스 오퍼레이터는 Namespace의 Label을 기준으로 AlertmanagerConfig 선택
-
-    - Alertmanager Config 경로 (컨테이너 파일시스템)
-
-        - /etc/alertmanager/config_out/alertmanager.env.yaml
+    2. PrometheusRule Object 생성 -> 경고 조건 등록
     
-    - Alertmanager 구성파일 secret 내용 확인
-
-        ```
-        k get secret alertmanager-RELEASE-kube-prometheus-alertmanager -o jsonpath='{.data.alertmanager\.yaml}' | base64 -d
-        ```
-
-- AlertManager Alert 구성 방법
-
-    - [By Prometheus Operator Config - AlertmanagerConfig(CRD)](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md)
-
-        - 알람 기본 설정: AlertManager(CRD) -> AlertmanagerConfig(route/receivers)
-        - 경고 조건 설정: Prometheus(CRD) -> PrometheusRule(Alert Condition)
-
-        1. 슬랙 봇 토큰 및 API 정보 담은 Secret 생성 (AlertmanagerConfig과 같은 네임스페이스)
-        2. AlertmanagerConfig Object 생성 -> 경고 채널 및 경고 라우팅 설정 (1에서 만든 시크릿 참조)
-
-            - AlertManager.spec.alertmanagerConfigSelector 에 선언된 Label 작성 (모든 Label일 경우 생략)
-            - Alertmanager Pod의 설정 파일에 설정됨 (인메모리, tmpfs)
-
-        3. PromehteusRule Object 생성 -> 경고 조건 설정
-
-            - Prometheus.ruleSelector 에 선언된 Label 작성(기본값: 'release: RELEASE', 모든 Label일 경우 생략)
-            - Prometheus Rule 파일 경로에 추가됨 (인메모리, tmpfs)
-    
-    - [By Alertmanager Native Config - Helm Value to Secret(alertmanager.yaml)](https://prometheus.io/docs/alerting/latest/configuration/)
-        
-        1. Helm Value 파일에 Slack 채널 추가
-
-            ```yaml
-            alertmanager:
-            config:
-                route:
-                  receiver: 'slack-notification' # receiver 이름
-                receivers:
-                - name: 'null' # default watchdog 경고 에서 사용
-                - name: 'slack-notification' # receiver 이름
-                slack_configs:
-                    - channel: '#alert-test' # 슬랙 채널 이름
-                    send_resolved: true
-                    api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
-                    http_config:
-                      authorization:
-                        type: Bearer 
-                        credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
-            ```
-
-        2. PrometheusRule Object 생성 -> 경고 조건 등록
-
-- ServiceMonitor
-
-    1. 동작방식
-
-        - ServiceMonitor <- Watch -> Prometheus Operator -> Update -> Prometheus
-
-    1. 프로메테우스가 클러스터 내 모든 Service Monitor를 식별할 수 있도록 설정
-
-        - 아래 설정을 하게 되면 service monitor selector 설정을 하지 않아도 모든 service monitor 식별 가능 (ServiceMonitor의 metadata.labels 설정 불필요 (release: "RELEASE"))
-
-        ```
-        prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues = false
-        prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues = false
-        ```
-    
-    2. Application, Pod, Service 구성
-        
-        - Application이 자신의 메트릭을 수집할 수 있도록 엔드포인트를 제공하는지 확인 
-            
-            - nginx application의 경우 stub_status 설정을 On 하면 메트릭 노출되며, nginx-prometheus-exporter application을 통해 프로메테우스 시계열 데이터로 변환해서 노출시킴
-    
-        - Pod에서 메트릭 노출 엔드포인트 포트를 설정 하고 Service에서 이를 특정 포트로 메트릭 노출
 
 
-    3. Service Monitor 세팅 및 배포
-
-        - 수집할 Service를 Label로 선택하고, Service에서 노출한 메트릭 수집 엔드포인트 포트를 설정
-    
-        ```yaml
-        apiVersion: monitoring.coreos.com/v1
-        kind: ServiceMonitor
-        metadata:
-          name: example-app
-        labels:
-          team: frontend
-          release: prometheus # 프로메테우스 헬름 릴리즈 이름 (필요시)
-        spec:
-          selector:
-              matchLabels:
-                  app: example-app # Service Object의 Label
-          endpoints:
-          - port: web # Service Object의 Port Name
-
-        ```
-
-
-- Retain 된 PV 재사용
+#### Stateful Setting - Retain 된 PV 재사용
 
     1. Retain 된 PV에 해당하는 Azure Managed Disk 식별
     2. Managed Disk 사용해서 PV 생성, diskName, diskURI 입력
@@ -247,43 +312,43 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
         ```prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName```
 
 
-- Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
+#### Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
 
-    1. kuber-prometheus-stack Side
+1. kuber-prometheus-stack Side
 
-        1. kuber-prometheus-stack Helm Value 설정 편집
+    1. kuber-prometheus-stack Helm Value 설정 편집
 
-            ```yaml
-            prometheus:
-                prometheusSpec:
-                    podMonitorSelectorNilUsesHelmValues: false
-                    serviceMonitorSelectorNilUsesHelmValues: false
-            ```
+        ```yaml
+        prometheus:
+            prometheusSpec:
+                podMonitorSelectorNilUsesHelmValues: false
+                serviceMonitorSelectorNilUsesHelmValues: false
+        ```
 
-        2. 프로메테우스 차트 업그레이드
+    2. 프로메테우스 차트 업그레이드
 
-            ```bash
-            helm upgrade -n NAMESPACE RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE --version VERSION
-            ```
+        ```bash
+        helm upgrade -n NAMESPACE RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE --version VERSION
+        ```
 
-    2. Ingress Nginx Controller Side
+2. Ingress Nginx Controller Side
 
-        1. Ingress-Nginx Controller Helm Values 설정 편집
-            ```yaml
-            controller:
-                metrics:
+    1. Ingress-Nginx Controller Helm Values 설정 편집
+        ```yaml
+        controller:
+            metrics:
+                enabled: true
+                serviceMonitor:
                     enabled: true
-                    serviceMonitor:
-                        enabled: true
-                        additionalLabels:
-                            release: RELEASE # kuber-prometheus-stack's Release Name
-            ```
+                    additionalLabels:
+                        release: RELEASE # kuber-prometheus-stack's Release Name
+        ```
 
-        2. 인그레스 컨트롤러 차트 업그레이드
+    2. 인그레스 컨트롤러 차트 업그레이드
 
-            ```bash
-            helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
-            ```
+        ```bash
+        helm upgrade -n NAMESPACE RELEASE CHART -f VALUEFILE --version VERSION
+        ```
 
 - Nginx Ingress Controller Grafana Official Dashabord
 
@@ -291,52 +356,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     - Ingress Nginx / Request Handling Performance: 20510
     - Request Handling Performance: 12680
 
-- Configiguration Path
-
-    - Prometheus: File Path (in prometheus server) (created by Custom Resource)
-
-        - configfile: /etc/prometheus/config_out/prometheus.env.yaml
-        - rulefile: /etc/prometheus/rules/prometheus-prom-stack-hyukjun-kube-pr-prometheus-rulefiles-0/*.yaml
-
-    - Prometheus: 기본 Config
-
-        ```
-        # 전역설정
-        global:
-            scrape_interval:
-        # 별도 Rule 파일 경로
-        rule_files:
-            - 'prometheus.rules.yml'
-        # 개별 수집 설정
-        scrape_configs:
-            # 개별 수집 항목 (job은 레이블, `job=<job_name>`)
-            - job_name: 'prometheus'
-              scrape_interval: 5s
-              # 타겟 설정 (label로 그룹화 가능)
-              static_configs:
-              - targets: ['localhost:8080', 'localhost:8081']
-                  labels:
-                    group: 'production'
-
-              - targets: ['localhost:8082']
-                  labels:
-                    group: 'canary'
-        ```
-
-    - Prometheus: Rule 설정 (특정 쿼리를 메트릭 지표로 만들어서 수집 가능, 성능 향상)
-        - prometheus.rules.yml
-
-            ```
-            groups:
-            - name: cpu-node
-              rules:
-              - record: job_instance_mode:node_cpu_seconds:avg_rate5m
-                expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
-            ```
-    - Prometheus: Service Monitor
-        k8s에서 메트릭 수집을 위한 프로메테우스 Rule 설정을 위한 객체, 즉 CRD로 프로메테우스 룰을 구성하는 용도
-
-- Uninstall
+#### Uninstall Release
 
     1. Uninstall Helm Release
     2. Delete crd manually
