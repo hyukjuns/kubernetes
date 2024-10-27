@@ -3,19 +3,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 ### TODO
 - prometheus, alertmanager configuration 정리
 
-### Alert List
-- Cluster Level
-- Node Level
-- Pod Level
-
-### Helm User Value Setting
-- Prometheus의 PV 회수정책 변경 (StorageClass 커스텀)
-- Grafana를 StatefulSet으로 배포하도록 세팅 (대시보드 저장)
-- 각 컴포넌트의 Resource Request/Limit 지정 (OOM 방지)
-- NGINX Ingress Controller에 대한 모니터링 설정 (ServiceMonitor)
-- Grafana / Prometheus / Alertmanager에 Ingress 연결
-
-### Prom Stack Component
+### Prometheus Stack Component
 - Prometheus Operator
 - Prometheus Server
 - Alertmanager
@@ -23,7 +11,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 - State-Metric Server
 - Grafana Server
 
-### Installation
+### Installation Step
 
 1. Create Namespace & Storage Class
     
@@ -69,7 +57,7 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
     kubectl get all -n monitoring
     ```
 
-### Operations
+### Operation
 
 #### Configuration File and Object
 - prometheuses.yaml
@@ -163,7 +151,6 @@ groups:
 
 3. Pod, Service, ServiceMonitor 오브젝트 생성
     ```yaml
-    ---
     apiVersion: v1
     kind: Service
     metadata:
@@ -232,14 +219,14 @@ templates: # list, 경고 템플릿 파일 위치
 
 - Alertmanager의 Global 설정
     
-    글로벌 설정을 위한 AlertmanagerConfig는 Alertmanager와 같은 네임스페이스에 존재, Alertmanager 스펙에서 alertmanagerConfiguration.name에 AlertmanagerConfig 이름 입력
+    글로벌 설정을 위한 AlertmanagerConfig는 Alertmanager와 같은 네임스페이스에 존재해야함, Alertmanager 스펙에서 alertmanagerConfiguration.name에 AlertmanagerConfig 이름 입력
 
-- AlertmanagerConfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 강제 등록되는것을 방지 (기본값: OnNamespace)
+- AlertmanagerConfig의 Namespace가 alertmanager 설정 중 route.routes.matchers에 label로 강제 등록되는것을 방지 (기본값: OnNamespace)
 
     ```yaml
     alertmanager:
         alertmanagerSpec:
-        alertmanagerConfigMatcherStrategy:
+          alertmanagerConfigMatcherStrategy:
             type: None
     ```
 - Alertmanager의 alertmanagerConfigNamespaceSelector 항목으로 AlertmanagerConfig 선택 하도록 설정
@@ -252,14 +239,15 @@ templates: # list, 경고 템플릿 파일 위치
 
 - Alertmanager 구성파일 secret 내용 확인
 
-```
-k get secret alertmanager-RELEASE-kube-prometheus-alertmanager -o jsonpath='{.data.alertmanager\.yaml}' | base64 -d
-```
+    ```
+    k get secret alertmanager-RELEASE-kube-prometheus-alertmanager -o jsonpath='{.data.alertmanager\.yaml}' | base64 -d
+    ```
 
 #### AlertManager Alert 구성 방법
 
 - [By Prometheus Operator Config - AlertmanagerConfig(CRD)](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/user-guides/alerting.md)
 
+    - Helm Value 사용 보다 이점: 슬랙 토큰 같은 민감 정보를 Secret 오브젝트로 만들어서 참조하기 편함
     - 알람 기본 설정: AlertManager(CRD) -> AlertmanagerConfig(route/receivers)
     - 경고 조건 설정: Prometheus(CRD) -> PrometheusRule(Alert Condition)
 
