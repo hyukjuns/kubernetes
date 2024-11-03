@@ -276,12 +276,12 @@ templates: # list, 경고 템플릿 파일 위치
             - name: 'slack-notification' # receiver 이름
             slack_configs:
                 - channel: '#alert-test' # 슬랙 채널 이름
-                send_resolved: true
-                api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
-                http_config:
+                  send_resolved: true
+                  api_url: https://slack.com/api/chat.postMessage # 슬랙 API 엔드포인트
+                  http_config:
                     authorization:
-                    type: Bearer 
-                    credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
+                      type: Bearer 
+                      credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
         ```
 
     2. PrometheusRule Object 생성 -> 경고 조건 등록

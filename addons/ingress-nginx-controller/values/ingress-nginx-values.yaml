@@ -6,24 +6,30 @@ controller:
   ## Prometheus Monitoring (serviceMonitor - Diffrent Namespace)
   metrics:
     enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus # Prometheus Release Name
+    port: 10254
+    portName: metrics
+    service:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "10254"
+    ## ServiceMonitor CRD Create First
+    # serviceMonitor:
+    #   enabled: true
+    #   additionalLabels:
+    #     release: prometheus # Prometheus Release Name
   
   ## Azure LB Probe Setting
   service:
     annotations: 
-      externalTrafficPolicy: Local
+      # externalTrafficPolicy: Local
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz 
   
   ## Ingress Class
   electionID: external-ingress-controller-leader
   ingressClassResource:
-    name: external-ingress-nginx-class
+    name: ingress-nginx-class
     enabled: true
     default: false
-    controllerValue: "k8s.io/external-ingress-nginx"
+    controllerValue: "k8s.io/ingress-nginx"
   
   ## QoS: Burstable
   resources:
@@ -33,3 +39,10 @@ controller:
     requests:
       cpu: 500m
       memory: 256Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 11
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
