@@ -10,6 +10,10 @@
     1. Detect change in source git repo
     2. Sync Application - Deployment Strategy (Blue/Green, Canary)
 
+### Argo Rollouts
+- Blue/Green
+- Canary
+
 ### ArgoCD CLI
 - Add External Cluster (Default: Internally, https://kubernetes.default.svc)
 ```
