@@ -27,6 +27,7 @@ alertmanager:
     alertmanagerConfigMatcherStrategy:
       type: None # Default == OnNamespace
     # Alertmanager 가 속한 Namespace에 있는 AlertmanagerConfig만 식별
+    alertmanagerConfigSelector: {}
     alertmanagerConfigNamespaceSelector: {} 
 
     # Pod and Container Specs
