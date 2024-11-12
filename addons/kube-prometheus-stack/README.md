@@ -1,7 +1,7 @@
 # Kube Prometheus Stack
 AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus) 헬름 차트 설치 및 관리
 ### TODO
-- prometheus, alertmanager configuration 정리
+- Install / Configuration / Alerting
 
 ### Prometheus Stack Component
 - Prometheus Operator
@@ -11,127 +11,151 @@ AKS 환경에 [kube-prometheus-stack](https://github.com/prometheus-operator/kub
 - State-Metric Server
 - Grafana Server
 
-### Installation Step
+### Installation
 
-1. Create Namespace & Storage Class
+```bash
+# Create Namespace & SC
+k create ns NAMESPACE
+k apply -f ./objects/sample-storageclass.yaml
+
+# Add Helm Repo
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+
+# Get Default Chart Value & Make Custom Values
+helm show values prometheus-community/kube-prometheus-stack > values.yaml
+
+# Check Chart Version
+helm search repo prometheus-community/kube-prometheus-stack --versions | head
+
+# Install Helm Chart
+helm install RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE -n NAMESPACE --version VERSION
+
+# Upgrade or Install Helm Chart
+helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE -n NAMESPACE --version VERSION
+```
+
+### Configuration
+
+#### Prometheus Configuration
+
+> Prometheus는 Config Reloader 컨테이너를 사이드카로서 사용함, Prometheus Server는 Config Reloader 컨테이너와 EmptyDir 볼륨을 통해 설정파일을 공유하고 있음, EmptyDir 볼륨의 마운트 경로는 /etc/prometheus/config_out
+
+- prometheus.yaml 생성 과정
+
+
+  1. Defined default configuration by Helm
+  2. Create in Secret Object
     
-    ```bash
-    k create ns monitoring
-    k apply -f ./objects/storageclass.yaml
-    ```
-
-2. Add Helm Repo
-
-    ```bash
-    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-    helm repo update
-    ```
-
-3. Setting Helm Value
-
-    ```bash
-    # Get Default Value
-    helm show values prometheus-community/kube-prometheus-stack > values.yaml
-
-    # Create User Value File
-    vi ./values/user-values.yaml
-    ...
-    ```
-
-4. Install Helm Chart
-
-    ```bash
-    # Check Chart Version
-    helm search repo prometheus-community/kube-prometheus-stack --versions | head
-
-    # Install Helm Chart
-    helm install RELEASE prometheus-community/kube-prometheus-stack --version VERSION -f ./values/user-values.yaml -n monitoring
-
-    # Upgrade or Install Helm Chart
-    helm upgrade --install -n NAMESPACE RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE --version VERSION
-    ```
-
-5. Verify
-
-    ```bash
-    kubectl get all -n monitoring
-    ```
-
-### Operation
-
-#### Configuration File and Object
-- prometheuses.yaml
-    - Resource: Secret -> Volume -> Pod
-    - Default Path: /etc/prometheus/config
-    - 실행시 Flag Path: /etc/prometheus/config_out/
-    - ShareVolume(EmptyDir) - config-reloader   
-        - path: /etc/prometheus/config_out/prometheus.env.yaml
-
-- PrometheusRules (CRD)
-    
-    - Resource: ConfigMap -> Volume -> Pod
-    - path: /etc/prometheus/rules/prometheus-prometheus-kube-prometheus-prometheus-rulefiles-0
-
-- alertmanager.yaml
-
-    - Resource: Secret -> Volume -> Pod
-    - Default Path: /etc/alertmanager/config
-    - 실행시 Flag Path: /etc/alertmanager/config_out
-    - ShareVolume(EmptyDir) - config-reloader
-        - path: /etc/alertmanager/config_out/alertmanager.env.yaml
-
-- AlertmanagerConfig (CRD)
-
-    - Direct Reconciled by Prometheus Operator (into alertmanager.yaml)
-
-#### Prometheus Configuration File (prometheus.yaml)
+      - Zipped File: prometheus.yaml.gz
+  
+  3. Mounted and Unzipped in Config Reloader Container
+      - Secret Mount Path: /etc/prometheus/config/prometheus.yaml.gz
+      - Unzipped Path: /etc/prometheus/config_out/prometheus.env.yaml
+  
+  4. Shared and used by prometheus server Container
+  
+      - Empty Dir Mount Path: /etc/prometheus/config_out/prometheus.env.yaml
 
 ```yaml
 # 전역설정
 global:
-  scrape_interval:
+  scrape_interval: 15s
+  scrape_timeout: 10s
+  evaluation_interval: 15s
+
 # 별도 Rule 파일 경로
 rule_files:
   - 'prometheus.rules.yml'
-# 개별 수집 설정
+  - /etc/prometheus/rules/prometheus-prometheus-kube-prometheus-prometheus-rulefiles-0/*.yaml
+
+# Alertmanager 설정
+alerting:
+  alert_relabel_configs:
+  alertmanagers:
+
+# Job 단위로 서비스 디스커버리
 scrape_configs:
   # 개별 수집 항목 (job은 레이블, `job=<job_name>`)
   - job_name: 'prometheus'
+      # 스크랩 주기
       scrape_interval: 5s
-      # 타겟 설정 (label로 그룹화 가능)
+      # 라벨 재정의
+      relabel_configs:
+      - source_labels: [job]
+        separator: ;
+        target_label: __tmp_prometheus_job_name
+        replacement: $1
+        action: replace
+      # 쿠버네티스 서비스 디스커버리 설정
+      kubernetes_sd_configs:
+      - role: endpoints
+        kubeconfig_file: ""
+        follow_redirects: true
+        enable_http2: true
+        namespaces:
+          own_namespace: false
+          names:
+          - monitoring
+      # 정적 타겟 설정 (label로 그룹화 가능)
       static_configs:
       - targets: ['localhost:8080', 'localhost:8081']
           labels:
-          group: 'production'
+            group: 'production'
       - targets: ['localhost:8082']
           labels:
-          group: 'canary'
-rule_files:
-  - 'prometheus.rules.yml'
+            group: 'canary'
 ```
 
-#### Prometheus Rule File (Record Rule, Alert Rule)
+#### Prometheus Rules (Record Rule, Alert Rule)
+
+- Prometheus Rule 파일 생성 과정
+
+  1. Defined default configuration by Helm
+  2. Create in ConfigMap Object
+    
+      - Name: <RELEASE>-prometheus-kube-prometheus-prometheus-rulefiles-0
+  
+  3. Mount in prometheus server container 
+    
+      - mount path: /etc/prometheus/rules/<RELEASE>-prometheus-kube-prometheus-prometheus-rulefiles-0
+  
+- PrometheusRules (CRD) 로 Rule 추가 과정
+
+  Prometheus Operator에 의해 Prometheus Server로 설정이 추가 업데이트 됨
+
+  1. Create PrometheusRule CRD Object
+  2. Detect by Prometheus Operator
+  2. Update in ConfigMap
+    
+      - Name: <RELEASE>-prometheus-kube-prometheus-prometheus-rulefiles-0
+  
+  3. Reconciled in Prometheus Server (Rule Files are Mounted by Volume)
+
 ```yaml
+# Record Rule
 groups:
-- name: cpu-node
+  - name: example
     rules:
-    # Record Rule
-    - record: job_instance_mode:node_cpu_seconds:avg_rate5m
-      expr: avg by (job, instance, mode) (rate(node_cpu_seconds_total[5m]))
-    # Alert Rule
-    - alert: KubernetesPodNotHealthy
-      expr: sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed|Waiting"}) > 0
-      for: 10s
-      # Alertmanager.matchers 와 일치 시켜야 함 -> 경고 발송 채널 설정
-      labels:
-        custom: value
-      annotations:
-        summary: Kubernetes Pod not healthy (instance {{ $labels.instance }})
-        description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-running state for longer than 15 minutes.\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
+    - record: code:prometheus_http_requests_total:sum
+      expr: sum by (code) (prometheus_http_requests_total)
 
+# Alert Rule
+groups:
+- name: example
+  rules:
+  - alert: HighRequestLatency
+    expr: job:request_latency_seconds:mean5m{job="myjob"} > 0.5
+    for: 10m
+    # Alertmanager 로 경고가 전달 될 때, Label 도 함께 전달됨
+    # 전달된 경고의 Label은 Alertmanager 설정 중 route.routes[].matchers 와 일치하는지 비교되며, 일치되는 route 경로의 Receiver로 알람이 처리됨
+    labels:
+      severity: page
+    annotations:
+      summary: High request latency
 ```
 
-#### Prometheus ServiceMonitor
+#### Prometheus Service Monitor
 > ServiceMonitor <- Watch -> Prometheus Operator -> Update -> Prometheus Server
 
 메트릭 수집 엔드포인트를 정의한 ServiceMonitor를 Prometheus Operator가 식별하여 Prometheus Server의 서비스 디스커버리 설정(job)을 업데이트 시킴
@@ -183,7 +207,7 @@ groups:
         - port: metrics # Service Object의 Port Name
 
     ```
-#### PromQL & ETC
+#### PromQL
 ```markdown
 - Config Reload: ```kill -s SIGHUP <PID>```
 - Shutdown: ```kill -s SIGTERM <PID>```
@@ -194,7 +218,20 @@ groups:
 - 쿼리 실행시간이 길면 새로운 메트릭으로 만들어서 사용 가능
 ```
 
-#### AlertManager Configuration (alertmanager.yaml)
+#### Alertmanager Configurations
+
+- alertmanager.yaml
+
+    - Resource: Secret -> Volume -> Pod
+    - Default Path: /etc/alertmanager/config
+    - 실행시 Flag Path: /etc/alertmanager/config_out
+    - ShareVolume(EmptyDir) - config-reloader
+        - path: /etc/alertmanager/config_out/alertmanager.env.yaml
+
+- AlertmanagerConfig (CRD)
+
+    - Direct Reconciled by Prometheus Operator (into alertmanager.yaml)
+
 ```yaml
 global: # map, 글로벌 설정
 route:
@@ -215,7 +252,7 @@ receivers: # list, 각 리시버 설정 (슬랙,이메일 등)
 templates: # list, 경고 템플릿 파일 위치 
 ```
 
-#### AlertmanagerConfig - Prometheus Operator
+#### AlertmanagerConfig (CRD)
 
 - Alertmanager의 Global 설정
     

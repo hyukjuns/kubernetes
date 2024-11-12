@@ -1,0 +1,163 @@
+# Exclude
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false
+  
+## Alertmanager
+alertmanager:
+  # Ingress Settings
+  ingress:
+    enabled: true
+    ingressClassName: external-ingress-nginx-class
+    hosts:
+      - alertmanager.namutest.site
+    path: /
+  
+  # Alertmanager Spec Settings
+  alertmanagerSpec:
+    # Alertmanager Global Setting Configuration
+    alertmanagerConfiguration:
+      name: global-alertmanager-config
+    # alertmanagerconfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 등록되는것을 방지
+    alertmanagerConfigMatcherStrategy:
+      type: None # Default == OnNamespace
+    # Alertmanager 가 속한 Namespace에 있는 AlertmanagerConfig만 식별
+    alertmanagerConfigNamespaceSelector: {} 
+
+    # Pod and Container Specs
+    replicas: 1
+    resources:
+      limits:
+        cpu: 200m
+        memory: 200Mi
+      requests:
+        cpu: 100m
+        memory: 100Mi
+    
+    # Stateful Setting
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: azuredisk-ssd-lrs
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+## Grafana
+grafana:
+  # Global Config
+  defaultDashboardsTimezone: kst
+  adminPassword: admin
+
+  # Ingress Setting
+  ingress:
+    enabled: true
+    ingressClassName: external-ingress-nginx-class
+    hosts:
+      - grafana.namutest.site
+    path: /
+  
+  # ServiceMonitor Setting
+  serviceMonitor:
+    enabled: true
+    path: "/metrics"
+    scrapeTimeout: 10s
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+  # StatefulSet Setting
+  persistence:
+    enabled: true
+    type: sts
+    storageClassName: default
+    accessModes:
+      - ReadWriteOnce
+    size: 5Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
+
+## PrometheusOperator
+prometheusOperator:
+   resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+## Promtetheus Server
+prometheus:
+  # Ingress Setting
+  ingress:
+    enabled: true
+    ingressClassName: external-ingress-nginx-class
+    hosts:
+      - prometheus.namutest.site
+    paths:
+      - /    
+  # Prometheus Spec Setting
+  prometheusSpec:
+    # PrometheusRule Selector -> All Select
+    ruleSelectorNilUsesHelmValues: false
+    # Detect All Service Monitor & Pod Monitor
+    podMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+    
+    # 메트릭 스크랩 scrapeTimeout > scrapeInterval
+    scrapeInterval: "15s"
+    evaluationInterval: "15s"
+    scrapeTimeout: "10s"
+    retention:  10d 
+    retentionSize: "5GiB"
+    
+    # Pod and Contaienr Spec Settings
+    replicas: 1
+    resources:
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        memory: 1Gi
+    
+    # StatefulSet Settings
+    storageSpec: 
+      volumeClaimTemplate:
+        spec:
+          storageClassName: azuredisk-ssd-lrs # 미리 단들어둔 스토리지클래스
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+## Node Exporter
+nodeExporter:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+## Kube State Metrics
+kube-state-metrics:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
