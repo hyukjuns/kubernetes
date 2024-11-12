@@ -57,6 +57,7 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
   
       - Empty Dir Mount Path: /etc/prometheus/config_out/prometheus.env.yaml
 
+- prometheus.yaml 샘플
 ```yaml
 # 전역설정
 global:
@@ -132,6 +133,7 @@ scrape_configs:
   
   3. Reconciled in Prometheus Server (Rule Files are Mounted by Volume)
 
+- Rule File 샘플
 ```yaml
 # Record Rule
 groups:
