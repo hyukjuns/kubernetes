@@ -10,6 +10,17 @@ kubeProxy:
   
 ## Alertmanager
 alertmanager:
+  config:
+    route:
+      group_by: ['job']
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 1m
+      receiver: 'null'
+      routes:
+      - receiver: 'null'
+        matchers:
+          - alertname = "Watchdog"
   # Service Settings
   service:
     port: 9093
@@ -18,6 +29,8 @@ alertmanager:
 
   # Alertmanager Spec Settings
   alertmanagerSpec:
+    alertmanagerConfiguration:
+      name: global-alertmanager-config
      # alertmanagerconfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 등록되는것을 방지
     alertmanagerConfigMatcherStrategy:
       type: None # Default == OnNamespace
@@ -34,15 +47,15 @@ alertmanager:
         cpu: 100m
         memory: 100Mi
 
-    # Stateful Setting
-    storage:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: azuredisk-ssd-lrs
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 5Gi
+    # # Stateful Setting
+    # storage:
+    #   volumeClaimTemplate:
+    #     spec:
+    #       storageClassName: azuredisk-ssd-lrs
+    #       accessModes: ["ReadWriteOnce"]
+    #       resources:
+    #         requests:
+    #           storage: 5Gi
 ## Grafana
 grafana:
   # Global Config

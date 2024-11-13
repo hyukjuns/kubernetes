@@ -1,5 +1,3 @@
-# Dev Namespace
-# Alertmanager Config
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: AlertmanagerConfig
 metadata:
@@ -9,16 +7,17 @@ metadata:
     team: dev
 spec:
   route:
-    groupBy: ['job'] # 알람 그룹핑
-    groupWait: 10s # 초기 알람 대기시간
-    groupInterval: 5m
-    repeatInterval: 12h
+    groupBy: ['namespace'] # 알람 그룹핑
+    groupWait: 5s # 초기 알람 대기시간
+    groupInterval: 10s
+    repeatInterval: 1h
     receiver: 'slack-notification'  # receiver 이름
+    continue: false
     # And 조건, 모든 matcher 일치 필요
     matchers:
       - matchType:  "="
         name: severity
-        value: warning|info|critical
+        value: critical
   receivers:
   - name: 'slack-notification'  # receiver 이름
     slackConfigs:
