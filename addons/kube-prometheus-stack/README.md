@@ -41,7 +41,7 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
 
 #### Prometheus Configuration
 
-> Prometheus는 Config Reloader 컨테이너를 사이드카로서 사용함, Prometheus Server는 Config Reloader 컨테이너와 EmptyDir 볼륨을 통해 설정파일을 공유하고 있음, EmptyDir 볼륨의 마운트 경로는 /etc/prometheus/config_out
+> Prometheus Server는 Config Reloader 컨테이너를 사이드카로 사용, Prometheus Server와 Config Reloader는 EmptyDir 볼륨을 통해 설정파일을 공유
 
 - 부트스트랩 시 prometheus.yaml 생성 과정
 
@@ -217,12 +217,15 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
 
 #### Alertmanager Configurations
 
+> Alertmanager Server는 Config Reloader 컨테이너를 사이드카로 사용, Alertmanager Server와 Config Reloader는 EmptyDir 볼륨을 통해 설정파일을 공유
+
 - 부트스트랩 시 alertmanager.yaml 생성 과정
 
   1. Helm Value로 기본값 정의 by helm 
 
   2. Secret Object 로 생성 by helm
 
+      - Secret: alertmanager-prometheus-kube-prometheus-alertmanager-generated
       - Zipped File: alertmanager.yaml.gz
 
   3. Config Reloader Container 에 마운트
@@ -262,7 +265,17 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
 
 #### AlertmanagerConfig (CRD)
 
-Prometheus Operator에 의해 alertmanager container에 직접 반영됨 (Direct Reconciled)
+> Prometheus Operator에 의해 alertmanager container에 반영됨
+
+- Prometheus Operator가 업데이트한 alertmanager.yaml 내용 확인
+
+  - Secret Volume 로컬로 복사 및 압축해제
+
+    ``` k exec alertmanager-prometheus-kube-prometheus-alertmanager-0 -- tar -cf /etc/alertmanager/config/alertmanager.yaml.gz | tar -xf -```
+
+  - 압축 해제된 설정 파일
+
+    ```k exec alertmanager-prometheus-kube-prometheus-alertmanager-0 -- cat /etc/alertmanager/config_out/alertmanager.env.yaml```
 
 - Alertmanager의 Global 설정 (필요시)
     

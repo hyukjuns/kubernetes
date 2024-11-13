@@ -5,6 +5,12 @@
 
 ### Cheatsheet
 ```markdown
+## JSONPath
+k get pod -o jsonpath='{@}'
+k get pod -o jsonpath='{.items[0]}'
+k get secret alertmanager-prometheus-kube-prometheus-alertmanager -o jsonpath='{.data.alertmanager\.yaml}'
+k get secret alertmanager-prometheus-kube-prometheus-alertmanager -o jsonpath='{.data.alertmanager\.yaml}' | base64 -d
+
 ## Workspace Setting
 # shell setting
 source <(kubectl completion zsh)
