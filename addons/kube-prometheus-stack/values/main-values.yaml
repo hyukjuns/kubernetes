@@ -1,3 +1,10 @@
+# Resources
+# alertmanager: cpu 0.5 mem 256Mi
+# grafana: cpu 0.5 mem 256Mi
+# prometheusOperator: cpu 0.5 mem 256Mi
+# prometheus: cpu 1, mem 1Gi
+# nodeExporter: cpu 0.1, mem 128Mi
+# kube-state-metrics: cpu 0.1, mem 128Mi
 # Exclude
 kubeControllerManager:
   enabled: false
@@ -10,19 +17,33 @@ kubeProxy:
   
 ## Alertmanager
 alertmanager:
+  # Default Config
+  config:
+    route:
+      group_by: ['namespace']
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 1m
+      receiver: 'null'
+      routes:
+      - receiver: 'null'
+        matchers:
+          - alertname = "Watchdog"
+        continue: true
   # Ingress Settings
   ingress:
     enabled: true
     ingressClassName: external-ingress-nginx-class
     hosts:
       - alertmanager.namutest.site
-    path: /
+    paths: 
+      - /
   
   # Alertmanager Spec Settings
   alertmanagerSpec:
-    # Alertmanager Global Setting Configuration
-    alertmanagerConfiguration:
-      name: global-alertmanager-config
+    # # Alertmanager Global Setting Configuration
+    # alertmanagerConfiguration:
+    #   name: global-alertmanager-config
     # alertmanagerconfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 등록되는것을 방지
     alertmanagerConfigMatcherStrategy:
       type: None # Default == OnNamespace
@@ -34,11 +55,11 @@ alertmanager:
     replicas: 1
     resources:
       limits:
-        cpu: 200m
-        memory: 200Mi
+        cpu: 1000m
+        memory: 512Mi
       requests:
-        cpu: 100m
-        memory: 100Mi
+        cpu: 500m
+        memory: 256Mi
     
     # Stateful Setting
     storage:
@@ -62,7 +83,8 @@ grafana:
     ingressClassName: external-ingress-nginx-class
     hosts:
       - grafana.namutest.site
-    path: /
+    paths: 
+      - /
   
   # ServiceMonitor Setting
   serviceMonitor:
@@ -71,11 +93,11 @@ grafana:
     scrapeTimeout: 10s
   resources:
     limits:
-      cpu: 200m
-      memory: 200Mi
+      cpu: 1000m
+      memory: 512Mi
     requests:
-      cpu: 100m
-      memory: 100Mi
+      cpu: 500m
+      memory: 256Mi
 
   # StatefulSet Setting
   persistence:
@@ -92,11 +114,11 @@ grafana:
 prometheusOperator:
    resources:
     limits:
-      cpu: 200m
-      memory: 200Mi
+      cpu: 1000m
+      memory: 512Mi
     requests:
-      cpu: 100m
-      memory: 100Mi
+      cpu: 500m
+      memory: 256Mi
 
 ## Promtetheus Server
 prometheus:
@@ -127,10 +149,10 @@ prometheus:
     replicas: 1
     resources:
       limits:
-        cpu: 1000m
+        cpu: 2000m
         memory: 2Gi
       requests:
-        cpu: 500m
+        cpu: 1000m
         memory: 1Gi
     
     # StatefulSet Settings
@@ -142,23 +164,24 @@ prometheus:
           resources:
             requests:
               storage: 5Gi
+          volumeName: restore-prometheus-pv # 프로메테우스의 PV 복구시 PV 먼저 만들고 입력
 
 ## Node Exporter
 nodeExporter:
   resources:
     limits:
-      cpu: 100m
+      cpu: 200m
       memory: 256Mi
     requests:
-      cpu: 50m
+      cpu: 100m
       memory: 128Mi
 
 ## Kube State Metrics
 kube-state-metrics:
   resources:
     limits:
-      cpu: 100m
+      cpu: 200m
       memory: 256Mi
     requests:
-      cpu: 50m
+      cpu: 100m
       memory: 128Mi

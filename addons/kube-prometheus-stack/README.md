@@ -1,6 +1,11 @@
 # Kube Prometheus Stack
 Prometheus Install / Configuration / Alerting
 
+### Todo
+- 알람 원하는 조건으로 구성 및 라우팅
+- 알람 문구 커스텀
+- relabel 이해
+
 ### Environments
 - AKS >= 1.30.4
 - Helm Chart: [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus)
