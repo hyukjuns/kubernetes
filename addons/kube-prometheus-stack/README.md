@@ -277,6 +277,15 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
 
     ```k exec alertmanager-prometheus-kube-prometheus-alertmanager-0 -- cat /etc/alertmanager/config_out/alertmanager.env.yaml```
 
+- Default 설정 중 continue = true 로 수정
+
+  Default 설정 중 null receiver로 빠지는 route의 continue를 true로 설정하여 개별 라우팅 경로로 경고가 흘러갈 수 있도록 설정
+
+  ```yaml
+  # In Helm Values
+  alertmanager.config.route.routes[0].receiver.ontinue: true
+  ```
+
 - Alertmanager의 Global 설정 (필요시)
     
     Global AlertmanagerConfig는 Alertmanager CRD 와 같은 네임스페이스에 존재해야하며, Alertmanager 스펙 중 alertmanagerConfiguration.name에 AlertmanagerConfig 이름을 지정해 줘야함
