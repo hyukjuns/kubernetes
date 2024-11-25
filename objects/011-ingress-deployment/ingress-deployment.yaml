@@ -42,7 +42,7 @@ metadata:
 spec:
   ingressClassName: external-ingress-nginx-class
   rules:
-  - host: namutest.site
+  - host: dev.namutest.site
     http:
       paths:
       - pathType: Prefix
