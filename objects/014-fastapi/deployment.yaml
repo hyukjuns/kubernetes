@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-webapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi-webapp
+  template:
+    metadata:
+      labels:
+        app: fastapi-webapp
+    spec:
+      containers:
+      - name: fastapi-webapp
+        image: hyukjun/fastapi-sample-webapp:8d9f3661664bb5fab9cfa614fc1a98ce9f01a359
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 8080
+        # For Security
+        securityContext:
+          # runAsNonRoot를 사용할 경우 container의 USER는 Numeric 해야함 (해당 사용자가 루트권한인지 식별하기위해)
+          # 만약 pod runAsUser의 uid가 dockerfile의 uid와 다르다면 덮어씀
+          # 따라서 컨테이너 내 파일시스템에 대한 권한 문제가 발생할 수 있음
+          # 즉, runAsNonRoot를 사용하고 싶다면
+          # Dockerfile에 사용자를 지정할때 USER 항목에 uid로 지정하고 runAsNonRoot를 쓰면됨
+          # 해당 uid를 runAsUser로 함께 세팅해서 사용해도됨
+          runAsNonRoot: true
+          readOnlyRootFilesystem: true
+        # Check Availability
+        startupProbe:
+          httpGet:
+            path: /connections
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 5
+          failureThreshold: 3
