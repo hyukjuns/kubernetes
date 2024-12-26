@@ -1,0 +1,61 @@
+# 3개 노드 배포시 2 2 1 로 배치됨 (node 3, replicas 5, maxskew 2 기준)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mynginx
+  name: mynginx
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: mynginx
+  template:
+    metadata:
+      labels:
+        app: mynginx
+    spec:
+      containers:
+      - image: nginx:latest
+        name: nginx
+        command: ["/bin/bash"]
+        args: ["-c", "echo \"hello from $(hostname)!\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            cpu: 10m
+            memory: 64Mi
+        ports:
+          - containerPort: 80
+      topologySpreadConstraints:
+      - labelSelector:
+          matchLabels:
+            app: mynginx
+        maxSkew: 2 # topology key 별로 허용되는 pod 수
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule # ScheduleAnyway, DoNotSchedule
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mynginx-lb
+spec:
+  type: LoadBalancer
+  selector:
+    app: mynginx
+  ports:
+  - port: 80
+    targetPort: 80
+ 
+# ---
+# apiVersion: policy/v1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: mynginx-pdb
+# spec:
+#   minAvailable: 4
+#   selector:
+#     matchLabels:
+#       app: mynginx
