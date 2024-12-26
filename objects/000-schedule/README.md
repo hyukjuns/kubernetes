@@ -1,0 +1,1 @@
+- [podtopologyspread](https://kubernetes.io/blog/2020/05/introducing-podtopologyspread/)
