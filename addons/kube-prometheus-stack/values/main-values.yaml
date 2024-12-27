@@ -65,11 +65,13 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: azuredisk-ssd-lrs
+          storageClassName: azuredisk-ssd-zrs
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
               storage: 5Gi
+          volumeName: alertmanager-restore-pv # 복구용 PV 이름
+
 
 ## Grafana
 grafana:
@@ -149,22 +151,22 @@ prometheus:
     replicas: 1
     resources:
       limits:
-        cpu: 2000m
-        memory: 2Gi
-      requests:
         cpu: 1000m
         memory: 1Gi
+      requests:
+        cpu: 500m
+        memory: 512Mi
     
     # StatefulSet Settings
     storageSpec: 
       volumeClaimTemplate:
         spec:
-          storageClassName: azuredisk-ssd-lrs # 미리 단들어둔 스토리지클래스
+          storageClassName: azuredisk-ssd-zrs # 미리 단들어둔 스토리지클래스
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
               storage: 5Gi
-          volumeName: restore-prometheus-pv # 프로메테우스의 PV 복구시 PV 먼저 만들고 입력
+          volumeName: prometheus-restore-pv # 복구용 PV 이름
 
 ## Node Exporter
 nodeExporter:

@@ -1,0 +1,25 @@
+global:
+  domain: argo.namutest.site
+
+configs:
+  params:
+    server.insecure: true
+
+server:
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  ingress:
+    enabled: true
+    ingressClassName: external-ingress-nginx-class
+    annotations:
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    hostname: argo.namutest.site
+    path: /
+    pathType: Prefix
+    tls: false

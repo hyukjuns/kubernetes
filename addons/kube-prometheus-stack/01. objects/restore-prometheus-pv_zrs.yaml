@@ -1,0 +1,17 @@
+# restore-prometheus-pv
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: prometheus-restore-pv
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: azuredisk-ssd-zrs
+  azureDisk:
+    diskName: ""
+    diskURI: ""
+    kind: Managed
+    cachingMode: None

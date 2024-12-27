@@ -1,14 +1,14 @@
 # ArgoCD
 
-### GitOps CI/CD Steps
-1. CI - Github Actions
-    1. Commit Code
-    2. Code Test
-    3. Build and Push Image to Container Registry
-    4. Modify K8s Manifest (Plain YAML or Helm Chart Value)
-2. CD - ArgoCD
-    1. Detect change in source git repo
-    2. Sync Application - Deployment Strategy (Blue/Green, Canary)
+## Chart
+- [chart repo](https://argoproj.github.io/argo-helm)
+- [chart github](https://github.com/argoproj/argo-helm/tree/main)
+
+## Installation
+```bash
+helm repo add argo https://argoproj.github.io/argo-helm
+helm install REALEASE argo/argo-cd -f user-values.yaml -n NAMESPACE
+```
 
 ### Argo Rollouts
 - Blue/Green
