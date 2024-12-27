@@ -1,13 +1,19 @@
-# ArgoCD
+# Argo CD & Argo Rollouts
 
-## Chart
-- [chart repo](https://argoproj.github.io/argo-helm)
-- [chart github](https://github.com/argoproj/argo-helm/tree/main)
+## ArgoCD Helm Chart
+- [chart Site](https://argoproj.github.io/argo-helm)
+- [chart Github Repo](https://github.com/argoproj/argo-helm/tree/main)
 
 ## Installation
 ```bash
+# Add Repo
 helm repo add argo https://argoproj.github.io/argo-helm
+
+# Argo CD
 helm install REALEASE argo/argo-cd -f user-values.yaml -n NAMESPACE
+
+# Argo Rollouts
+helm install REALEASE argo/argo-rollouts -f user-values.yaml -n NAMESPACE
 ```
 
 ### Argo Rollouts
