@@ -1,3 +1,5 @@
+global:
+  revisionHistoryLimit: 3
 controller:
   replicas: 1
   resources:
@@ -10,7 +12,6 @@ controller:
       memory: 64Mi
   metrics:
     enabled: true
-  dashboard:
-    enabled: true
-    service:
-      type: LoadBalancer
+dashboard:
+  enabled: true
+  type: LoadBalancer
