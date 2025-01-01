@@ -45,7 +45,7 @@ spec:
         maxSkew: 1 # topology key 별로 허용되는 pod 수
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule # ScheduleAnyway, DoNotSchedule
-        nodeTaintsPolicy: Honor
+        nodeTaintsPolicy: Honor # 노드에 테인트가 있다면 토폴리지 SKEW 계산에서 제외
 ---
 apiVersion: v1
 kind: Service
