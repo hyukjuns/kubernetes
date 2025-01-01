@@ -6,7 +6,7 @@ metadata:
     app: mynginx
   name: mynginx
 spec:
-  replicas: 5
+  replicas: 7
   selector:
     matchLabels:
       app: mynginx
@@ -29,13 +29,23 @@ spec:
             memory: 64Mi
         ports:
           - containerPort: 80
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: kubernetes.azure.com/mode
+                  operator: In
+                  values:
+                    - user
       topologySpreadConstraints:
       - labelSelector:
           matchLabels:
             app: mynginx
-        maxSkew: 2 # topology key 별로 허용되는 pod 수
+        maxSkew: 1 # topology key 별로 허용되는 pod 수
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: DoNotSchedule # ScheduleAnyway, DoNotSchedule
+        nodeTaintsPolicy: Honor
 ---
 apiVersion: v1
 kind: Service
@@ -49,13 +59,13 @@ spec:
   - port: 80
     targetPort: 80
  
-# ---
-# apiVersion: policy/v1
-# kind: PodDisruptionBudget
-# metadata:
-#   name: mynginx-pdb
-# spec:
-#   minAvailable: 4
-#   selector:
-#     matchLabels:
-#       app: mynginx
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: mynginx-pdb
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: mynginx
