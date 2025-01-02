@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-webserver-internal
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-webserver-internal
+  template:
+    metadata:
+      labels:
+        app: nginx-webserver-internal
+    spec:
+      containers:
+      - name: nginx-webserver-internal
+        image: nginx:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args: ["-c", "echo \"hello from $(hostname)!\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: internal-app
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: nginx-webserver-internal
