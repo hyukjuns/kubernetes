@@ -20,7 +20,7 @@ controller:
   ## Azure LB Probe Setting
   service:
     annotations: 
-      # externalTrafficPolicy: Local
+      externalTrafficPolicy: Local
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz 
   
   ## Ingress Class
