@@ -8,7 +8,7 @@
 
 4. configMapRef, configMapKeyRef 차이 (시크릿도 동일)
 ```
-# env.value.from.configMapKeyRef 은 ConfigMap의 특정 Key만 참조해서 환경변수로 설정할 수 있게 해줌
+# env.valueFrom.configMapKeyRef 은 ConfigMap의 특정 Key만 참조해서 환경변수로 설정할 수 있게 해줌
 env:
   - name: CONSUMERGROUP
     valueFrom:
