@@ -5,7 +5,7 @@ metadata:
   labels:
     name: fastapi-webapp
 spec:
-  ingressClassName: external-ingress-nginx-class
+  ingressClassName: ingress-nginx-class
   rules:
   - host: api.namutest.site
     http:

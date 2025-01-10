@@ -15,7 +15,7 @@ server:
       memory: 64Mi
   ingress:
     enabled: true
-    ingressClassName: external-ingress-nginx-class
+    ingressClassName: ingress-nginx-class
     annotations:
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
       nginx.ingress.kubernetes.io/backend-protocol: "HTTP"

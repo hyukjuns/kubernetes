@@ -5,7 +5,7 @@ metadata:
   labels:
     name: nginx-webserver
 spec:
-  ingressClassName: external-ingress-nginx-class
+  ingressClassName: ingress-nginx-class
   rules:
   - host: nginx.namutest.site
     http:

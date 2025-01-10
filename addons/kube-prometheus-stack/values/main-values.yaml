@@ -33,7 +33,7 @@ alertmanager:
   # Ingress Settings
   ingress:
     enabled: true
-    ingressClassName: external-ingress-nginx-class
+    ingressClassName: ingress-nginx-class
     hosts:
       - alertmanager.namutest.site
     paths: 
@@ -82,7 +82,7 @@ grafana:
   # Ingress Setting
   ingress:
     enabled: true
-    ingressClassName: external-ingress-nginx-class
+    ingressClassName: ingress-nginx-class
     hosts:
       - grafana.namutest.site
     paths: 
@@ -127,7 +127,7 @@ prometheus:
   # Ingress Setting
   ingress:
     enabled: true
-    ingressClassName: external-ingress-nginx-class
+    ingressClassName: ingress-nginx-class
     hosts:
       - prometheus.namutest.site
     paths:
