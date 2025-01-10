@@ -1,21 +1,22 @@
 ## External Ingress Controller Setting (AKS)
 
 controller:
+  ## Scaling
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 11
+    targetCPUUtilizationPercentage: 80
+    targetMemoryUtilizationPercentage: 80
   ## Preemption Priority Setting
   priorityClassName: high-priority-nonpreempting
   ## Prometheus Monitoring (serviceMonitor - Diffrent Namespace)
   metrics:
     enabled: true
-    port: 10254
-    portName: metrics
-    service:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "10254"
-    ## ServiceMonitor CRD Create First
-    # serviceMonitor:
-    #   enabled: true
-    #   additionalLabels:
-    #     release: prometheus # Prometheus Release Name
+    serviceMonitor:
+      enabled: true
+      additionalLabels:
+        release: prometheus # Prometheus Release Name
   
   ## Azure LB Probe Setting
   service:
@@ -39,10 +40,3 @@ controller:
     requests:
       cpu: 500m
       memory: 256Mi
-
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 11
-    targetCPUUtilizationPercentage: 50
-    targetMemoryUtilizationPercentage: 50

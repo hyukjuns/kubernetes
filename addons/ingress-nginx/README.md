@@ -1,53 +1,38 @@
 # Ingress Nginx Controller
 AKS 환경에 [Ingress NGINX Controller](https://github.com/kubernetes/ingress-nginx) 헬름 차트 설치 및 관리
 
-### Installation
+## Initial Installation
+```bash
+# Setup Repo
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
 
-1. Create Namespace
+# Create Namespace
+k create ns ingress-nginx
 
-    ```bash
-    k create ns ingress-nginx
-    ```
+# Setting Azure LB Health Probe Endpoint
+service.annotations.service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz 
 
-2. Add Helm Repo
+# Install Helm Chart
+helm install ingress-nginx-controller ingress-nginx/ingress-nginx --version 4.11.3 -n ingress-nginx -f ./values/ingress-nginx-values.yaml
+```
 
-    ```bash
-    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-    helm repo update
-    ```
+## Management
+1. Operation
 
-3. Setting Helm Value
+```bash
+# Upgrade Release
+helm upgrade RELEASE ingress-nginx/ingress-nginx --version VERSION -n NAMESPACE [-f VALUEFILE.yaml | --reuse-values]
+# Get Default Values
+helm show values ingress-nginx/ingress-nginx > values.yaml
+# Check Chart Version
+helm search repo ingress-nginx/ingress-nginx --versions | head
+# Check Release Status
+helm status RELEASE -n ingress-nginx 
+# Check Release Values
+helm get values RELEASE -n ingress-nginx
+```
 
-    ```bash
-    # Get Default Values
-    helm show values ingress-nginx/ingress-nginx > values.yaml
-    
-    ## Azure LB 프로브 세팅 (최소설정)
-    service:
-        annotations: 
-            service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz
-    ```
-    
-4. Install Helm Chart
-
-    ```bash
-    # Check Chart Version
-    helm search repo ingress-nginx/ingress-nginx --versions | head
-
-    # Install Helm Chart
-    helm install RELEASE ingress-nginx/ingress-nginx --version VERSION -n NAMESPACE> -f VALUEFILE
-    ```
-
-5. Verify
-
-    ```bash
-    # Check Installed chart (release)
-    helm ls -n ingress-nginx
-
-    # Check value (user values)
-    helm get values ingress-nginx -n ingress-nginx
-    ```
-### Operation
 1. NGINX 트래픽 관리
 
     ```

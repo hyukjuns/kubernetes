@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myenv-app
+  annotations:
+    reloader.stakater.com/auto: "true"
+    # configmap.reloader.stakater.com/reload: "foo-configmap,bar-configmap,baz-configmap"
+    # secret.reloader.stakater.com/reload: "foo-secret,bar-secret,baz-secret"
+spec:
+  selector:
+    matchLabels:
+      app: myenv-app
+  template:
+    metadata:
+      labels:
+        app: myenv-app
+    spec:
+      containers:
+      - name: myenv-app
+        image: alpine
+        command: ["/bin/sh"]
+        args: ["-c", "while true; do echo \"ENV Value: $(CONSUMERGROUP), SECRET Value: $(SECRET-TEST)\"; sleep 5s; done"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        ports:
+        - containerPort: 80
+        env:
+          - name: CONSUMERGROUP
+            valueFrom:
+              configMapKeyRef:
+                name: myenv-app-config
+                key: consumer-group-name
+          - name: SECRET-TEST
+            valueFrom:
+              secretKeyRef:
+                name: myenv-app-secret
+                key: mysecret
+
