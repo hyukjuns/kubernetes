@@ -70,7 +70,7 @@ alertmanager:
           resources:
             requests:
               storage: 5Gi
-          volumeName: alertmanager-restore-pv # 복구용 PV 이름
+          # volumeName: alertmanager-restore-pv # 복구용 PV 이름
 
 
 ## Grafana
@@ -166,7 +166,7 @@ prometheus:
           resources:
             requests:
               storage: 5Gi
-          volumeName: prometheus-restore-pv # 복구용 PV 이름
+          # volumeName: prometheus-restore-pv # 복구용 PV 이름
 
 ## Node Exporter
 nodeExporter:
@@ -180,6 +180,10 @@ nodeExporter:
 
 ## Kube State Metrics
 kube-state-metrics:
+  prometheus:
+    monitor:
+      enabled: true
+      interval: "15s"
   resources:
     limits:
       cpu: 200m
