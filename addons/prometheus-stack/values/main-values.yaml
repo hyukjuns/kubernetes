@@ -12,9 +12,18 @@ kubeEtcd:
   enabled: false
 kubeScheduler:
   enabled: false
+
+
+# Enable
 kubeProxy:
-  enabled: false
-  
+  enabled: true
+
+# PrometheusRule
+defaultRules:
+  create: true
+  rules:
+    windows: false
+
 ## Alertmanager
 alertmanager:
   # Default Config
@@ -180,10 +189,6 @@ nodeExporter:
 
 ## Kube State Metrics
 kube-state-metrics:
-  prometheus:
-    monitor:
-      enabled: true
-      interval: "15s"
   resources:
     limits:
       cpu: 200m
