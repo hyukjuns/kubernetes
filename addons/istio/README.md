@@ -1,13 +1,18 @@
 # Istio
 
+## Installation
+- istioctl
+- helm
+
+## SideCar Injection
 ```yaml
-# Install Istiod
 # inject envoy sidecar specific namespace
 kubectl label namespace default istio-injection=enabled
-
 ```
 
-# kiali operator
+## Install kiali operator
+- manifest
+- helm
 ```
 helm install \
     --set cr.create=true \
@@ -18,3 +23,20 @@ helm install \
     kiali-operator \
     kiali/kiali-operator
 ```
+
+## Integration with Prometheus Stack (Prometheus Operator)
+for Istio
+1. Configure ServiceMonitor for istiod
+2. Configure PodMonitor for istio Proxy or envoy sidecar
+
+for kiali
+1. Edit Configuration Kiali (config.yaml)
+    Edit: configmap or manifest file
+    ```
+    external_services:
+      prometheus:
+        url: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+      grafana: 
+        external_url: http://prometheus-grafana.monitoring.svc.cluster.local:80
+        internal_url: http://prometheus-grafana.monitoring.svc.cluster.local:80
+    ```
