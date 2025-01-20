@@ -74,12 +74,12 @@ alertmanager:
     storage:
       volumeClaimTemplate:
         spec:
-          storageClassName: azuredisk-ssd-zrs
+          storageClassName: azuredisk-ssd-lrs
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 5Gi
-          # volumeName: alertmanager-restore-pv # 복구용 PV 이름
+              storage: 8Gi
+          volumeName: restore-alertmanager-pv # 복구용 PV 이름
 
 
 ## Grafana
@@ -114,12 +114,13 @@ grafana:
   persistence:
     enabled: true
     type: sts
-    storageClassName: default
+    storageClassName: azuredisk-ssd-lrs
     accessModes:
       - ReadWriteOnce
-    size: 5Gi
+    size: 8Gi
     finalizers:
       - kubernetes.io/pvc-protection
+    volumeName: restore-grafana-pv
 
 ## PrometheusOperator
 prometheusOperator:
@@ -154,7 +155,7 @@ prometheus:
     evaluationInterval: "15s"
     scrapeTimeout: "10s"
     retention:  10d 
-    retentionSize: "5GiB"
+    retentionSize: "8GiB"
     
     # Pod and Contaienr Spec Settings
     replicas: 1
@@ -170,12 +171,12 @@ prometheus:
     storageSpec: 
       volumeClaimTemplate:
         spec:
-          storageClassName: azuredisk-ssd-zrs # 미리 단들어둔 스토리지클래스
+          storageClassName: azuredisk-ssd-lrs # 미리 단들어둔 스토리지클래스
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
               storage: 5Gi
-          # volumeName: prometheus-restore-pv # 복구용 PV 이름
+          volumeName: restore-prometheus-pv # 복구용 PV 이름
 
 ## Node Exporter
 nodeExporter:

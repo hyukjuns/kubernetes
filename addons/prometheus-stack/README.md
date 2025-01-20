@@ -1,5 +1,5 @@
 # Kube Prometheus Stack
-Prometheus Install / Configuration / Alerting
+Prometheus Operator 기반 kube-prometheus-stack 관리
 
 ### Todo
 - 알람 원하는 조건으로 구성 및 라우팅
@@ -44,7 +44,7 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
 
 ### Configuration
 
-#### Prometheus Configuration
+### Prometheus Configuration
 
 > Prometheus Server는 Config Reloader 컨테이너를 사이드카로 사용, Prometheus Server와 Config Reloader는 EmptyDir 볼륨을 통해 설정파일을 공유
 
@@ -220,7 +220,7 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
         - port: metrics # Service Object의 Port Name
     ```
 
-#### Alertmanager Configurations
+### Alertmanager Configurations
 
 > Alertmanager Server는 Config Reloader 컨테이너를 사이드카로 사용, Alertmanager Server와 Config Reloader는 EmptyDir 볼륨을 통해 설정파일을 공유
 
@@ -268,7 +268,7 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
   templates: # list, 경고 템플릿 파일 위치 
   ```
 
-#### AlertmanagerConfig (CRD)
+### AlertmanagerConfig (CRD)
 
 > Prometheus Operator에 의해 alertmanager container에 반영됨
 
@@ -314,7 +314,7 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
   alertmanagerConfigNamespaceSelector: {} 
   ```
 
-#### Alertmanager 설정 참고
+### Alertmanager 설정 참고
 
 - AlertmanagerConfig(CRD)로 설정
 
@@ -347,17 +347,43 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
                   credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
       ```
       
-#### Stateful Setting - Retain 된 PV 재사용
+### Prometheus, Alertmanager, Grafana PV 복구
 
-    1. Retain 된 PV에 해당하는 Azure Managed Disk 식별
-    2. Managed Disk 사용해서 PV 생성, diskName, diskURI 입력
+사용시기: Chart Uninstall 후 재설치 시 Prometheus, Alertmanager, Grafana의 데이터를 보존하고 싶을 경우
+주의사항: 사용하던 PV의 ReclaimPolicy가 Delete인 경우 Retain으로 변경 필요 (edit or patch)
 
-        ```./objects/restore-prometheus-pv.yaml```
+1. Release된 PV의 Snapshot -> Managed Disk 생성
+2. 수동으로 PV 생성, Managed Disk의 이름과 URI 입력 
 
-    3.  Prometheus Helm Values에서 PV 정보 입력 후 업그레이드/재배포
+```yaml
+PersistentVolume.spec.azureDisk.diskName
+PersistentVolume.spec.azureDisk.diskURI
+```
 
-        ```prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName```
+3. Prometheus, Alertmanager의 경우 Helm Values에서 새로 생성한 volumeName 입력
 
+```yaml
+# alertmanager
+alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.volumeName
+
+# prometheus
+prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName
+```
+4. Grafana의 경우 Chart를 Pull 받은 후 Template 수정 필요
+  
+  Grafana Chart의 statefulset.yaml Template에서는 volumeName 항목이 세팅되어 있지 않기때문에 해당 항목 세팅 후 변수로 입력 필요
+
+  1. Kube-Prometheus-Stack Chart > Subchart > Grafana > templates > statefulset.yaml 에서 volumeName 입력
+
+    ```yaml
+    StatefulSet.spec.volumeClaimTemplates[].spec..volumeName: {{ .Values.persistence.volumeName | quote }}
+    ```
+  2. 배포시 사용할 Custom Values 파일에서 새로 생성한 volumeName 입력
+    
+    ```yaml
+    grafana.persistence.volumeName
+    ```
+5. Helm Install or Upgrade 수행 (다운로드 받은 Helm Chart로 Install)
 
 #### Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)
 

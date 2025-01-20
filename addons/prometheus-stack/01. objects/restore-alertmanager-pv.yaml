@@ -1,15 +1,15 @@
-# restore-prometheus-pv
+# pvc-63378926-bf51-4c91-bc5a-8672450ef37b
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: prometheus-restore-pv
+  name: restore-alertmanager-pv
 spec:
   capacity:
-    storage: 5Gi
+    storage: 8Gi
   volumeMode: Filesystem
   accessModes:
     - ReadWriteOnce
-  storageClassName: azuredisk-ssd-zrs
+  storageClassName: azuredisk-ssd-lrs
   azureDisk:
     diskName: ""
     diskURI: ""
