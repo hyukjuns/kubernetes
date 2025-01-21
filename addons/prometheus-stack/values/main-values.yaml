@@ -79,8 +79,6 @@ alertmanager:
           resources:
             requests:
               storage: 8Gi
-          volumeName: restore-alertmanager-pv # 복구용 PV 이름
-
 
 ## Grafana
 grafana:
@@ -120,7 +118,6 @@ grafana:
     size: 8Gi
     finalizers:
       - kubernetes.io/pvc-protection
-    volumeName: restore-grafana-pv
 
 ## PrometheusOperator
 prometheusOperator:
@@ -144,6 +141,7 @@ prometheus:
       - /    
   # Prometheus Spec Setting
   prometheusSpec:
+    logLevel: debug
     # PrometheusRule Selector -> All Select
     ruleSelectorNilUsesHelmValues: false
     # Detect All Service Monitor & Pod Monitor
@@ -176,8 +174,7 @@ prometheus:
           resources:
             requests:
               storage: 5Gi
-          volumeName: restore-prometheus-pv # 복구용 PV 이름
-
+          
 ## Node Exporter
 nodeExporter:
   resources:

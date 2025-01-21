@@ -448,7 +448,7 @@ prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName
     3. Delete Service in kube-system (for kubelet)
 
 ### Reference
-
+- [how-relabeling-in-prometheus-works](https://grafana.com/blog/2022/03/21/how-relabeling-in-prometheus-works/)
 - [Awesome Prometheus alerts](https://samber.github.io/awesome-prometheus-alerts/)
 
 - [Alertmanager Matcher Type Enforce Disable](https://github.com/prometheus-operator/prometheus-operator/issues/3737)
