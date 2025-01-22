@@ -1,6 +1,10 @@
 # Kube Prometheus Stack
 Prometheus Operator 기반 kube-prometheus-stack 관리
 
+# Todo
+1. Prometheus API Auth (ex: Grafana to Promethues API)
+2. Prometheus Web UI Auth
+
 ### Environments
 - AKS >= 1.30.4
 - Helm Chart: [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus)
