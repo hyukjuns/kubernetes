@@ -3,10 +3,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
   name: prometheus-sample-record-rules
-  namespace: monitoring
-  labels:
-    for: sample
-    team: infra
+  # namespace: monitoring
+  # labels:
+  #   release: prometheus
 spec:
   groups:
   - name: ./sample-record.rules

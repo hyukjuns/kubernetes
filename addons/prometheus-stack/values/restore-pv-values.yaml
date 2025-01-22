@@ -175,7 +175,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 5Gi
+              storage: 8Gi
           volumeName: restore-prometheus-pv # 복구용 PV 이름
 
 ## Node Exporter

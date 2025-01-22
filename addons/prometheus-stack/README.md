@@ -1,22 +1,20 @@
 # Kube Prometheus Stack
 Prometheus Operator 기반 kube-prometheus-stack 관리
 
-### Todo
-- 알람 원하는 조건으로 구성 및 라우팅
-- 알람 문구 커스텀
-- relabel 이해
-
 ### Environments
 - AKS >= 1.30.4
 - Helm Chart: [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus)
 
-### Prometheus Stack Component
-- Prometheus Operator
-- Prometheus Server
-- Alertmanager
-- Node-exporter
-- State-Metric Server
-- Grafana Server
+### Prometheus Stack Component & Custom Resource Type, Requests and Limit
+| Component      | CPU        | MEM      | Type |
+|-----------|-------------|-----------|-----------|
+| Prometheus Operator | 0.5 | 256Mi | Deployment |
+| Prometheus Server | 1 | 1Gi | StatefulSet |
+| Alertmanager | 0.5 | 256Mi | StatefulSet |
+| Grafana | 0.5 | 256Mi | StatefulSet |
+| Node-exporter | 0.1 | 128Mi | DaemonSet | 
+| Kube-State-Metric | 0.1 | 128Mi | Deployment |
+*Custom Value File: [main-values.yaml](/addons/prometheus-stack/values/main-values.yaml)
 
 ### Installation and Upgrade
 
@@ -37,6 +35,9 @@ helm search repo prometheus-community/kube-prometheus-stack --versions | head
 
 # Install Helm Chart
 helm install RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE -n NAMESPACE --version VERSION
+
+# Install Helm Chart (Pulled Chart)
+helm install RELEASE PATH_TO_PULLED_CHART -f VALUEFILE -n NAMESPACE --version VERSION
 
 # Upgrade or Install Helm Chart
 helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE -n NAMESPACE --version VERSION

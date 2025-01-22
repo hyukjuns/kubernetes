@@ -1,11 +1,4 @@
-# Resources
-# alertmanager: cpu 0.5 mem 256Mi
-# grafana: cpu 0.5 mem 256Mi
-# prometheusOperator: cpu 0.5 mem 256Mi
-# prometheus: cpu 1, mem 1Gi
-# nodeExporter: cpu 0.1, mem 128Mi
-# kube-state-metrics: cpu 0.1, mem 128Mi
-# Exclude
+# Exclude - AKS Managed Component
 kubeControllerManager:
   enabled: false
 kubeEtcd:
@@ -13,10 +6,20 @@ kubeEtcd:
 kubeScheduler:
   enabled: false
 
-
-# Enable
+# Include - Kube-Proxy
+# AKS 환경에 맞게 service.selector 설정
 kubeProxy:
   enabled: true
+  service:
+    enabled: true
+    port: 10249
+    targetPort: 10249
+    ipDualStack:
+      enabled: false
+      ipFamilies: ["IPv6", "IPv4"]
+      ipFamilyPolicy: "PreferDualStack"
+    selector:
+      component: kube-proxy
 
 # PrometheusRule
 defaultRules:
@@ -24,7 +27,7 @@ defaultRules:
   rules:
     windows: false
 
-## Alertmanager
+# Alertmanager
 alertmanager:
   # Default Config
   config:
@@ -39,7 +42,7 @@ alertmanager:
         matchers:
           - alertname = "Watchdog"
         continue: true
-  # Ingress Settings
+  # Ingress Service
   ingress:
     enabled: true
     ingressClassName: ingress-nginx-class
@@ -48,20 +51,25 @@ alertmanager:
     paths: 
       - /
   
-  # Alertmanager Spec Settings
+  # Alertmanager Specs
   alertmanagerSpec:
-    # # Alertmanager Global Setting Configuration
+    
+    # 글로벌 AlertmanagerConfig 설정 시 사용
     # alertmanagerConfiguration:
     #   name: global-alertmanager-config
+    
     # alertmanagerconfig의 namespace가 alertmanager 설정 중 route.routes.matchers에 label로 등록되는것을 방지
     alertmanagerConfigMatcherStrategy:
-      type: None # Default == OnNamespace
-    # Alertmanager 가 속한 Namespace에 있는 AlertmanagerConfig만 식별
+      type: None # OnNamespace
+    
+    # Alertmanager 가 속한 Namespace에 있는 AlertmanagerConfig는 Label에 상관 없이 모두 식별
     alertmanagerConfigSelector: {}
     alertmanagerConfigNamespaceSelector: {} 
 
-    # Pod and Container Specs
+    # Replicas
     replicas: 1
+
+    # Resource Requests/Limits
     resources:
       limits:
         cpu: 1000m
@@ -79,14 +87,15 @@ alertmanager:
           resources:
             requests:
               storage: 8Gi
+          volumeName: restore-alertmanager-pv # 복구용 PV 이름
 
-## Grafana
+# Grafana
 grafana:
   # Global Config
   defaultDashboardsTimezone: kst
   adminPassword: admin
 
-  # Ingress Setting
+  # Ingress Service
   ingress:
     enabled: true
     ingressClassName: ingress-nginx-class
@@ -100,6 +109,8 @@ grafana:
     enabled: true
     path: "/metrics"
     scrapeTimeout: 10s
+
+  # Resource Requests/Limits
   resources:
     limits:
       cpu: 1000m
@@ -118,8 +129,9 @@ grafana:
     size: 8Gi
     finalizers:
       - kubernetes.io/pvc-protection
+    volumeName: restore-grafana-pv
 
-## PrometheusOperator
+# PrometheusOperator
 prometheusOperator:
    resources:
     limits:
@@ -129,9 +141,9 @@ prometheusOperator:
       cpu: 500m
       memory: 256Mi
 
-## Promtetheus Server
+# Promtetheus Server
 prometheus:
-  # Ingress Setting
+  # Ingress Service
   ingress:
     enabled: true
     ingressClassName: ingress-nginx-class
@@ -139,24 +151,45 @@ prometheus:
       - prometheus.namutest.site
     paths:
       - /    
-  # Prometheus Spec Setting
+  # Prometheus Specs
   prometheusSpec:
-    logLevel: debug
-    # PrometheusRule Selector -> All Select
-    ruleSelectorNilUsesHelmValues: false
-    # Detect All Service Monitor & Pod Monitor
-    podMonitorSelectorNilUsesHelmValues: false
-    serviceMonitorSelectorNilUsesHelmValues: false
-    
-    # 메트릭 스크랩 scrapeTimeout > scrapeInterval
+    logLevel: info # debug
+
+    # 메트릭 수집 설정
     scrapeInterval: "15s"
     evaluationInterval: "15s"
     scrapeTimeout: "10s"
     retention:  10d 
     retentionSize: "8GiB"
+
+    # Selector 설정 공통 사항
+    # xxxNilUsesHelmValues: true 로 설정시 xxxSelector에 matchLabel이 설정됨 (기본값: release: RELEASE)
+    # Chart Template Path: kube-prometheus-stack/templates/prometheus/prometheus.yaml
+    # (Example)
+    # serviceMonitorSelector:
+    #   matchLabels:
+    #     release: {{ $.Release.Name | quote }}
+
+    # Namespace / Label 상관 없이 클러스터내 모든 PrometheusRule 식별
+    ruleSelectorNilUsesHelmValues: false
+    ruleNamespaceSelector: {}
+    ruleSelector: {}
+
+    # Namespace / Label 상관 없이 클러스터내 모든 Pod Monitor 식별
+    podMonitorSelectorNilUsesHelmValues: false
+    podMonitorNamespaceSelector: {}
+    podMonitorSelector: {}
+
+    # Namespace / Label 상관 없이 클러스터내 모든 Service Monitor 식별
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelector: {}
     
-    # Pod and Contaienr Spec Settings
+    
+    # Replicas
     replicas: 1
+
+    # Resource Requests / Limits
     resources:
       limits:
         cpu: 1000m
@@ -173,9 +206,11 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 5Gi
-          
-## Node Exporter
+              storage: 8Gi
+          volumeName: restore-prometheus-pv # 복구용 PV 이름
+
+# Node Exporter
+# Resource Requests / Limits
 nodeExporter:
   resources:
     limits:
@@ -185,7 +220,8 @@ nodeExporter:
       cpu: 100m
       memory: 128Mi
 
-## Kube State Metrics
+# Kube State Metrics
+# Resource Requests / Limits
 kube-state-metrics:
   resources:
     limits:
