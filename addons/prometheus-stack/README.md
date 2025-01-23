@@ -5,11 +5,11 @@ Prometheus Operator 기반 kube-prometheus-stack 관리
 1. Prometheus API Auth (ex: Grafana to Promethues API)
 2. Prometheus Web UI Auth
 
-### Environments
+## Environments
 - AKS >= 1.30.4
 - Helm Chart: [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus)
 
-### Prometheus Stack Component & Custom Resource Type, Requests and Limit
+## Prometheus Stack Component & Custom Resource Type, Requests and Limit
 | Component      | CPU        | MEM      | Type |
 |-----------|-------------|-----------|-----------|
 | Prometheus Operator | 0.5 | 256Mi | Deployment |
@@ -20,7 +20,7 @@ Prometheus Operator 기반 kube-prometheus-stack 관리
 | Kube-State-Metric | 0.1 | 128Mi | Deployment |
 *Custom Value File: [main-values.yaml](/addons/prometheus-stack/values/main-values.yaml)
 
-### Installation and Upgrade
+## Installation and Upgrade
 
 ```bash
 # Create Namespace & SC
@@ -47,7 +47,27 @@ helm install RELEASE PATH_TO_PULLED_CHART -f VALUEFILE -n NAMESPACE --version VE
 helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VALUEFILE -n NAMESPACE --version VERSION
 ```
 
-### Configuration
+## Configuration
+
+### Ingress Basic Auth
+
+1. Create Auth Credential
+
+```bash
+htpasswd -c auth USERNAME
+k create secret generic SECRETNAME --from-file=auth -n NAMESPACE
+```
+
+2. Annotate Ingress Object
+
+```yaml
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: SECRETNAME
+    nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+```
 
 ### Prometheus Configuration
 

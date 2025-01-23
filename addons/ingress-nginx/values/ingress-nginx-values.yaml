@@ -4,24 +4,26 @@ controller:
   ## Scaling
   autoscaling:
     enabled: true
-    minReplicas: 2
-    maxReplicas: 11
-    targetCPUUtilizationPercentage: 80
-    targetMemoryUtilizationPercentage: 80
+    minReplicas: 1
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 50
+    targetMemoryUtilizationPercentage: 50
+  
   ## Preemption Priority Setting
-  priorityClassName: high-priority-nonpreempting
+  # priorityClassName: high-priority-nonpreempting
+
   ## Prometheus Monitoring (serviceMonitor - Diffrent Namespace)
   metrics:
     enabled: true
-    serviceMonitor:
-      enabled: true
-      additionalLabels:
-        release: prometheus # Prometheus Release Name
+    # serviceMonitor:
+    #   enabled: true
+    #   additionalLabels:
+    #     release: prometheus # Prometheus Release Name
   
   ## Azure LB Probe Setting
   service:
     annotations: 
-      externalTrafficPolicy: Local
+      # externalTrafficPolicy: Local
       service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: /healthz 
   
   ## Ingress Class

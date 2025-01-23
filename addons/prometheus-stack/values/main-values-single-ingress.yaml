@@ -49,11 +49,12 @@ alertmanager:
       nginx.ingress.kubernetes.io/auth-type: basic
       nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
       nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+      nginx.ingress.kubernetes.io/rewrite-target: /$2
     ingressClassName: ingress-nginx-class
-    hosts:
-      - alertmanager.namutest.site
+    # hosts:
+    #   - alertmanager.namutest.site
     paths: 
-      - /
+      - "/alertmanager(/|$)(.*)"
   
   # Alertmanager Specs
   alertmanagerSpec:
@@ -91,7 +92,7 @@ alertmanager:
           resources:
             requests:
               storage: 8Gi
-          volumeName: restore-alertmanager-pv # 복구용 PV 이름
+          # volumeName: restore-alertmanager-pv # 복구용 PV 이름
 
 # Grafana
 grafana:
@@ -103,10 +104,15 @@ grafana:
   ingress:
     enabled: true
     ingressClassName: ingress-nginx-class
-    hosts:
-      - grafana.namutest.site
+    annotations:
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
+      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+      nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+    # hosts:
+    #   - grafana.namutest.site
     paths: 
-      - /
+      - "/grafana(/|$)(.*)"
   
   # ServiceMonitor Setting
   serviceMonitor:
@@ -133,7 +139,7 @@ grafana:
     size: 8Gi
     finalizers:
       - kubernetes.io/pvc-protection
-    volumeName: restore-grafana-pv
+    # volumeName: restore-grafana-pv
 
 # PrometheusOperator
 prometheusOperator:
@@ -154,11 +160,13 @@ prometheus:
       nginx.ingress.kubernetes.io/auth-type: basic
       nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
       nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+      nginx.ingress.kubernetes.io/rewrite-target: "/$2"
+
     ingressClassName: ingress-nginx-class
-    hosts:
-      - prometheus.namutest.site
+    # hosts:
+    #   - prometheus.namutest.site
     paths:
-      - /
+      - "/prometheus(/|$)(.*)"
   # Prometheus Specs
   prometheusSpec:
     logLevel: info # debug
@@ -215,7 +223,7 @@ prometheus:
           resources:
             requests:
               storage: 8Gi
-          volumeName: restore-prometheus-pv # 복구용 PV 이름
+          # volumeName: restore-prometheus-pv # 복구용 PV 이름
 
 # Node Exporter
 # Resource Requests / Limits
