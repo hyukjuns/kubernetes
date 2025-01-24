@@ -28,9 +28,9 @@ loki:
       requestTimeout: 0
     # Blob Container Name
     bucketNames:
-      chunks: "chunks-test"
-      ruler: "ruler-test"
-      admin: "admin-test"
+      chunks: "loki/data/chunk"
+      ruler: "loki/data/ruler"
+      admin: "loki/data/admin"
 
 # Loki Mode
 deploymentMode: SimpleScalable

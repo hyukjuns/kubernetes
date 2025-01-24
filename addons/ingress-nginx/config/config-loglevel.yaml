@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-controller-controller
+  namespace: ingress-nginx
+data:
+  error-log-level: debug

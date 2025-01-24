@@ -1,5 +1,18 @@
 config:
+  enableTracing: true
 # publish data to loki
   clients:
     - url: http://loki-gateway.loki.svc.cluster.local/loki/api/v1/push
       tenant_id: 1
+  snippets:
+    pipelineStages:
+      - regex:
+          expression: ".*\\|\\sINFO\\s\\|.*"
+      - labels:
+          myloglevel:
+    extraRelabelConfigs:
+      - source_labels:
+          - __meta_kubernetes_pod_name
+        regex: (.*)
+        action: replace
+        target_label: custompodnamelabel

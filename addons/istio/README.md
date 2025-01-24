@@ -1,19 +1,34 @@
 # Istio
 
-## Installation
-- istioctl
-- helm
+## Installation Step
 
-## SideCar Injection
-```yaml
-# inject envoy sidecar specific namespace
-kubectl label namespace default istio-injection=enabled
-```
+1. Install Istio by istioctl
 
+  1. [Install istioctl](https://istio.io/latest/docs/ops/diagnostic-tools/istioctl/#install-hahahugoshortcode949s2hbhb)
+
+    ```
+    curl -sL https://istio.io/downloadIstioctl | sh -
+    export PATH=$HOME/.istioctl/bin:$PATH
+    ```
+
+  2. [Install minimal profile](https://istio.io/latest/docs/setup/install/istioctl/#install-a-different-profile)
+
+    `istioctl install --set profile=minimal`
+
+2. Enable SideCar Injection (Namespace 단위)
+
+`k label namespace default istio-injection=enabled`
+
+3. Install Kiali dashboard (istio addon)
+
+  `k apply -f ./kiali/kiali.yaml`
+
+
+## Ref
 ## Install kiali operator
 - manifest
 - helm
-```
+```bash
 helm install \
     --set cr.create=true \
     --set cr.namespace=istio-system \
