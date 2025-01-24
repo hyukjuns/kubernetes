@@ -4,16 +4,16 @@
 
 1. Install Istio by istioctl
 
-  1. [Install istioctl](https://istio.io/latest/docs/ops/diagnostic-tools/istioctl/#install-hahahugoshortcode949s2hbhb)
+- [Install istioctl](https://istio.io/latest/docs/ops/diagnostic-tools/istioctl/#install-hahahugoshortcode949s2hbhb)
 
-    ```
-    curl -sL https://istio.io/downloadIstioctl | sh -
-    export PATH=$HOME/.istioctl/bin:$PATH
-    ```
+  ```
+  curl -sL https://istio.io/downloadIstioctl | sh -
+  export PATH=$HOME/.istioctl/bin:$PATH
+  ```
 
-  2. [Install minimal profile](https://istio.io/latest/docs/setup/install/istioctl/#install-a-different-profile)
+- [Install minimal profile](https://istio.io/latest/docs/setup/install/istioctl/#install-a-different-profile)
 
-    `istioctl install --set profile=minimal`
+  `istioctl install --set profile=minimal`
 
 2. Enable SideCar Injection (Namespace 단위)
 
