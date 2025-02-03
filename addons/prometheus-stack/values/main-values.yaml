@@ -91,7 +91,7 @@ alertmanager:
           resources:
             requests:
               storage: 8Gi
-          volumeName: restore-alertmanager-pv # 복구용 PV 이름
+          # volumeName: restore-alertmanager-pv # 복구용 PV 이름
 
 # Grafana
 grafana:
@@ -133,7 +133,7 @@ grafana:
     size: 8Gi
     finalizers:
       - kubernetes.io/pvc-protection
-    volumeName: restore-grafana-pv
+    # volumeName: restore-grafana-pv
 
 # PrometheusOperator
 prometheusOperator:
@@ -167,7 +167,7 @@ prometheus:
     scrapeInterval: "15s"
     evaluationInterval: "15s"
     scrapeTimeout: "10s"
-    retention:  10d 
+    retention:  7d 
     retentionSize: "8GiB"
 
     # Selector 설정 공통 사항
@@ -215,7 +215,7 @@ prometheus:
           resources:
             requests:
               storage: 8Gi
-          volumeName: restore-prometheus-pv # 복구용 PV 이름
+          # volumeName: restore-prometheus-pv # 복구용 PV 이름
 
 # Node Exporter
 # Resource Requests / Limits

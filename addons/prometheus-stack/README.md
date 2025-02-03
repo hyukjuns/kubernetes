@@ -9,7 +9,7 @@ Prometheus Operator 기반 kube-prometheus-stack 관리
 - AKS >= 1.30.4
 - Helm Chart: [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus)
 
-## Prometheus Stack Component & Custom Resource Type, Requests and Limit
+## Prometheus Stack Component & Custom Resource Type, Resource Requests
 | Component      | CPU        | MEM      | Type |
 |-----------|-------------|-----------|-----------|
 | Prometheus Operator | 0.5 | 256Mi | Deployment |
@@ -18,6 +18,7 @@ Prometheus Operator 기반 kube-prometheus-stack 관리
 | Grafana | 0.5 | 256Mi | StatefulSet |
 | Node-exporter | 0.1 | 128Mi | DaemonSet | 
 | Kube-State-Metric | 0.1 | 128Mi | Deployment |
+| Sum | 2.7 | 2Gi | - |
 *Custom Value File: [main-values.yaml](/addons/prometheus-stack/values/main-values.yaml)
 
 ## Installation and Upgrade
