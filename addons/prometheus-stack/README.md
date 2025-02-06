@@ -16,9 +16,10 @@ Prometheus Operator 기반 kube-prometheus-stack 관리
 | Prometheus Server | 0.5 | 512Mi | 1 | 1Gi | StatefulSet |
 | Alertmanager | 0.5 | 256Mi | 1 | 512Mi | StatefulSet |
 | Grafana | 0.5 | 256Mi | 1 | 512Mi | StatefulSet |
-| Node-exporter | 0.1 | 128Mi | 0.2 | 256 Mi |  DaemonSet | 
+| Node-exporter | 0.1 | 128Mi | 0.2 | 256Mi |  DaemonSet | 
 | Kube-State-Metric | 0.1 | 128Mi | 0.2 | 256Mi | Deployment |
-| Sum | 2.2 | 1.5Gi | 3.7 | 3Gi |  - |
+| + Side Car Containers 를 위한 Limit Range | 0.1| 128Mi | 0.05 | 64Mi| -|
+| Sum | 2.5 | 1.875Gi | 4.5 | 3.75Gi |  - |
 *Custom Value File: [main-values.yaml](/addons/prometheus-stack/values/main-values.yaml)
 
 ## Installation and Upgrade
@@ -49,6 +50,13 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
 ```
 
 ## Configuration
+
+### 프로메테오스 스택 설치시 클러스터 자원 및 노드 격리
+- 자원격리: LimitRange, ResourceQuota 사용
+  - LimitRange: Helm Values 로 컨트롤 하기 어려운 Side Car 컨테이너에 기본 cpu/mem 요청/제한값 자동 적용 용도
+  - ResourceQuota: 모니터링 네임스페이스에서 사용 가능한 총 리소스 제한
+- 노드 격리: Node Affinity 사용
+  - 비지니스 워크로드와 물리적으로 격리하기 위한 용도
 
 ### Ingress Basic Auth
 

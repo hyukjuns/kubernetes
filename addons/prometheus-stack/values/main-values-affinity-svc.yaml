@@ -139,23 +139,23 @@ grafana:
 
 # PrometheusOperator
 prometheusOperator:
-  admissionWebhooks:
-    deployment:
-      resources:
-        limits:
-          cpu: 200m
-          memory: 200Mi
-        requests:
-          cpu: 100m
-          memory: 100Mi
-    patch:
-      esources:
-        limits:
-          cpu: 200m
-          memory: 200Mi
-        requests:
-          cpu: 100m
-          memory: 100Mi
+  # admissionWebhooks:
+  #   deployment:
+  #     resources:
+  #       limits:
+  #         cpu: 200m
+  #         memory: 256Mi
+  #       requests:
+  #         cpu: 100m
+  #         memory: 128Mi
+  #   patch:
+  #     resources:
+  #       limits:
+  #         cpu: 200m
+  #         memory: 256Mi
+  #       requests:
+  #         cpu: 100m
+  #         memory: 128Mi
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
