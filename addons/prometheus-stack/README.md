@@ -10,15 +10,15 @@ Prometheus Operator 기반 kube-prometheus-stack 관리
 - Helm Chart: [kube-prometheus-stack](https://github.com/prometheus-operator/kube-prometheus)
 
 ## Prometheus Stack Component & Custom Resource Type, Resource Requests
-| Component      | CPU        | MEM      | Type |
-|-----------|-------------|-----------|-----------|
-| Prometheus Operator | 0.5 | 256Mi | Deployment |
-| Prometheus Server | 1 | 1Gi | StatefulSet |
-| Alertmanager | 0.5 | 256Mi | StatefulSet |
-| Grafana | 0.5 | 256Mi | StatefulSet |
-| Node-exporter | 0.1 | 128Mi | DaemonSet | 
-| Kube-State-Metric | 0.1 | 128Mi | Deployment |
-| Sum | 2.7 | 2Gi | - |
+| Component      | CPU Request | MEM Request | CPU Limit | MEM Limit | Type |
+|-----------|-------------|-----------|-----------|-----------|-----------|
+| Prometheus Operator | 0.5 | 256Mi | 0.5 | 512Mi| Deployment |
+| Prometheus Server | 0.5 | 512Mi | 1 | 1Gi | StatefulSet |
+| Alertmanager | 0.5 | 256Mi | 1 | 512Mi | StatefulSet |
+| Grafana | 0.5 | 256Mi | 1 | 512Mi | StatefulSet |
+| Node-exporter | 0.1 | 128Mi | 0.2 | 256 Mi |  DaemonSet | 
+| Kube-State-Metric | 0.1 | 128Mi | 0.2 | 256Mi | Deployment |
+| Sum | 2.2 | 1.5Gi | 3.7 | 3Gi |  - |
 *Custom Value File: [main-values.yaml](/addons/prometheus-stack/values/main-values.yaml)
 
 ## Installation and Upgrade
