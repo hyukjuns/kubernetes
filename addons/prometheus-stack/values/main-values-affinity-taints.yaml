@@ -72,6 +72,11 @@ alertmanager:
               operator: In
               values:
               - user
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "NoSchedule"
     # Resource Requests/Limits
     resources:
       limits:
@@ -125,6 +130,11 @@ grafana:
             operator: In
             values:
             - user
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "monitoring"
+      effect: "NoSchedule"
   # StatefulSet Setting
   persistence:
     enabled: true
@@ -139,8 +149,13 @@ grafana:
 
 # PrometheusOperator
 prometheusOperator:
-  # admissionWebhooks:
-  #   deployment:
+  admissionWebhooks:
+    deployment:
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "NoSchedule"
   #     resources:
   #       limits:
   #         cpu: 200m
@@ -148,7 +163,12 @@ prometheusOperator:
   #       requests:
   #         cpu: 100m
   #         memory: 128Mi
-  #   patch:
+    patch:
+      tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "NoSchedule"
   #     resources:
   #       limits:
   #         cpu: 200m
@@ -165,6 +185,11 @@ prometheusOperator:
             operator: In
             values:
             - user
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "monitoring"
+      effect: "NoSchedule"
   resources:
     limits:
       cpu: 500m
@@ -224,6 +249,11 @@ prometheus:
               operator: In
               values:
               - user
+    tolerations:
+      - key: "dedicated"
+        operator: "Equal"
+        value: "monitoring"
+        effect: "NoSchedule"
     # Resource Requests / Limits
     resources:
       limits:
@@ -247,6 +277,10 @@ prometheus:
 # Node Exporter
 # Resource Requests / Limits
 nodeExporter:
+  # Default Toleration 
+  tolerations:
+  - effect: NoSchedule
+    operator: Exists
   resources:
     limits:
       cpu: 200m
@@ -268,6 +302,11 @@ kube-state-metrics:
             operator: In
             values:
             - user
+  tolerations:
+    - key: "dedicated"
+      operator: "Equal"
+      value: "monitoring"
+      effect: "NoSchedule"
   resources:
     limits:
       cpu: 200m
