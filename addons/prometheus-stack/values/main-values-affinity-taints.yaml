@@ -68,10 +68,10 @@ alertmanager:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: kubernetes.azure.com/mode
+            - key: mgmt
               operator: In
               values:
-              - user
+              - monitoring
     tolerations:
       - key: "dedicated"
         operator: "Equal"
@@ -126,10 +126,10 @@ grafana:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kubernetes.azure.com/mode
+          - key: mgmt
             operator: In
             values:
-            - user
+            - monitoring
   tolerations:
     - key: "dedicated"
       operator: "Equal"
@@ -181,10 +181,10 @@ prometheusOperator:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kubernetes.azure.com/mode
+          - key: mgmt
             operator: In
             values:
-            - user
+            - monitoring
   tolerations:
     - key: "dedicated"
       operator: "Equal"
@@ -245,10 +245,10 @@ prometheus:
         requiredDuringSchedulingIgnoredDuringExecution:
           nodeSelectorTerms:
           - matchExpressions:
-            - key: kubernetes.azure.com/mode
+            - key: mgmt
               operator: In
               values:
-              - user
+              - monitoring
     tolerations:
       - key: "dedicated"
         operator: "Equal"
@@ -298,10 +298,10 @@ kube-state-metrics:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
         - matchExpressions:
-          - key: kubernetes.azure.com/mode
+          - key: mgmt
             operator: In
             values:
-            - user
+            - monitoring
   tolerations:
     - key: "dedicated"
       operator: "Equal"
