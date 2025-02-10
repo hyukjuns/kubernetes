@@ -482,6 +482,7 @@ prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName
     3. Delete Service in kube-system (for kubelet)
 
 ### Reference
+- [Resizing Volumes](https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/platform/storage.md#resizing-volumes)
 - [how-relabeling-in-prometheus-works](https://grafana.com/blog/2022/03/21/how-relabeling-in-prometheus-works/)
 - [Awesome Prometheus alerts](https://samber.github.io/awesome-prometheus-alerts/)
 
