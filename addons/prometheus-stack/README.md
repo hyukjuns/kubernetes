@@ -380,7 +380,25 @@ ingress:
                   type: Bearer 
                   credentials: 'BOT_TOKEN' # 슬랫 봇 토큰
       ```
-      
+### Prometheus PersistentVolume Resizing (PV)
+```yaml
+# Get SC Info
+kubectl get storageclass -o custom-columns=NAME:.metadata.name,ALLOWVOLUMEEXPANSION:.allowVolumeExpansion
+ 
+# Patch spec.paused==true , Set SIZE == 8Gi or 16Gi or 32Gi
+kubectl -n NAMESPACE patch prometheus/NAME --patch '{"spec": {"paused": true, "storage": {"volumeClaimTemplate": {"spec": {"resources": {"requests": {"storage":"SIZE"}}}}}}}' --type merge
+ 
+# Set 16 GB, Set SIZE == 8Gi or 16Gi or 32Gi
+for p in $(kubectl -n NAMESPACE get pvc -l operator.prometheus.io/name=NAME -o jsonpath='{range .items[*]}{.metadata.name} {end}'); do \
+  kubectl -n NAMESPACE patch pvc/${p} --patch '{"spec": {"resources": {"requests": {"storage":"SIZE"}}}}'; \
+done
+ 
+# Delete sts with orphan strategy 
+kubectl -n NAMESPACE delete statefulset -l operator.prometheus.io/name=NAME --cascade=orphan
+ 
+# Patch spec.paused==false 
+kubectl -n NAMESPACE patch prometheus/NAME --patch '{"spec": {"paused": false}}' --type merge
+```
 ### Prometheus, Alertmanager, Grafana PV 복구
 
 사용시기: Chart Uninstall 후 재설치 시 Prometheus, Alertmanager, Grafana의 데이터를 보존하고 싶을 경우
