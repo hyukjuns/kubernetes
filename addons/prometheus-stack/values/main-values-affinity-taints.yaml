@@ -211,7 +211,7 @@ prometheus:
     evaluationInterval: "15s"
     scrapeTimeout: "10s"
     retention:  7d 
-    retentionSize: "8GiB"
+    retentionSize: "64GiB"
 
     # Selector 설정 공통 사항
     # xxxNilUsesHelmValues: true 로 설정시 xxxSelector에 matchLabel이 설정됨 (기본값: release: RELEASE)
@@ -271,7 +271,7 @@ prometheus:
           accessModes: ["ReadWriteOnce"]
           resources:
             requests:
-              storage: 8Gi
+              storage: 64Gi
           # volumeName: restore-prometheus-pv # 복구용 PV 이름
 
 # Node Exporter
