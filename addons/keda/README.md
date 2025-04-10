@@ -6,7 +6,7 @@ https://keda.sh/docs/2.14/deploy/#helm
 ```bash
 helm repo add kedacore https://kedacore.github.io/charts
 helm repo update
-helm install keda kedacore/keda --namespace keda --create-namespace
+helm install keda kedacore/keda -n NAMESPACE -f VALUEFILE
 ```
 
 2. 이벤트허브 스케일러 구성
