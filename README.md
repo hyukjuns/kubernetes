@@ -1,5 +1,21 @@
 # Kubernetes
 
+### Opensource Contribution
+1. fork origin repo
+2. Checkout new branch and Edit Code
+3. Commit with sign
+4. Make Pull Request with description
+
+### Helm Linting
+```bash
+# 차트의 문법 검사, 즉, 차트의 구조 및 문법 오류 검사 terraform validate 와 유사
+helm lint CHART
+
+# 차트의 종합 검사, 차트의 구조 및 문법에 더해서 포괄적인 검사 (버전, 디렉터리 구조 등) terraform validate, fmt 2개를 합한것과 유사, ct.yaml 파일 필요
+# 여러 차트 동시에 검사 가능, CI/CD 파이프라인에서 주로 사용
+ct lint --charts CHART
+```
+
 ### Environment
 - Azure Kubernetes Service
 
