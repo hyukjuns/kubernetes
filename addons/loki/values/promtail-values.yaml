@@ -16,3 +16,7 @@ config:
         regex: (.*)
         action: replace
         target_label: custompodnamelabel
+tolerations:
+  - key: CriticalAddonsOnly
+    operator: Exists
+    effect: NoSchedule

@@ -1,4 +1,10 @@
 # Kubernetes
+### Addons Version Life Cycle
+- [ArgoCD](https://argo-cd.readthedocs.io/en/stable/developer-guide/release-process-and-cadence/) 
+- [Ingress NGINX Controller](https://github.com/kubernetes/ingress-nginx)
+- [KEDA](https://keda.sh/docs/2.17/operate/cluster/#kubernetes-compatibility)
+- [prometheus-operator](https://github.com/prometheus-operator/kube-prometheus?tab=readme-ov-file#compatibility)
+- [kube-prometheus-stack 최소 호환 버전 확인](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/Chart.yaml)
 
 ### Opensource Contribution
 1. fork origin repo

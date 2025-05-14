@@ -51,12 +51,12 @@ spec:
     targetPort: 80
  
 ---
-apiVersion: policy/v1
-kind: PodDisruptionBudget
-metadata:
-  name: mynginx-pdb
-spec:
-  maxUnavailable: 1
-  selector:
-    matchLabels:
-      app: mynginx
+# apiVersion: policy/v1
+# kind: PodDisruptionBudget
+# metadata:
+#   name: mynginx-pdb
+# spec:
+#   maxUnavailable: 1
+#   selector:
+#     matchLabels:
+#       app: mynginx
