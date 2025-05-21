@@ -1,4 +1,18 @@
 # Kubernetes
+
+### Well Known Annotations
+- node.kubernetes.io/instance-type
+- beta.kubernetes.io/os
+- kubernetes.azure.com/kubelet-identity-client-id
+- kubernetes.azure.com/mode
+- kubernetes.azure.com/node-image-version
+- kubernetes.io/arch
+- failure-domain.beta.kubernetes.io/region
+- failure-domain.beta.kubernetes.io/zone
+- topology.disk.csi.azure.com/zone
+- topology.kubernetes.io/region
+- topology.kubernetes.io/zone
+
 ### Addons Version Life Cycle
 - [ArgoCD](https://argo-cd.readthedocs.io/en/stable/developer-guide/release-process-and-cadence/) 
 - [Ingress NGINX Controller](https://github.com/kubernetes/ingress-nginx)
