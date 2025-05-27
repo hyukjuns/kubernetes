@@ -18,7 +18,7 @@ Prometheus Operator 기반 kube-prometheus-stack 관리
 | Grafana | 0.5 | 256Mi | 1 | 512Mi | StatefulSet |
 | Node-exporter | 0.1 | 128Mi | 0.2 | 256Mi |  DaemonSet | 
 | Kube-State-Metric | 0.1 | 128Mi | 0.2 | 256Mi | Deployment |
-| + Side Car Containers 를 위한 Limit Range | 0.1| 128Mi | 0.05 | 64Mi| -|
+| + Side Car Containers 를 위한 Limit Range | 0.05 | 64Mi | 0.1 | 128Mi| -|
 | Sum | 2.5 | 1.875Gi | 4.5 | 3.75Gi |  - |
 *Custom Value File: [main-values.yaml](/addons/prometheus-stack/values/main-values.yaml)
 
@@ -407,34 +407,39 @@ kubectl -n NAMESPACE patch prometheus/NAME --patch '{"spec": {"paused": false}}'
 1. Release된 PV의 Snapshot -> Managed Disk 생성
 2. 수동으로 PV 생성, Managed Disk의 이름과 URI 입력 
 
-```yaml
-PersistentVolume.spec.azureDisk.diskName
-PersistentVolume.spec.azureDisk.diskURI
-```
+    ```yaml
+    PersistentVolume.spec.azureDisk.diskName
+    PersistentVolume.spec.azureDisk.diskURI
+    ```
 
 3. Prometheus, Alertmanager의 경우 Helm Values에서 새로 생성한 volumeName 입력
 
-```yaml
-# alertmanager
-alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.volumeName
+    ```yaml
+    # alertmanager
+    alertmanager.alertmanagerSpec.storage.volumeClaimTemplate.spec.volumeName
 
-# prometheus
-prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName
-```
-4. Grafana의 경우 Chart를 Pull 받은 후 Template 수정 필요
+    # prometheus
+    prometheus.prometheusSpec.storageSpec.volumeClaimTemplate.spec.volumeName
+    ```
+
+4. Grafana의 경우 Chart를 Pull 받은 후 Template 수정 필요 ( < v8.14.0)
   
-  Grafana Chart의 statefulset.yaml Template에서는 volumeName 항목이 세팅되어 있지 않기때문에 해당 항목 세팅 후 변수로 입력 필요
+    Grafana Chart의 statefulset.yaml Template에서는 volumeName 항목이 세팅되어 있지 않기때문에 해당 항목 세팅 후 변수로 입력 필요
 
-  1. Kube-Prometheus-Stack Chart > Subchart > Grafana > templates > statefulset.yaml 에서 volumeName 입력
+    1. Kube-Prometheus-Stack Chart > Subchart > Grafana > templates > statefulset.yaml 에서 volumeName 입력
 
-    ```yaml
-    StatefulSet.spec.volumeClaimTemplates[].spec..volumeName: {{ .Values.persistence.volumeName | quote }}
-    ```
-  2. 배포시 사용할 Custom Values 파일에서 새로 생성한 volumeName 입력
     
-    ```yaml
-    grafana.persistence.volumeName
-    ```
+        ```yaml
+        StatefulSet.spec.volumeClaimTemplates[].spec..volumeName: {{ .Values.persistence.volumeName | quote }}
+        ```
+
+    2. 배포시 사용할 Custom Values 파일에서 새로 생성한 volumeName 입력
+    
+    
+        ```yaml
+        grafana.persistence.volumeName
+        ```
+
 5. Helm Install or Upgrade 수행 (다운로드 받은 Helm Chart로 Install)
 
 #### Ingress Nginx Controller 모니터링 환경 구성 (Service Monitor)

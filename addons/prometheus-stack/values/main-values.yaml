@@ -42,18 +42,22 @@ alertmanager:
         matchers:
           - alertname = "Watchdog"
         continue: true
-  # Ingress Service
-  ingress:
-    enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/auth-type: basic
-      nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
-      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
-    ingressClassName: ingress-nginx-class
-    hosts:
-      - alertmanager.namutest.site
-    paths: 
-      - /
+  # LoadBalancer Service
+  service:
+    type: LoadBalancer
+  # # Ingress Service
+  # ingress:
+  #   enabled: true
+  #   ## Authentication 설정
+  #   # annotations:
+  #   #   nginx.ingress.kubernetes.io/auth-type: basic
+  #   #   nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
+  #   #   nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+  #   ingressClassName: ingress-nginx-class
+  #   hosts:
+  #     - alertmanager.namutest.site
+  #   paths: 
+  #     - /
   
   # Alertmanager Specs
   alertmanagerSpec:
@@ -91,7 +95,7 @@ alertmanager:
           resources:
             requests:
               storage: 8Gi
-          # volumeName: restore-alertmanager-pv # 복구용 PV 이름
+          volumeName: restore-alertmanager-pv # 복구용 PV 이름
 
 # Grafana
 grafana:
@@ -99,14 +103,17 @@ grafana:
   defaultDashboardsTimezone: kst
   adminPassword: admin
 
-  # Ingress Service
-  ingress:
-    enabled: true
-    ingressClassName: ingress-nginx-class
-    hosts:
-      - grafana.namutest.site
-    paths: 
-      - /
+  # LoadBalancer Service
+  service:
+    type: LoadBalancer
+  # # Ingress Service
+  # ingress:
+  #   enabled: true
+  #   ingressClassName: ingress-nginx-class
+  #   hosts:
+  #     - grafana.namutest.site
+  #   paths: 
+  #     - /
   
   # ServiceMonitor Setting
   serviceMonitor:
@@ -133,7 +140,7 @@ grafana:
     size: 8Gi
     finalizers:
       - kubernetes.io/pvc-protection
-    # volumeName: restore-grafana-pv
+    volumeName: restore-grafana-pv
 
 # PrometheusOperator
 prometheusOperator:
@@ -147,18 +154,21 @@ prometheusOperator:
 
 # Promtetheus Server
 prometheus:
-  # Ingress Service
-  ingress:
-    enabled: true
-    annotations:
-      nginx.ingress.kubernetes.io/auth-type: basic
-      nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
-      nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
-    ingressClassName: ingress-nginx-class
-    hosts:
-      - prometheus.namutest.site
-    paths:
-      - /
+  # LoadBalancer Service
+  service:
+    type: LoadBalancer
+  # # Ingress Service
+  # ingress:
+  #   enabled: true
+  #   annotations:
+  #     nginx.ingress.kubernetes.io/auth-type: basic
+  #     nginx.ingress.kubernetes.io/auth-secret: prometheus-basic-auth
+  #     nginx.ingress.kubernetes.io/auth-realm: "Authentication Required"
+  #   ingressClassName: ingress-nginx-class
+  #   hosts:
+  #     - prometheus.namutest.site
+  #   paths:
+  #     - /
   # Prometheus Specs
   prometheusSpec:
     logLevel: info # debug
@@ -215,7 +225,7 @@ prometheus:
           resources:
             requests:
               storage: 8Gi
-          # volumeName: restore-prometheus-pv # 복구용 PV 이름
+          volumeName: restore-prometheus-pv # 복구용 PV 이름
 
 # Node Exporter
 # Resource Requests / Limits
