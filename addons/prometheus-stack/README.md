@@ -402,6 +402,7 @@ kubectl -n NAMESPACE patch prometheus/NAME --patch '{"spec": {"paused": false}}'
 ### Prometheus, Alertmanager, Grafana PV 복구
 
 사용시기: Chart Uninstall 후 재설치 시 Prometheus, Alertmanager, Grafana의 데이터를 보존하고 싶을 경우
+
 주의사항: 사용하던 PV의 ReclaimPolicy가 Delete인 경우 Retain으로 변경 필요 (edit or patch)
 
 1. Release된 PV의 Snapshot -> Managed Disk 생성
