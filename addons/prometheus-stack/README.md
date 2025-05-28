@@ -51,6 +51,11 @@ helm upgrade --install RELEASE prometheus-community/kube-prometheus-stack -f VAL
 
 ## Configuration
 
+### Grafana Server - Reset Admin Password
+```bash
+k exec -n monitoring PODNAME -- grafana cli admin reset-admin-password PASSWORD
+```
+
 ### 프로메테오스 스택 설치시 클러스터 자원 및 노드 격리
 - 자원격리: LimitRange, ResourceQuota 사용
   - LimitRange: Helm Values 로 컨트롤 하기 어려운 Side Car 컨테이너에 기본 cpu/mem 요청/제한값 자동 적용 용도
@@ -405,7 +410,10 @@ kubectl -n NAMESPACE patch prometheus/NAME --patch '{"spec": {"paused": false}}'
 
 주의사항: 사용하던 PV의 ReclaimPolicy가 Delete인 경우 Retain으로 변경 필요 (edit or patch)
 
-1. Release된 PV의 Snapshot -> Managed Disk 생성
+1. Release된 PV를 사용 가능하도록 변경
+  - Released 상태의 PV를 Available 상태로 변경 ->  kubectl patch pv <PV-NAME> -p '{"spec":{"claimRef": null}}'
+  - claimRef를 제거해서 Bound되었던 PVC 정보를 제거
+  - 클러스터 상에서 PV 제거하였다면 Azure 인프라에서 해당 디스크 정보로 새로운 PV 생성
 2. 수동으로 PV 생성, Managed Disk의 이름과 URI 입력 
 
     ```yaml

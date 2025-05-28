@@ -11,7 +11,7 @@ spec:
     - ReadWriteOnce
   storageClassName: azuredisk-ssd-lrs
   azureDisk:
-    diskName: ""
-    diskURI: ""
+    diskName: "prometheus-disk"
+    diskURI: "/subscriptions/e07c7243-0a87-43a1-b71e-7821108e90e7/resourceGroups/MC_RG-DEV_DEV-AKS-CLUSTER-001_KOREACENTRAL/providers/Microsoft.Compute/disks/prometheus-disk"
     kind: Managed
     cachingMode: None
