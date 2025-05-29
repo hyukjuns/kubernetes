@@ -422,14 +422,14 @@ kubectl -n NAMESPACE patch prometheus/NAME --patch '{"spec": {"paused": false}}'
 
       [./objects/restore-grafana-pv.yaml](./objects/restore-grafana-pv.yaml)
 
-2. 수동으로 PV 생성, Managed Disk의 이름과 URI 입력 
+    - 수동으로 PV 생성, Managed Disk의 이름과 URI 입력 
 
-    ```yaml
-    PersistentVolume.spec.azureDisk.diskName
-    PersistentVolume.spec.azureDisk.diskURI
-    ```
+      ```yaml
+      PersistentVolume.spec.azureDisk.diskName
+      PersistentVolume.spec.azureDisk.diskURI
+      ```
 
-3. Prometheus, Alertmanager의 경우 Helm Values에서 새로 생성한 volumeName 입력
+2. Helm Values에서 새로 생성한 volumeName 입력
 
     ```yaml
     # alertmanager
