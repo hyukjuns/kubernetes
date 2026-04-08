@@ -1,0 +1,12 @@
+controller:
+  readOnlyRootFilesystem: true
+  extraVolumeMounts:
+    - name: etc-haproxy
+      mountPath: /etc/haproxy
+    - name: var-state-haproxy
+      mountPath: /var/state/haproxy
+  extraVolumes:
+    - name: etc-haproxy
+      emptyDir: {}
+    - name: var-state-haproxy
+      emptyDir: {}

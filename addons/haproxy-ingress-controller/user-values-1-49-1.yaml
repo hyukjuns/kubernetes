@@ -1,0 +1,62 @@
+controller:
+  # Image Configuration
+  image:
+    repository: devhyukjunacr.azurecr.io/mirror-haproxytech/kubernetes-ingress
+    tag: "3.2.6"
+
+  # Scalability & Availability
+  replicaCount: 2
+  PodDisruptionBudget:
+    enable: "true"
+    minAvailable: 1
+
+  # Ingress Configuration
+  ingressClass: haproxy
+
+  unprivileged: true
+  readOnlyRootFilesystem: true
+
+  # Service Configuration (Azure ILB)
+  service:
+    type: LoadBalancer
+    externalTrafficPolicy: "Local"
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+      service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "sn-loadbalancer"
+
+  # Scheduling (Tolerations)
+  tolerations:
+    - key: "env"
+      operator: "Equal"
+      value: "dev"
+      effect: "NoSchedule"
+
+  # [Security] 쓰기 권한이 필요한 경로를 메모리 기반 emptyDir로 마운트
+  extraVolumeMounts:
+    - name: etc-haproxy
+      mountPath: /etc/haproxy
+    - name: var-state-haproxy
+      mountPath: /var/state/haproxy
+
+  extraVolumes:
+    - name: etc-haproxy
+      emptyDir: {}
+    - name: var-state-haproxy
+      emptyDir: {}
+      
+  # Custom Config (Enable Access Log)
+  config:
+    syslog-server: "address:stdout, format: raw, facility:daemon"
+
+# Default Backend Disabled
+defaultBackend:
+  enabled: false
+
+# CRD Job Configuration (Tolerations)
+crdjob:
+  tolerations:
+    - key: "env"
+      operator: "Equal"
+      value: "dev"
+      effect: "NoSchedule"

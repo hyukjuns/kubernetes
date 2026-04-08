@@ -1,0 +1,48 @@
+controller:
+  # Image Configuration
+  image:
+    repository: devhyukjunacr.azurecr.io/mirror-haproxytech/kubernetes-ingress
+    tag: "3.2.6"
+
+  # Scalability & Availability
+  replicaCount: 2
+  PodDisruptionBudget:
+    enable: "true"
+    minAvailable: 1
+
+  # Ingress Configuration
+  ingressClass: haproxy
+
+  unprivileged: true
+
+  # Service Configuration (Azure ILB)
+  service:
+    type: LoadBalancer
+    externalTrafficPolicy: "Local"
+    annotations:
+      service.beta.kubernetes.io/azure-load-balancer-health-probe-request-path: "/healthz"
+      service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+      service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "sn-loadbalancer"
+
+  # Scheduling (Tolerations)
+  tolerations:
+    - key: "env"
+      operator: "Equal"
+      value: "dev"
+      effect: "NoSchedule"
+      
+  # Custom Config (Enable Access Log)
+  config:
+    syslog-server: "address:stdout, format: raw, facility:daemon"
+
+# Default Backend Disabled
+defaultBackend:
+  enabled: false
+
+# CRD Job Configuration (Tolerations)
+crdjob:
+  tolerations:
+    - key: "env"
+      operator: "Equal"
+      value: "dev"
+      effect: "NoSchedule"

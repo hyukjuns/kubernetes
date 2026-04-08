@@ -1,0 +1,23 @@
+# foo-ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-devhyukjun-info-haproxy
+  labels:
+    app.kubernetes.io/name: test.devhyukjun.info
+  # annotations:
+  #   haproxy.org/timeout-server: "120"
+  #   haproxy.org/ssl-redirect: "false"
+spec:
+  ingressClassName: haproxy-hyukjun
+  rules:
+  - host: test.devhyukjun.info
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: testa
+            port: 
+              number: 80
