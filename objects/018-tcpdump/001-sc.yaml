@@ -1,0 +1,14 @@
+# 001-sc.yaml
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: custom-azurefile
+provisioner: file.csi.azure.com
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+mountOptions:
+- mfsymlinks
+- actimeo=30
+- nosharesock
+parameters:
+  skuName: Standard_LRS

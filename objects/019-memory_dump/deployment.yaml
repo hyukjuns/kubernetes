@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oom-burn
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: oom-burn
+  template:
+    metadata:
+      labels:
+        app: oom-burn
+    spec:
+      containers:
+        - name: oom-burn
+          image: <YOUR_IMAGE>  # 예: <acr>.azurecr.io/oom-burn:1
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "64Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"   # 작게 잡으면 금방 OOMKilled 재현됨

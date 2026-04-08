@@ -1,0 +1,8 @@
+apiVersion: approuting.kubernetes.azure.com/v1alpha1
+kind: NginxIngressController
+metadata:
+  name: nginx-public
+spec:
+  defaultBackendService:
+    name: default-service
+    namespace: default

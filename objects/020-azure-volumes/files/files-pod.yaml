@@ -1,0 +1,16 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  name: hyukjun-nginx-pv
+spec:
+  containers:
+    - image: mcr.microsoft.com/oss/nginx/nginx:1.17.3-alpine
+      name: nginx-blob
+      volumeMounts:
+        - name: files
+          mountPath: "/mnt/blob"
+          readOnly: false
+  volumes:
+    - name: files
+      persistentVolumeClaim:
+        claimName: hyukjun-azurefile-pvc

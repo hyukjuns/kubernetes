@@ -1,0 +1,53 @@
+# foo-ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo
+  labels:
+    app.kubernetes.io/name: demo.hyukjun.com
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+  - host: demo.hyukjun.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/foo(/|$)(.*)"
+        backend:
+          service:
+            name: foo
+            port: 
+              number: 80
+      - pathType: Prefix
+        path: "/bar(/|$)(.*)"
+        backend:
+          service:
+            name: bar
+            port: 
+              number: 80
+---
+# foo-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: foo
+spec:
+  selector:
+    app: foo
+  ports:
+  - port: 80
+    targetPort: 80
+---
+# bar-service
+apiVersion: v1
+kind: Service
+metadata:
+  name: bar
+spec:
+  selector:
+    app: bar
+  ports:
+  - port: 80
+    targetPort: 80

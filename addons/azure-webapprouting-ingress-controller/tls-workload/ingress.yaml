@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.azure.com/tls-cert-keyvault-uri: CERT_URI
+  name: foo-test-com
+  namespace: dev
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+  - host: foo.test.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: dev-service
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - foo.test.com
+    secretName: keyvault-foo-test-com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-service
+  namespace: dev
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: foo-test-com
+  type: ClusterIP

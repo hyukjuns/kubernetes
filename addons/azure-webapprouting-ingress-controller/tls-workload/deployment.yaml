@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foo-test-com
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: foo-test-com
+  template:
+    metadata:
+      labels:
+        app: foo-test-com
+    spec:
+      containers:
+      - name: foo-test-com
+        image: nginx:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/bin/bash"]
+        args: ["-c", "echo \"foo-test-com \n Hello from $(hostname)!\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+        ports:
+        - containerPort: 80

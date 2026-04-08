@@ -1,0 +1,55 @@
+# 003-daemonset.yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: tcpdump
+  labels:
+    app: tcpdump
+spec:
+  selector:
+    matchLabels:
+      app: tcpdump
+  template:
+    metadata:
+      labels:
+        app: tcpdump
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+      - name: tcpdump
+        image: ACR_NAME.azurecr.io/tcpdump:2.0
+        command:
+        - sh
+        - -c
+        - |
+          mkdir -p /root/tcpdump
+          /usr/bin/tcpdump -n -s 0 -C 500 -W 20 -tttt "(host $DST_1 or host $DST_2)" -w /root/tcpdump/"$NODE_NAME ""$(date +"%Y_%m_%d_%I_%M_%p").cap"
+        env:
+          - name: NODE_NAME
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.nodeName
+          - name: DST_1
+            value: ""
+          - name: DST_2
+            value: ""
+        resources:
+          limits:
+            cpu: 100m
+            memory: 90Mi
+          requests:
+            cpu: 100m
+            memory: 90Mi
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /root/tcpdump
+            name: tcpdump
+            readOnly: false
+      nodeSelector:
+        kubernetes.azure.com/mode: user
+      volumes:
+      - name: tcpdump
+        persistentVolumeClaim:
+          claimName: tcpdump

@@ -1,0 +1,14 @@
+# 002-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tcpdump
+  labels:
+    app: tcpdump
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: custom-azurefile
+  resources:
+    requests:
+      storage: 500Gi
