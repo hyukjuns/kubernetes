@@ -1,7 +1,7 @@
 controller:
   # Image Configuration
   image:
-    repository: devhyukjunacr.azurecr.io/mirror-haproxytech/kubernetes-ingress
+    repository: ACR_NAME.azurecr.io/mirror-haproxytech/kubernetes-ingress
     tag: "3.2.6"
 
   # Scalability & Availability
