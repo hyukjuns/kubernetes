@@ -1,0 +1,32 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: demo-gateway
+  namespace: demo
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "sn-loadbalancer"
+    service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.225.4.20
+spec:
+  gatewayClassName: approuting-istio
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httpbin
+  namespace: demo
+spec:
+  parentRefs:
+  - name: demo-gateway
+  hostnames: ["test.devhyukjun.info"]
+  rules:
+    - backendRefs:
+      - name: demo-app
+        port: 8080
