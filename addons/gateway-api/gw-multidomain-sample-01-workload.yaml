@@ -1,0 +1,95 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: foo
+  namespace: ns-foo
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: foo
+  template:
+    metadata:
+      labels:
+        app: foo
+    spec:
+      containers:
+      - name: foo
+        image: nginx:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        command: ["/bin/bash"]
+        args: ["-c", "echo \" Hello Foo! Host: $(hostname), Node IP: ${NODE_IP}\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: foo
+  namespace: ns-foo
+spec:
+  selector:
+    app: foo
+  ports:
+  - port: 8080
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bar
+  namespace: ns-bar
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bar
+  template:
+    metadata:
+      labels:
+        app: bar
+    spec:
+      containers:
+      - name: bar
+        image: nginx:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        command: ["/bin/bash"]
+        args: ["-c", "echo \" Hello Bar! Host: $(hostname), Node IP: ${NODE_IP}\" > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "50m"
+          requests:
+            memory: "128Mi"
+            cpu: "50m"
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bar
+  namespace: ns-bar
+spec:
+  selector:
+    app: bar
+  ports:
+  - port: 8080
+    targetPort: 80

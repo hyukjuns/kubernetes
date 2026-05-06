@@ -1,5 +1,10 @@
 # Gateway API - AKS Approuting Addon Gateway API
 
+## Samples
+- Multi Domain
+- Multi Path
+- TLS Termination
+
 ## Concept
 ### Hierachy
 ```markdown
