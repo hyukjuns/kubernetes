@@ -1,0 +1,95 @@
+# Scenario: Path-based routing with URL prefix rewrite
+# Single hostname routes different URL paths to separate backend microservices.
+# /api and /auth prefixes are stripped before forwarding so backends receive requests at /.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: demo-gateway-03
+  namespace: demo
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "sn-loadbalancer"
+    service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.225.4.22
+spec:
+  gatewayClassName: approuting-istio
+  listeners:
+  - name: portal
+    hostname: portal.devhyukjun.info
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: portal-route
+  namespace: demo
+spec:
+  parentRefs:
+  - name: demo-gateway-03
+  hostnames:
+    - portal.devhyukjun.info
+  rules:
+    # /api/* → api-service (prefix stripped: /api/users → /users)
+    - matches:
+      - path:
+          type: PathPrefix
+          value: "/api"
+      filters:
+      - type: URLRewrite
+        urlRewrite:
+          path:
+            type: ReplacePrefixMatch
+            replacePrefixMatch: /
+      backendRefs:
+      - name: api-service
+        port: 8080
+    # /auth/* → auth-service (prefix stripped: /auth/login → /login)
+    - matches:
+      - path:
+          type: PathPrefix
+          value: "/auth"
+      filters:
+      - type: URLRewrite
+        urlRewrite:
+          path:
+            type: ReplacePrefixMatch
+            replacePrefixMatch: /
+      backendRefs:
+      - name: auth-service
+        port: 8080
+    # / → frontend (catch-all, must be last)
+    - matches:
+      - path:
+          type: PathPrefix
+          value: "/"
+      backendRefs:
+      - name: frontend-service
+        port: 80
+---
+# Weighted traffic splitting for canary deployment
+# 90% traffic to stable, 10% to canary — no client-side changes needed
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: canary-route
+  namespace: demo
+spec:
+  parentRefs:
+  - name: demo-gateway-03
+  hostnames:
+    - canary.devhyukjun.info
+  rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: "/"
+      backendRefs:
+      - name: demo-app-stable
+        port: 8080
+        weight: 90
+      - name: demo-app-canary
+        port: 8080
+        weight: 10

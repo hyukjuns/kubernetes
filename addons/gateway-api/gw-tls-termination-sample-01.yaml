@@ -1,0 +1,90 @@
+# Scenario: HTTPS TLS termination with HTTP-to-HTTPS redirect
+#
+# Prerequisites — create TLS secret in the same namespace:
+#   kubectl create secret tls tls-secret \
+#     --cert=cert.crt --key=cert.key -n demo
+#
+# For Azure Key Vault managed certificates, mount the cert via the
+# Secrets Store CSI driver and create the Secret from it, or use the
+# App Routing addon's built-in AKV sync:
+#   kubectl annotate secret tls-secret \
+#     kubernetes.azure.com/tls-cert-keyvault-uri=\
+#     "https://<vault>.vault.azure.net/certificates/<cert-name>" -n demo
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: demo-gateway-04
+  namespace: demo
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "sn-loadbalancer"
+    service.beta.kubernetes.io/azure-load-balancer-ipv4: 10.225.4.23
+spec:
+  gatewayClassName: approuting-istio
+  listeners:
+  - name: https
+    hostname: secure.devhyukjun.info
+    port: 443
+    protocol: HTTPS
+    tls:
+      mode: Terminate
+      certificateRefs:
+      - name: tls-secret
+        kind: Secret
+    allowedRoutes:
+      namespaces:
+        from: All
+  - name: http
+    hostname: secure.devhyukjun.info
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: All
+---
+# HTTP listener: redirect all requests to HTTPS (301)
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: http-to-https-redirect
+  namespace: demo
+spec:
+  parentRefs:
+  - name: demo-gateway-04
+    sectionName: http
+  hostnames:
+    - secure.devhyukjun.info
+  rules:
+    - filters:
+      - type: RequestRedirect
+        requestRedirect:
+          scheme: https
+          statusCode: 301
+---
+# HTTPS listener: route traffic to backend
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: https-route
+  namespace: demo
+spec:
+  parentRefs:
+  - name: demo-gateway-04
+    sectionName: https
+  hostnames:
+    - secure.devhyukjun.info
+  rules:
+    - matches:
+      - path:
+          type: PathPrefix
+          value: "/api"
+      backendRefs:
+      - name: api-service
+        port: 8080
+    - matches:
+      - path:
+          type: PathPrefix
+          value: "/"
+      backendRefs:
+      - name: demo-app
+        port: 8080
