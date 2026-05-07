@@ -13,8 +13,8 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: demo-gateway-04
-  namespace: demo
+  name: demo-gateway-https
+  namespace: gw-share
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
     service.beta.kubernetes.io/azure-load-balancer-internal-subnet: "sn-loadbalancer"
@@ -29,7 +29,7 @@ spec:
     tls:
       mode: Terminate
       certificateRefs:
-      - name: tls-secret
+      - name: devhyukjun-tls-secret
         kind: Secret
     allowedRoutes:
       namespaces:
@@ -50,7 +50,8 @@ metadata:
   namespace: demo
 spec:
   parentRefs:
-  - name: demo-gateway-04
+  - name: demo-gateway-https
+    namespace: gw-share
     sectionName: http
   hostnames:
     - secure.devhyukjun.info
@@ -69,7 +70,8 @@ metadata:
   namespace: demo
 spec:
   parentRefs:
-  - name: demo-gateway-04
+  - name: demo-gateway-https
+    namespace: gw-share
     sectionName: https
   hostnames:
     - secure.devhyukjun.info
@@ -84,7 +86,7 @@ spec:
     - matches:
       - path:
           type: PathPrefix
-          value: "/"
+          value: "/ver"
       backendRefs:
-      - name: demo-app
+      - name: api-service
         port: 8080
